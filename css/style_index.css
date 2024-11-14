@@ -10,6 +10,10 @@ html {
     align-items: center;
 }
 
+.hidden {
+    display: none;
+}
+
 .container {
     display: flex;
     width: 100vw;

@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const mainContainer = document.querySelector("main");
-    mainContainer.classList.add("container"); // Adds id "container" to the main element
+    mainContainer.classList.add("container");
     const homeView = document.querySelector("#home");
+    const browseView = document.querySelector("#browse");
 
     // Replace with API data when available
     const seasons = ["2020", "2021", "2022", "2023"];
@@ -26,13 +27,30 @@ document.addEventListener("DOMContentLoaded", () => {
         container.classList.add("select-container");
         const seasonSelect = document.createElement("select");
 
+        // Populate select options
         populateSeasonOptions(seasonSelect, seasons);
         container.appendChild(seasonSelect);
+
+        // Add event listener to seasonSelect
+        seasonSelect.addEventListener("change", (event) => {
+            const selectedSeason = event.target.value;
+            if (selectedSeason) {
+                homeView.classList.add("hidden"); // Hide home view
+                browseView.classList.remove("hidden"); // Show browse view
+                displayRaces(selectedSeason);
+            }
+        });
+
         return container;
     }
 
     // Method to populate the select element with options
     function populateSeasonOptions(selectElement, seasons) {
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a Season";
+        selectElement.appendChild(defaultOption);
+
         seasons.forEach(season => {
             const option = document.createElement("option");
             option.value = season;
@@ -52,8 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const textSection = document.createElement("div");
         textSection.classList.add("text-section");
 
-        textSection.appendChild(addHeader())
-        textSection.appendChild(addPageInfo())
+        textSection.appendChild(addHeader());
+        textSection.appendChild(addPageInfo());
         textSection.appendChild(createSeasonSelect());
 
         // Append the two divs to the diagonal-layout section
@@ -64,9 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
         homeView.appendChild(diagonalLayout);
     }
 
-    // Call methods to build the home view
-    addHeader();
-    addPageInfo();
-    createSeasonSelect();
+    // Call method to build the home view
     addDiagonalLayout();
 });

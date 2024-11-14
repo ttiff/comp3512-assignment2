@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const mainContainer = document.querySelector("main");
+    mainContainer.classList.add("container"); // Adds id "container" to the main element
     const homeView = document.querySelector("#home");
 
     // Replace with API data when available
@@ -7,22 +9,26 @@ document.addEventListener("DOMContentLoaded", () => {
     // Method to create and append the header
     function addHeader() {
         const header = document.createElement("h1");
-        header.textContent = "COMP 3512 - F1 Dashboard Project";
+        header.textContent = "Formula 1 Dashboard";
         return header;
     }
 
     // Method to create and append the description paragraph
     function addPageInfo() {
         const pageInfo = document.createElement("p");
-        pageInfo.textContent = "Explore race results, driver performances, and more from the 2022 F1 season.";
+        pageInfo.textContent = "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript and Semantic UI. Click below to explore race results, driver performances, and more from 2020 - 2022 F1 seasons.";
         return pageInfo;
     }
 
     // Method to create and append the select element
     function createSeasonSelect() {
+        const container = document.createElement("div");
+        container.classList.add("select-container");
         const seasonSelect = document.createElement("select");
+
         populateSeasonOptions(seasonSelect, seasons);
-        return seasonSelect;
+        container.appendChild(seasonSelect);
+        return container;
     }
 
     // Method to populate the select element with options

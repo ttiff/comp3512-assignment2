@@ -8,21 +8,21 @@ document.addEventListener("DOMContentLoaded", () => {
     function addHeader() {
         const header = document.createElement("h1");
         header.textContent = "COMP 3512 - F1 Dashboard Project";
-        homeView.appendChild(header);
+        return header;
     }
 
     // Method to create and append the description paragraph
     function addPageInfo() {
         const pageInfo = document.createElement("p");
         pageInfo.textContent = "Explore race results, driver performances, and more from the 2022 F1 season.";
-        homeView.appendChild(pageInfo);
+        return pageInfo;
     }
 
     // Method to create and append the select element
     function createSeasonSelect() {
         const seasonSelect = document.createElement("select");
-        homeView.appendChild(seasonSelect);
         populateSeasonOptions(seasonSelect, seasons);
+        return seasonSelect;
     }
 
     // Method to populate the select element with options
@@ -35,8 +35,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Method to create and append the diagonal-layout section
+    function addDiagonalLayout() {
+        const diagonalLayout = document.createElement("section");
+        diagonalLayout.classList.add("diagonal-layout");
+
+        const imageSection = document.createElement("div");
+        imageSection.classList.add("image-section");
+
+        const textSection = document.createElement("div");
+        textSection.classList.add("text-section");
+
+        textSection.appendChild(addHeader())
+        textSection.appendChild(addPageInfo())
+        textSection.appendChild(createSeasonSelect());
+
+        // Append the two divs to the diagonal-layout section
+        diagonalLayout.appendChild(imageSection);
+        diagonalLayout.appendChild(textSection);
+
+        // Append the diagonal-layout section to the #home element
+        homeView.appendChild(diagonalLayout);
+    }
+
     // Call methods to build the home view
     addHeader();
     addPageInfo();
     createSeasonSelect();
+    addDiagonalLayout();
 });

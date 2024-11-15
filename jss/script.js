@@ -1,11 +1,25 @@
+import { renderRaces } from "./browseView.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const mainContainer = document.querySelector("main");
     mainContainer.classList.add("container");
     const homeView = document.querySelector("#home");
     const browseView = document.querySelector("#browse");
+    browseView.classList.add("hidden");
+    homeView.classList.remove("hidden");
+
 
     // Replace with API data when available
     const seasons = ["2020", "2021", "2022", "2023"];
+
+    // Function to switch the stylesheet
+    function switchStylesheet(view) {
+        if (view === "home") {
+            themeStylesheet.href = "css/style_index.css";
+        } else if (view === "browse") {
+            themeStylesheet.href = "css/style_browse.css";
+        }
+    }
 
     // Method to create and append the header
     function addHeader() {
@@ -37,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (selectedSeason) {
                 homeView.classList.add("hidden"); // Hide home view
                 browseView.classList.remove("hidden"); // Show browse view
-                displayRaces(selectedSeason);
+                switchStylesheet("browse");
+                renderRaces(selectedSeason);
             }
         });
 

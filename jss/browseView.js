@@ -16,88 +16,105 @@ const races = [
 ];
 
 
-
-// Function to render the races and the details message
-export function renderRaces(seasonYear) {
-    // Select or create the main container
-    const mainContainer = document.querySelector("main")
+// Function to set up the main container
+function setupMainContainer() {
+    const mainContainer = document.querySelector("main");
     mainContainer.className = "ui fluid container";
+    return mainContainer;
+}
 
-    const browseView = document.querySelector("#browse");
-    browseView.innerHTML = ""; // Clear existing content
-
-
-    // Create the main grid
+// Function to create the main grid layout
+function createMainGrid(parent) {
     const mainGrid = document.createElement("div");
     mainGrid.className = "ui grid stackable";
-    browseView.appendChild(mainGrid);
+    parent.appendChild(mainGrid);
+    return mainGrid;
+}
 
-    // Left column for race list
+// Function to create the left column for race list
+function createRaceListColumn(parent, seasonYear) {
     const raceListColumn = document.createElement("div");
     raceListColumn.className = "four wide column";
-    mainGrid.appendChild(raceListColumn);
+    parent.appendChild(raceListColumn);
 
-    // Header for the race list
     const header = document.createElement("h1");
     header.className = "ui centered header";
     header.textContent = `${seasonYear} Races`;
     raceListColumn.appendChild(header);
 
-    // Create grid for race cards
     const raceGrid = document.createElement("div");
     raceGrid.className = "ui stackable doubling three column grid";
     raceGrid.id = "race-grid";
     raceListColumn.appendChild(raceGrid);
 
-    // Filter races by season and create cards
+    return raceGrid;
+}
+
+// Function to create each race card
+function createRaceCard(raceGrid, race) {
+    const raceColumn = document.createElement("div");
+    raceColumn.className = "column";
+    raceGrid.appendChild(raceColumn);
+
+    const card = document.createElement("div");
+    card.className = "ui card";
+    raceColumn.appendChild(card);
+
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "content";
+    card.appendChild(contentDiv);
+
+    const raceHeader = document.createElement("div");
+    raceHeader.className = "header";
+    raceHeader.textContent = `Round ${race.round}`;
+    contentDiv.appendChild(raceHeader);
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = race.circuit;
+    contentDiv.appendChild(meta);
+
+    const extraContent = document.createElement("div");
+    extraContent.className = "extra content";
+    card.appendChild(extraContent);
+
+    const resultsButton = document.createElement("a");
+    resultsButton.className = "ui tiny button fluid";
+    resultsButton.href = `#`; //replace with eventhandler
+    resultsButton.textContent = "Results";
+    extraContent.appendChild(resultsButton);
+}
+
+// Function to filter races by season and render race cards
+function renderRaceList(raceGrid, seasonYear) {
     const seasonRaces = races.filter(race => race.year === seasonYear);
-    seasonRaces.forEach(race => {
-        const raceColumn = document.createElement("div");
-        raceColumn.className = "column";
-        raceGrid.appendChild(raceColumn);
+    seasonRaces.forEach(race => createRaceCard(raceGrid, race));
+}
 
-        const card = document.createElement("div");
-        card.className = "ui card";
-        raceColumn.appendChild(card);
-
-        const contentDiv = document.createElement("div");
-        contentDiv.className = "content";
-        card.appendChild(contentDiv);
-
-        const raceHeader = document.createElement("div");
-        raceHeader.className = "header";
-        raceHeader.textContent = `Round ${race.round}`;
-        contentDiv.appendChild(raceHeader);
-
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        meta.textContent = race.circuit;
-        contentDiv.appendChild(meta);
-
-        const extraContent = document.createElement("div");
-        extraContent.className = "extra content";
-        card.appendChild(extraContent);
-
-        const resultsButton = document.createElement("a");
-        resultsButton.className = "ui tiny button fluid";
-        resultsButton.href = "";
-        resultsButton.textContent = "Results";
-        extraContent.appendChild(resultsButton);
-    });
-
-    //message display on right
+// Function to create the right column for the details message
+function createDetailsColumn(parent, seasonYear) {
     const detailsColumn = document.createElement("div");
     detailsColumn.className = "eleven wide column";
-    mainGrid.appendChild(detailsColumn);
+    parent.appendChild(detailsColumn);
 
     const segment = document.createElement("div");
     segment.className = "ui segment";
     detailsColumn.appendChild(segment);
 
     const message = document.createElement("p");
-    message.textContent = "Please select a circuit to view details and race results for the 2022 season.";
+    message.textContent = message.textContent = `Please select a circuit to view details and race results for the ${seasonYear} season.`;
     segment.appendChild(message);
 }
 
-// Initial call to render the races for the selected season
-renderRaces("2022");
+// Main function to render the races and details message
+export function renderRaces(seasonYear) {
+    const mainContainer = setupMainContainer();
+    const browseView = document.querySelector("#browse");
+    browseView.innerHTML = ""; // Clear existing content
+
+    const mainGrid = createMainGrid(browseView);
+    const raceGrid = createRaceListColumn(mainGrid, seasonYear);
+    renderRaceList(raceGrid, seasonYear);
+    createDetailsColumn(mainGrid, seasonYear);
+}
+

@@ -1,3 +1,5 @@
+import { switchStylesheet } from "./script.js";
+
 // Sample data for races; replace with API data when available
 const races = [
     { "raceName": "Bahrain Grand Prix", "year": "2020", "round": 1, "circuit": "Bahrain International Circuit", "raceId": 1 },
@@ -31,23 +33,37 @@ function createMenuContainer() {
 }
 
 // Function to create a menu item with an icon
-function createMenuItem(href, iconClass) {
+function createMenuItem(href, iconClass, onClick = null) {
     const link = document.createElement("a");
     link.className = "item";
     link.href = href;
+    if (onClick) {
+        link.addEventListener("click", onClick);
+    }
     const icon = document.createElement("i");
-    icon.className = iconClass; // Font Awesome icon class
+    icon.className = iconClass;
     link.appendChild(icon);
     return link;
 }
 
-// Main function to assembl navigation bar
+// Main function to assemble navigation bar
 function createNavigation() {
     const headerContainer = document.querySelector("header");
     const menuContainer = createMenuContainer();
     headerContainer.appendChild(menuContainer);
 
-    const homeLink = createMenuItem("#", "fas fa-home"); // add event handler
+    const homeView = document.querySelector("#home");
+    const browseView = document.querySelector("#browse");
+
+    // Home button event handler
+    const homeLink = createMenuItem("#", "fas fa-home", () => {
+        headerContainer.innerHTML = "";
+        homeView.classList.remove("hidden"); // Show home view
+        browseView.classList.add("hidden");   // Hide browse view
+
+        // Switch stylesheet to home view styling
+        switchStylesheet("home");
+    });
     menuContainer.appendChild(homeLink);
 
     const githubLink = createMenuItem("https://github.com/ttiff/comp3512-assignment2", "fab fa-github");
@@ -139,14 +155,18 @@ function createDetailsColumn(parent, seasonYear) {
 
 // Main function to render the races and details message
 export function renderRaces(seasonYear) {
-    createNavigation();
+    // Clear existing navigation and content to avoid duplication
+    const headerContainer = document.querySelector("header");
+    headerContainer.innerHTML = ""; // Clear the navigation container
+
     const mainContainer = setupMainContainer();
     const browseView = document.querySelector("#browse");
-    browseView.innerHTML = ""; // Clear existing content
+    browseView.innerHTML = ""; // Clear existing browse view content
+
+    createNavigation();
 
     const mainGrid = createMainGrid(browseView);
     const raceGrid = createRaceListColumn(mainGrid, seasonYear);
     renderRaceList(raceGrid, seasonYear);
     createDetailsColumn(mainGrid, seasonYear);
 }
-

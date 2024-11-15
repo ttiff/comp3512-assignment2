@@ -12,15 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Replace with API data when available
     const seasons = ["2020", "2021", "2022", "2023"];
 
-    // Function to switch the stylesheet
-    function switchStylesheet(view) {
-        if (view === "home") {
-            themeStylesheet.href = "css/style_index.css";
-        } else if (view === "browse") {
-            themeStylesheet.href = "css/style_browse.css";
-        }
-    }
-
     // Method to create and append the header
     function addHeader() {
         const header = document.createElement("h1");
@@ -100,3 +91,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Call method to build the home view
     addDiagonalLayout();
 });
+
+export function switchStylesheet(view) {
+    const themeStylesheet = document.querySelector("#theme-stylesheet");
+
+    if (!themeStylesheet) {
+        console.error("Stylesheet element with ID 'theme-stylesheet' not found.");
+        return;
+    }
+
+    if (view === "home") {
+        themeStylesheet.href = "css/style_index.css";
+    } else if (view === "browse") {
+        themeStylesheet.href = "css/style_browse.css";
+    }
+}

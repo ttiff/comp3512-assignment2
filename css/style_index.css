@@ -2,7 +2,6 @@ body,
 html {
     margin: 0;
     padding: 0;
-    font-family: 'Bodoni Moda', Arial, sans-serif;
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -30,32 +29,29 @@ html {
     background-image: url('../img/home.png');
     background-size: cover;
     background-position: center;
-    width: 60vw;
+    width: 80vw;
     height: 100vh;
     clip-path: polygon(0 0, 100% 0, 65% 100%, 0 100%);
 }
 
 .text-section {
-    width: 35vw;
+    width: 20vw;
     background-color: #fff;
-    padding: 0 40px;
+    padding: 0 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: left;
-    margin-left: -5vw;
+    margin-left: -7vw;
 }
 
 h1 {
-    font-family: 'Bodoni Moda', serif;
-    font-size: 4.1em;
+    font-size: 4.1em !important;
     margin: 0;
-    color: #4A4A4A;
-    color: #000000;
+    color: #2C2F33;
 }
 
 p {
-    font-family: 'Bodoni Moda', serif;
     font-size: 1.2em;
     line-height: 1.5;
     color: #4A4A4A;
@@ -64,7 +60,6 @@ p {
 
 label,
 select {
-    font-family: 'Bodoni Moda', serif;
     font-size: 1em;
     margin-top: 5px;
 }

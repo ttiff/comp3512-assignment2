@@ -1,5 +1,47 @@
 import { renderRaces } from "./browseView.js";
 
+export function createNavigationBar(switchViewCallback) {
+    const headerContainer = document.querySelector("header");
+    headerContainer.innerHTML = ""; // Clear existing content
+
+    const menuContainer = document.createElement("div");
+    menuContainer.className = "ui dark large secondary pointing menu";
+
+    const homeLink = document.createElement("a");
+    homeLink.className = "item";
+    homeLink.href = "#";
+    homeLink.innerHTML = '<i class="fas fa-home"></i>';
+    homeLink.addEventListener("click", () => {
+        switchViewCallback("home");
+    });
+
+    const githubLink = document.createElement("a");
+    githubLink.className = "item";
+    githubLink.href = "https://github.com/ttiff/comp3512-assignment2";
+    githubLink.innerHTML = '<i class="fab fa-github"></i>';
+
+    menuContainer.appendChild(homeLink);
+    menuContainer.appendChild(githubLink);
+    headerContainer.appendChild(menuContainer);
+}
+
+
+function switchView(view) {
+    const homeView = document.querySelector("#home");
+    const browseView = document.querySelector("#browse");
+
+    if (view === "home") {
+        homeView.classList.remove("hidden");
+        browseView.classList.add("hidden");
+        switchStylesheet("home");
+
+    } else if (view === "browse") {
+        homeView.classList.add("hidden");
+        browseView.classList.remove("hidden");
+        switchStylesheet("browse");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const mainContainer = document.querySelector("main");
     mainContainer.classList.add("container");
@@ -40,9 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         seasonSelect.addEventListener("change", (event) => {
             const selectedSeason = event.target.value;
             if (selectedSeason) {
-                homeView.classList.add("hidden"); // Hide home view
-                browseView.classList.remove("hidden"); // Show browse view
-                switchStylesheet("browse");
+                switchView("browse");
                 renderRaces(selectedSeason);
             }
         });
@@ -89,16 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Call method to build the home view
+    createNavigationBar(switchView);
     addDiagonalLayout();
 });
 
 export function switchStylesheet(view) {
     const themeStylesheet = document.querySelector("#theme-stylesheet");
-
-    if (!themeStylesheet) {
-        console.error("Stylesheet element with ID 'theme-stylesheet' not found.");
-        return;
-    }
 
     if (view === "home") {
         themeStylesheet.href = "css/style_index.css";

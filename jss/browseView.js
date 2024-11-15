@@ -23,6 +23,37 @@ function setupMainContainer() {
     return mainContainer;
 }
 
+// Function to create the main navigation menu container
+function createMenuContainer() {
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "ui dark large secondary pointing menu";
+    return headerDiv;
+}
+
+// Function to create a menu item with an icon
+function createMenuItem(href, iconClass) {
+    const link = document.createElement("a");
+    link.className = "item";
+    link.href = href;
+    const icon = document.createElement("i");
+    icon.className = iconClass; // Font Awesome icon class
+    link.appendChild(icon);
+    return link;
+}
+
+// Main function to assembl navigation bar
+function createNavigation() {
+    const headerContainer = document.querySelector("header");
+    const menuContainer = createMenuContainer();
+    headerContainer.appendChild(menuContainer);
+
+    const homeLink = createMenuItem("#", "fas fa-home"); // add event handler
+    menuContainer.appendChild(homeLink);
+
+    const githubLink = createMenuItem("https://github.com/ttiff/comp3512-assignment2", "fab fa-github");
+    menuContainer.appendChild(githubLink);
+}
+
 // Function to create the main grid layout
 function createMainGrid(parent) {
     const mainGrid = document.createElement("div");
@@ -108,6 +139,7 @@ function createDetailsColumn(parent, seasonYear) {
 
 // Main function to render the races and details message
 export function renderRaces(seasonYear) {
+    createNavigation();
     const mainContainer = setupMainContainer();
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing content

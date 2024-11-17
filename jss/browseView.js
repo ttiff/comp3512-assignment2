@@ -216,7 +216,7 @@ function createTableContainer(titleText) {
 
 function createQualifyingResultsTable(qualifyingResults) {
     const table = document.createElement("table");
-    table.className = "ui celled striped padded table";
+    table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"];
     const thead = createTableHeaders(headers);
@@ -230,7 +230,7 @@ function createQualifyingResultsTable(qualifyingResults) {
 
 function createTop3RacersTable(top3Racers) {
     const table = document.createElement("table");
-    table.className = "ui celled striped padded table";
+    table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver"];
     const thead = createTableHeaders(headers);
@@ -246,7 +246,7 @@ function createTop3RacersTable(top3Racers) {
 function createFinalResultsTable(finalResults) {
 
     const table = document.createElement("table");
-    table.className = "ui celled striped padded table";
+    table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver", "Constructor", "Laps", "Points"];
     const thead = createTableHeaders(headers);

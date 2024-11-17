@@ -2,21 +2,23 @@ import { createNavigationBar, switchStylesheet } from "./script.js";
 
 // Sample data for races; replace with API data when available
 const races = [
-    { "raceName": "Bahrain Grand Prix", "year": "2020", "round": 1, "circuit": "Bahrain International Circuit", "raceId": 1 },
-    { "raceName": "Saudi Arabian Grand Prix", "year": "2020", "round": 2, "circuit": "Jeddah Corniche Circuit", "raceId": 2 },
-    { "raceName": "Australian Grand Prix", "year": "2020", "round": 3, "circuit": "Melbourne Grand Prix Circuit", "raceId": 3 },
-    { "raceName": "Emilia Romagna Grand Prix", "year": "2020", "round": 4, "circuit": "Imola Circuit", "raceId": 4 },
-    { "raceName": "Miami Grand Prix", "year": "2020", "round": 5, "circuit": "Miami International Autodrome", "raceId": 5 },
-    { "raceName": "Spanish Grand Prix", "year": "2020", "round": 6, "circuit": "Circuit de Barcelona-Catalunya", "raceId": 6 },
-    { "raceName": "Monaco Grand Prix", "year": "2020", "round": 7, "circuit": "Circuit de Monaco", "raceId": 7 },
-    { "raceName": "Azerbaijan Grand Prix", "year": "2020", "round": 8, "circuit": "Baku City Circuit", "raceId": 8 },
-    { "raceName": "Canadian Grand Prix", "year": "2020", "round": 9, "circuit": "Circuit Gilles Villeneuve", "raceId": 9 },
-    { "raceName": "British Grand Prix", "year": "2020", "round": 10, "circuit": "Silverstone Circuit", "raceId": 10 },
-    { "raceName": "Austrian Grand Prix", "year": "2020", "round": 11, "circuit": "Red Bull Ring", "raceId": 11 },
-    { "raceName": "French Grand Prix", "year": "2020", "round": 12, "circuit": "Circuit Paul Ricard", "raceId": 12 },
-    { "raceName": "Hungarian Grand Prix", "year": "2020", "round": 13, "circuit": "Hungaroring", "raceId": 13 }
-];
-
+    // 2020
+    { "raceName": "Austrian Grand Prix", "year": "2020", "round": 1, "circuit": "Red Bull Ring", "location": "Spielberg", "country": "Austria", "date": "2020-07-05", "url": "https://youtube.com" },
+    { "raceName": "Styrian Grand Prix", "year": "2020", "round": 2, "circuit": "Red Bull Ring", "location": "Spielberg", "country": "Austria", "date": "2020-07-12", "url": "https://youtube.com" },
+    { "raceName": "Hungarian Grand Prix", "year": "2020", "round": 3, "circuit": "Hungaroring", "location": "Mogyoród", "country": "Hungary", "date": "2020-07-19", "url": "https://youtube.com" },
+    // 2021
+    { "raceName": "Bahrain Grand Prix", "year": "2021", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2021-03-28", "url": "https://youtube.com" },
+    { "raceName": "Emilia Romagna Grand Prix", "year": "2021", "round": 2, "circuit": "Autodromo Enzo e Dino Ferrari", "location": "Imola", "country": "Italy", "date": "2021-04-18", "url": "https://youtube.com" },
+    { "raceName": "Portuguese Grand Prix", "year": "2021", "round": 3, "circuit": "Autódromo Internacional do Algarve", "location": "Portimão", "country": "Portugal", "date": "2021-05-02", "url": "https://youtube.com" },
+    // 2022
+    { "raceName": "Bahrain Grand Prix", "year": "2022", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2022-03-20", "url": "https://youtube.com" },
+    { "raceName": "Saudi Arabian Grand Prix", "year": "2022", "round": 2, "circuit": "Jeddah Corniche Circuit", "location": "Jeddah", "country": "Saudi Arabia", "date": "2022-03-27", "url": "https://youtube.com" },
+    { "raceName": "Australian Grand Prix", "year": "2022", "round": 3, "circuit": "Albert Park Circuit", "location": "Melbourne", "country": "Australia", "date": "2022-04-10", "url": "https://youtube.com" },
+    // 2023
+    { "raceName": "Bahrain Grand Prix", "year": "2023", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2023-03-05", "url": "https://youtube.com" },
+    { "raceName": "Saudi Arabian Grand Prix", "year": "2023", "round": 2, "circuit": "Jeddah Corniche Circuit", "location": "Jeddah", "country": "Saudi Arabia", "date": "2023-03-19", "url": "https://youtube.com" },
+    { "raceName": "Australian Grand Prix", "year": "2023", "round": 3, "circuit": "Albert Park Circuit", "location": "Melbourne", "country": "Australia", "date": "2023-04-02", "url": "https://youtube.com" }
+]
 
 // Function to set up the main container
 function setupMainContainer() {
@@ -85,6 +87,8 @@ function createRaceCard(raceGrid, race) {
     resultsButton.href = `#`; //replace with eventhandler
     resultsButton.textContent = "Results";
     extraContent.appendChild(resultsButton);
+
+    resultsButton.addEventListener("click", () => displayRaceDetails(race));
 }
 
 // Function to filter races by season and render race cards
@@ -108,8 +112,65 @@ function createDetailsColumn(parent, seasonYear) {
     segment.appendChild(message);
 }
 
-// Main function to render the races and details message
+// Function to display detailed information for a selected race
+function displayRaceDetails(race) {
+    const detailsColumn = document.querySelector(".eleven.wide.column");
 
+    detailsColumn.textContent = ""; // Clear existing details
+
+    const segment = document.createElement("div");
+    segment.className = "ui segment";
+    detailsColumn.appendChild(segment);
+
+    const title = document.createElement("h2");
+    title.textContent = "Race Details";
+    segment.appendChild(title);
+
+    segment.appendChild(createDetailParagraph("Race Name", race.raceName));
+    segment.appendChild(createDetailParagraph("Round", race.round));
+    segment.appendChild(createDetailParagraph("Circuit Name", race.circuit));
+    segment.appendChild(createDetailParagraph("Location", race.location));
+    segment.appendChild(createDetailParagraph("Country", race.country));
+    segment.appendChild(createDetailParagraph("Date of Race", race.date));
+
+    const infoLink = createInfoLink("Race Information", race.url);
+    segment.appendChild(infoLink);
+}
+
+
+// Function to create a detail paragraph
+function createDetailParagraph(labelText, valueText) {
+    const paragraph = document.createElement("p");
+
+    const label = document.createElement("span");
+    label.className = "label-bold";
+    label.textContent = `${labelText}: `;
+
+    const value = document.createElement("span");
+    value.textContent = valueText;
+
+    paragraph.appendChild(label);
+    paragraph.appendChild(value);
+
+    return paragraph;
+}
+
+// Function to create a link element
+function createInfoLink(linkText, url) {
+    const paragraph = document.createElement("p");
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.textContent = linkText;
+
+    paragraph.appendChild(link);
+
+    return paragraph;
+}
+
+
+// Main function to render the races and details message
 export function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing browse view content

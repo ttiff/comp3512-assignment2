@@ -31,6 +31,19 @@ const top3Racers = [
     { position: 3, forename: "Bob", surname: "Doe" }
 ];
 
+const finalResults = [
+    { "position": 1, "forename": "Charles", "surname": "Leclerc", "constructor": "Ferrari", "laps": 57, "points": 26 },
+    { "position": 2, "forename": "Carlos", "surname": "Sainz", "constructor": "Ferrari", "laps": 57, "points": 18 },
+    { "position": 3, "forename": "Lewis", "surname": "Hamilton", "constructor": "Mercedes", "laps": 57, "points": 15 },
+    { "position": 4, "forename": "George", "surname": "Russell", "constructor": "Mercedes", "laps": 57, "points": 12 },
+    { "position": 5, "forename": "Kevin", "surname": "Magnussen", "constructor": "Haas F1 Team", "laps": 57, "points": 10 },
+    { "position": 6, "forename": "Valtteri", "surname": "Bottas", "constructor": "Alfa Romeo", "laps": 57, "points": 8 },
+    { "position": 7, "forename": "Esteban", "surname": "Ocon", "constructor": "Alpine F1 Team", "laps": 57, "points": 6 },
+    { "position": 8, "forename": "Yuki", "surname": "Tsunoda", "constructor": "AlphaTauri", "laps": 57, "points": 4 },
+    { "position": 9, "forename": "Fernando", "surname": "Alonso", "constructor": "Alpine F1 Team", "laps": 57, "points": 2 },
+    { "position": 10, "forename": "Guanyu", "surname": "Zhou", "constructor": "Alfa Romeo", "laps": 57, "points": 1 }
+];
+
 // Function to set up the main container
 function setupMainContainer() {
     const mainContainer = document.querySelector("main");
@@ -103,6 +116,7 @@ function createRaceCard(raceGrid, race) {
         displayRaceDetails(race);
         displayQualifyResults(qualifyingResults);
         displayTop3Racers(top3Racers);
+        displayFinalResults(finalResults);
     });
 }
 
@@ -171,7 +185,7 @@ function displayQualifyResults(qualifyingResults) {
 function displayTop3Racers(top3Racers) {
     const detailsColumn = document.querySelector(".ui.two.column.grid");
     const segment = document.createElement("div");
-    segment.classList = "column";
+    segment.classList = "column top3";
     const divTable = createTableContainer("Top 3 Racers");
 
     const table = createTop3RacersTable(top3Racers);
@@ -179,6 +193,14 @@ function displayTop3Racers(top3Racers) {
 
     segment.appendChild(divTable);
     detailsColumn.appendChild(segment);
+}
+
+function displayFinalResults(finalResults) {
+    const detailsColumn = document.querySelector(".column.top3");
+    const divTable = createTableContainer("Race Results");
+    const table = createFinalResultsTable(finalResults);
+    divTable.append(table);
+    detailsColumn.appendChild(divTable);
 }
 
 function createTableContainer(titleText) {
@@ -215,6 +237,22 @@ function createTop3RacersTable(top3Racers) {
     table.appendChild(thead);
 
     const tbody = createTop3RacersTableBody(top3Racers);
+    table.appendChild(tbody);
+
+    return table;
+
+}
+
+function createFinalResultsTable(finalResults) {
+
+    const table = document.createElement("table");
+    table.className = "ui celled striped padded table";
+
+    const headers = ["Position", "Driver", "Constructor", "Laps", "Points"];
+    const thead = createTableHeaders(headers);
+    table.appendChild(thead);
+
+    const tbody = createFinalResultsTableBody(finalResults);
     table.appendChild(tbody);
 
     return table;
@@ -266,6 +304,23 @@ function createTop3RacersTableBody(top3Racers) {
     });
 
     return tbody
+}
+
+function createFinalResultsTableBody(finalResults) {
+    const tbody = document.createElement("tbody");
+    finalResults.forEach(result => {
+        const row = document.createElement("tr");
+        row.appendChild(createCell(result.position));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+        row.appendChild(createLinkCell(result.constructor, ""));
+        row.appendChild(createCell(result.laps));
+        row.appendChild(createCell(result.points));
+
+        tbody.appendChild(row)
+    });
+
+    return tbody
+
 }
 
 function createCell(textContent) {

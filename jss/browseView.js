@@ -25,6 +25,12 @@ const qualifyingResults = [
     { position: 2, driverRef: "verstappen", forename: "Max", surname: "Verstappen", constructorRef: "redbull", constructorName: "Red Bull Racing", q1: "1:23.789", q2: "1:22.678", q3: "1:21.567" }
 ];
 
+const top3Racers = [
+    { position: 1, forename: "Lewis", surname: "Hamilton" },
+    { position: 2, forename: "Max", surname: "Verstappen" },
+    { position: 3, forename: "Bob", surname: "Doe" }
+];
+
 // Function to set up the main container
 function setupMainContainer() {
     const mainContainer = document.querySelector("main");
@@ -96,6 +102,7 @@ function createRaceCard(raceGrid, race) {
     resultsButton.addEventListener("click", () => {
         displayRaceDetails(race);
         displayQualifyResults(qualifyingResults);
+        displayTop3Racers(top3Racers);
     });
 }
 
@@ -161,6 +168,19 @@ function displayQualifyResults(qualifyingResults) {
     detailsColumn.appendChild(segment);
 }
 
+function displayTop3Racers(top3Racers) {
+    const detailsColumn = document.querySelector(".ui.two.column.grid");
+    const segment = document.createElement("div");
+    segment.classList = "column";
+    const divTable = createTableContainer("Top 3 Racers");
+
+    const table = createTop3RacersTable(top3Racers);
+    divTable.appendChild(table);
+
+    segment.appendChild(divTable);
+    detailsColumn.appendChild(segment);
+}
+
 function createTableContainer(titleText) {
     const divTable = document.createElement("div");
     divTable.className = "column";
@@ -186,6 +206,20 @@ function createQualifyingResultsTable(qualifyingResults) {
     return table;
 }
 
+function createTop3RacersTable(top3Racers) {
+    const table = document.createElement("table");
+    table.className = "ui celled striped padded table";
+
+    const headers = ["Position", "Driver"];
+    const thead = createTableHeaders(headers);
+    table.appendChild(thead);
+
+    const tbody = createTop3RacersTableBody(top3Racers);
+    table.appendChild(tbody);
+
+    return table;
+
+}
 
 function createTableHeaders(headers) {
     const thead = document.createElement("thead");
@@ -219,6 +253,19 @@ function createQualifyingTableBody(qualifyingResults) {
     });
 
     return tbody;
+}
+
+function createTop3RacersTableBody(top3Racers) {
+    const tbody = document.createElement("tbody");
+    top3Racers.forEach(result => {
+        const row = document.createElement("tr");
+        row.appendChild(createCell(result.position));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+
+        tbody.appendChild(row)
+    });
+
+    return tbody
 }
 
 function createCell(textContent) {

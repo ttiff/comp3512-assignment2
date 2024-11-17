@@ -20,6 +20,11 @@ const races = [
     { "raceName": "Australian Grand Prix", "year": "2023", "round": 3, "circuit": "Albert Park Circuit", "location": "Melbourne", "country": "Australia", "date": "2023-04-02", "url": "https://youtube.com" }
 ]
 
+const qualifyingResults = [
+    { position: 1, driverRef: "hamilton", forename: "Lewis", surname: "Hamilton", constructorRef: "mercedes", constructorName: "Mercedes", q1: "1:23.456", q2: "1:22.345", q3: "1:21.234" },
+    { position: 2, driverRef: "verstappen", forename: "Max", surname: "Verstappen", constructorRef: "redbull", constructorName: "Red Bull Racing", q1: "1:23.789", q2: "1:22.678", q3: "1:21.567" }
+];
+
 // Function to set up the main container
 function setupMainContainer() {
     const mainContainer = document.querySelector("main");
@@ -88,7 +93,10 @@ function createRaceCard(raceGrid, race) {
     resultsButton.textContent = "Results";
     extraContent.appendChild(resultsButton);
 
-    resultsButton.addEventListener("click", () => displayRaceDetails(race));
+    resultsButton.addEventListener("click", () => {
+        displayRaceDetails(race);
+        displayQualifyResults(qualifyingResults);
+    });
 }
 
 // Function to filter races by season and render race cards
@@ -136,7 +144,98 @@ function displayRaceDetails(race) {
     const infoLink = createInfoLink("Race Information", race.url);
     segment.appendChild(infoLink);
 }
+// Function to display the qualifying results for selected race
+function displayQualifyResults(qualifyingResults) {
+    const detailsColumn = document.querySelector(".eleven.wide.column");
+    const segment = document.createElement("div");
+    segment.className = "ui two column grid";
 
+    const divTable = createTableContainer("Qualifying Results");
+
+    // Create and append the table
+    const table = createQualifyingResultsTable(qualifyingResults);
+    divTable.appendChild(table);
+
+    // Append to segment and details column
+    segment.appendChild(divTable);
+    detailsColumn.appendChild(segment);
+}
+
+function createTableContainer(titleText) {
+    const divTable = document.createElement("div");
+    divTable.className = "column";
+
+    const title = document.createElement("h3");
+    title.textContent = titleText;
+    divTable.appendChild(title);
+
+    return divTable;
+}
+
+function createQualifyingResultsTable(qualifyingResults) {
+    const table = document.createElement("table");
+    table.className = "ui celled striped padded table";
+
+    const headers = ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"];
+    const thead = createTableHeaders(headers);
+    table.appendChild(thead);
+
+    const tbody = createQualifyingTableBody(qualifyingResults);
+    table.appendChild(tbody);
+
+    return table;
+}
+
+
+function createTableHeaders(headers) {
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    headers.forEach(headerText => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    return thead;
+}
+
+
+function createQualifyingTableBody(qualifyingResults) {
+    const tbody = document.createElement("tbody");
+
+    qualifyingResults.forEach(result => {
+        const row = document.createElement("tr");
+
+        row.appendChild(createCell(result.position));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+        row.appendChild(createLinkCell(result.constructorName, ""));
+        row.appendChild(createCell(result.q1));
+        row.appendChild(createCell(result.q2));
+        row.appendChild(createCell(result.q3));
+
+        tbody.appendChild(row);
+    });
+
+    return tbody;
+}
+
+function createCell(textContent) {
+    const cell = document.createElement("td");
+    cell.textContent = textContent;
+    return cell;
+}
+
+function createLinkCell(textContent, href) {
+    const cell = document.createElement("td");
+    const link = document.createElement("a");
+    link.className = "underline-link";
+    link.href = href;
+    link.textContent = textContent;
+    cell.appendChild(link);
+    return cell;
+}
 
 // Function to create a detail paragraph
 function createDetailParagraph(labelText, valueText) {

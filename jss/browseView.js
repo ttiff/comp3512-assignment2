@@ -44,6 +44,13 @@ const finalResults = [
     { "position": 10, "forename": "Guanyu", "surname": "Zhou", "constructor": "Alfa Romeo", "laps": 57, "points": 1 }
 ];
 
+const constructorResults = [
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 }
+];
+
 // Function to set up the main container
 function setupMainContainer() {
     const mainContainer = document.querySelector("main");
@@ -281,8 +288,9 @@ function createQualifyingTableBody(qualifyingResults) {
         const row = document.createElement("tr");
 
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(result.constructorName, ""));
+        // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
+        row.appendChild(createLinkCell(result.constructorName, "#", false, true, constructorResults));
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -298,7 +306,8 @@ function createTop3RacersTableBody(top3Racers) {
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+        // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
 
         tbody.appendChild(row)
     });
@@ -306,14 +315,34 @@ function createTop3RacersTableBody(top3Racers) {
     return tbody
 }
 
+
 function createFinalResultsTableBody(finalResults) {
     const tbody = document.createElement("tbody");
     finalResults.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(result.constructor, ""));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
+        // row.appendChild(createLinkCell(result.constructor, "", false, true));
+        row.appendChild(createLinkCell(result.constructor, "#", false, true, constructorResults));
+
         row.appendChild(createCell(result.laps));
+        row.appendChild(createCell(result.points));
+
+        tbody.appendChild(row)
+    });
+
+    return tbody
+
+}
+
+function createConstructorTableBody(results) {
+    const tbody = document.createElement("tbody");
+    results.forEach(result => {
+        const row = document.createElement("tr");
+        row.appendChild(createCell(result.round));
+        row.appendChild(createCell(result.circuit));
+        row.appendChild(createCell(`${result.forename} ${result.surname}`));
+        row.appendChild(createCell(result.position));
         row.appendChild(createCell(result.points));
 
         tbody.appendChild(row)
@@ -329,12 +358,40 @@ function createCell(textContent) {
     return cell;
 }
 
-function createLinkCell(textContent, href) {
+// function createLinkCell(textContent, href) {
+//     const cell = document.createElement("td");
+//     const link = document.createElement("a");
+//     link.className = "underline-link";
+//     link.href = href;
+//     link.textContent = textContent;
+//     cell.appendChild(link);
+//     return cell;
+// }
+
+
+function createLinkCell(textContent, href, isDriver = false, isConstructor = false, details = null) {
     const cell = document.createElement("td");
     const link = document.createElement("a");
     link.className = "underline-link";
     link.href = href;
     link.textContent = textContent;
+
+    // If it's a driver link, add a click event
+    if (isDriver && details) {
+        link.addEventListener("click", (e) => {
+            e.preventDefault(); // Prevent default link behavior
+            displayDriverPopup(details);
+        });
+    }
+
+    // If it's a constructor link, add a click event
+    if (isConstructor && details) {
+        link.addEventListener("click", (e) => {
+            e.preventDefault(); // Prevent default link behavior
+            displayConstructorPopup(details);
+        });
+    }
+
     cell.appendChild(link);
     return cell;
 }
@@ -394,4 +451,64 @@ export function renderRaces(seasonYear) {
     const raceGrid = createRaceListColumn(mainGrid, seasonYear);
     renderRaceList(raceGrid, seasonYear);
     createDetailsColumn(mainGrid, seasonYear);
+}
+
+
+function displayConstructorPopup(constructor) {
+    const constructorPopup = document.querySelector("#constructor");
+    constructorPopup.innerHTML = ""; // Clear previous content
+
+    createConstructorDetails(constructor, constructorPopup);
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "ui button";
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", () => {
+        constructorPopup.style.display = "none";
+    });
+    constructorPopup.appendChild(closeButton);
+
+    constructorPopup.style.display = "block";
+}
+
+function createConstructorDetails(constructor, targetElement) {
+    console.log(constructor)
+    const column = document.createElement("div");
+    column.className = "twelve wide column"; // Add column class
+
+    const segment = document.createElement("div");
+    segment.className = "ui segment";
+
+    const title = document.createElement("h2");
+    title.textContent = "Constructor Details";
+    segment.appendChild(title);
+
+    //need to update this
+    segment.appendChild(createDetailParagraph("Name", "John Doe"));
+    segment.appendChild(createDetailParagraph("Nationality", "Add Nationality"));
+    const infoLink = createInfoLink("Constructor Biography", "Add URL");
+    segment.appendChild(infoLink);
+
+
+    column.appendChild(segment);
+
+    targetElement.append(column);
+
+    targetElement.append(createConstructorsTable(constructorResults))
+}
+
+
+function createConstructorsTable(constructorResults) {
+
+    const table = document.createElement("table");
+    table.className = "ui celled striped single line very compact left aligned table";
+
+    const headers = ["Round", "Circuit", "Driver", "Position", "Points"];
+    const thead = createTableHeaders(headers);
+    table.appendChild(thead);
+
+    const tbody = createConstructorTableBody(constructorResults);
+    table.appendChild(tbody);
+
+    return table;
 }

@@ -95,3 +95,29 @@ main {
     z-index: 999;
     display: none;
 }
+
+.close-button-top {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    background: #3b3e43;
+    border: 1px solid #3b3e43;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    width: 17px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.close-button-top:hover {
+    background: #b22222;
+    border: 1px solid #b22222;
+    color: white;
+    transform: scale(1.1);
+}

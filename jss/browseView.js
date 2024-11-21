@@ -479,6 +479,17 @@ function displayConstructorPopup(constructor) {
 
     createConstructorDetails(constructor, constructorPopup);
 
+    const closeButtonTop = document.createElement("button");
+    closeButtonTop.className = "close-button-top";
+    closeButtonTop.textContent = "X";
+
+    closeButtonTop.addEventListener("click", () => {
+        constructorPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    constructorPopup.appendChild(closeButtonTop);
+
     const closeButton = document.createElement("button");
     closeButton.className = "ui button";
     closeButton.textContent = "Close";

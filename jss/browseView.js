@@ -68,6 +68,32 @@ const constructorResults = [
     { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 }
 ];
 
+const driverResults = [
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
+    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
+    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 }
+
+];
+
+
 // Function to set up the main container
 function setupMainContainer() {
     const mainContainer = document.querySelector("main");
@@ -306,7 +332,7 @@ function createQualifyingTableBody(qualifyingResults) {
 
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false, driverResults));
         row.appendChild(createLinkCell(result.constructorName, "#", false, true, constructorResults));
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
@@ -324,7 +350,7 @@ function createTop3RacersTableBody(top3Racers) {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false, driverResults));
 
         tbody.appendChild(row)
     });
@@ -338,7 +364,7 @@ function createFinalResultsTableBody(finalResults) {
     finalResults.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false));
+        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false, driverResults));
         // row.appendChild(createLinkCell(result.constructor, "", false, true));
         row.appendChild(createLinkCell(result.constructor, "#", false, true, constructorResults));
 
@@ -359,6 +385,22 @@ function createConstructorTableBody(results) {
         row.appendChild(createCell(result.round));
         row.appendChild(createCell(result.circuit));
         row.appendChild(createCell(`${result.forename} ${result.surname}`));
+        row.appendChild(createCell(result.position));
+        row.appendChild(createCell(result.points));
+
+        tbody.appendChild(row)
+    });
+
+    return tbody
+
+}
+
+function createDriversTableBody(results) {
+    const tbody = document.createElement("tbody");
+    results.forEach(result => {
+        const row = document.createElement("tr");
+        row.appendChild(createCell(result.round));
+        row.appendChild(createCell(result.circuit));
         row.appendChild(createCell(result.position));
         row.appendChild(createCell(result.points));
 
@@ -528,7 +570,6 @@ function createConstructorDetails(constructor, targetElement) {
     targetElement.append(createConstructorsTable(constructorResults))
 }
 
-
 function createConstructorsTable(constructorResults) {
 
     const table = document.createElement("table");
@@ -539,6 +580,92 @@ function createConstructorsTable(constructorResults) {
     table.appendChild(thead);
 
     const tbody = createConstructorTableBody(constructorResults);
+    table.appendChild(tbody);
+
+    return table;
+}
+
+function displayDriverPopup(driver) {
+    console.log(driver);
+    const driverPopup = document.querySelector("#driver");
+    driverPopup.innerHTML = ""; // Clear previous content
+    const overlay = document.querySelector("#modal-overlay");
+    overlay.style.display = "block";
+
+    createDriverDetails(driver, driverPopup);
+
+    const closeButtonTop = document.createElement("button");
+    closeButtonTop.className = "close-button-top";
+    closeButtonTop.textContent = "X";
+
+    closeButtonTop.addEventListener("click", () => {
+        driverPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    driverPopup.appendChild(closeButtonTop);
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "ui button";
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", () => {
+        driverPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+    driverPopup.appendChild(closeButton);
+
+    driverPopup.style.display = "block";
+}
+
+function createDriverDetails(driver, targetElement) {
+    const column = document.createElement("div");
+    column.className = "twelve wide column";
+
+    const segment = document.createElement("div");
+    segment.className = "ui segment driver-details-container";
+
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "driver-image";
+
+    const image = document.createElement("img");
+    image.src = '../img/profile.png';
+    image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
+    imageContainer.appendChild(image);
+
+    segment.appendChild(imageContainer);
+
+    const detailsContainer = document.createElement("div");
+    detailsContainer.className = "driver-details";
+
+    const title = document.createElement("h2");
+    title.textContent = "Driver Details";
+    detailsContainer.appendChild(title);
+
+    detailsContainer.appendChild(createDetailParagraph("Name", "John Doe"));
+    detailsContainer.appendChild(createDetailParagraph("Nationality", "Add Nationality"));
+    detailsContainer.appendChild(createDetailParagraph("Age", "28"));
+    const infoLink = createInfoLink("Driver Biography", "#");
+    detailsContainer.appendChild(infoLink);
+
+    segment.appendChild(detailsContainer);
+
+    column.appendChild(segment);
+
+    targetElement.appendChild(column);
+
+    targetElement.appendChild(createDriversTable(driverResults || []));
+}
+
+function createDriversTable(driverResults) {
+
+    const table = document.createElement("table");
+    table.className = "ui celled striped single line very compact left aligned table";
+
+    const headers = ["Round", "Circuit", "Position", "Points"];
+    const thead = createTableHeaders(headers);
+    table.appendChild(thead);
+
+    const tbody = createDriversTableBody(driverResults);
     table.appendChild(tbody);
 
     return table;

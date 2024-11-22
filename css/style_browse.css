@@ -85,6 +85,25 @@ main {
     box-sizing: border-box;
 }
 
+#driver {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+
 #modal-overlay {
     position: fixed;
     top: 0;
@@ -120,4 +139,22 @@ main {
     border: 1px solid #b22222;
     color: white;
     transform: scale(1.1);
+}
+
+.driver-details-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+}
+
+.driver-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.driver-details {
+    flex: 1;
 }

@@ -1,4 +1,6 @@
 import { createNavigationBar, switchStylesheet } from "./script.js";
+import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage } from './dataUtils.js';
+
 
 // Sample data for races; replace with API data when available
 const races = [

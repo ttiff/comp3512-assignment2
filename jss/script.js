@@ -1,4 +1,6 @@
 import { renderRaces } from "./browseView.js";
+import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage } from './dataUtils.js';
+
 
 export function createNavigationBar(switchViewCallback) {
     const headerContainer = document.querySelector("header");

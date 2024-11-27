@@ -3,48 +3,6 @@ import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage } from
 
 
 // // Sample data for races; replace with API data when available
-// const races = [
-//     // 2020
-//     { "raceName": "Austrian Grand Prix", "year": "2020", "round": 1, "circuit": "Red Bull Ring", "location": "Spielberg", "country": "Austria", "date": "2020-07-05", "url": "https://youtube.com" },
-//     { "raceName": "Styrian Grand Prix", "year": "2020", "round": 2, "circuit": "Red Bull Ring", "location": "Spielberg", "country": "Austria", "date": "2020-07-12", "url": "https://youtube.com" },
-//     { "raceName": "Hungarian Grand Prix", "year": "2020", "round": 3, "circuit": "Hungaroring", "location": "Mogyoród", "country": "Hungary", "date": "2020-07-19", "url": "https://youtube.com" },
-//     // 2021
-//     { "raceName": "Bahrain Grand Prix", "year": "2021", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2021-03-28", "url": "https://youtube.com" },
-//     { "raceName": "Emilia Romagna Grand Prix", "year": "2021", "round": 2, "circuit": "Autodromo Enzo e Dino Ferrari", "location": "Imola", "country": "Italy", "date": "2021-04-18", "url": "https://youtube.com" },
-//     { "raceName": "Portuguese Grand Prix", "year": "2021", "round": 3, "circuit": "Autódromo Internacional do Algarve", "location": "Portimão", "country": "Portugal", "date": "2021-05-02", "url": "https://youtube.com" },
-//     // 2022
-//     { "raceName": "Bahrain Grand Prix", "year": "2022", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2022-03-20", "url": "https://youtube.com" },
-//     { "raceName": "Saudi Arabian Grand Prix", "year": "2022", "round": 2, "circuit": "Jeddah Corniche Circuit", "location": "Jeddah", "country": "Saudi Arabia", "date": "2022-03-27", "url": "https://youtube.com" },
-//     { "raceName": "Australian Grand Prix", "year": "2022", "round": 3, "circuit": "Albert Park Circuit", "location": "Melbourne", "country": "Australia", "date": "2022-04-10", "url": "https://youtube.com" },
-//     // 2023
-//     { "raceName": "Bahrain Grand Prix", "year": "2023", "round": 1, "circuit": "Bahrain International Circuit", "location": "Sakhir", "country": "Bahrain", "date": "2023-03-05", "url": "https://youtube.com" },
-//     { "raceName": "Saudi Arabian Grand Prix", "year": "2023", "round": 2, "circuit": "Jeddah Corniche Circuit", "location": "Jeddah", "country": "Saudi Arabia", "date": "2023-03-19", "url": "https://youtube.com" },
-//     { "raceName": "Australian Grand Prix", "year": "2023", "round": 3, "circuit": "Albert Park Circuit", "location": "Melbourne", "country": "Australia", "date": "2023-04-02", "url": "https://youtube.com" }
-// ]
-
-const qualifyingResults = [
-    { position: 1, driverRef: "hamilton", forename: "Lewis", surname: "Hamilton", constructorRef: "mercedes", constructorName: "Mercedes", q1: "1:23.456", q2: "1:22.345", q3: "1:21.234" },
-    { position: 2, driverRef: "verstappen", forename: "Max", surname: "Verstappen", constructorRef: "redbull", constructorName: "Red Bull Racing", q1: "1:23.789", q2: "1:22.678", q3: "1:21.567" }
-];
-
-const top3Racers = [
-    { position: 1, forename: "Lewis", surname: "Hamilton" },
-    { position: 2, forename: "Max", surname: "Verstappen" },
-    { position: 3, forename: "Bob", surname: "Doe" }
-];
-
-const finalResults = [
-    { "position": 1, "forename": "Charles", "surname": "Leclerc", "constructor": "Ferrari", "laps": 57, "points": 26 },
-    { "position": 2, "forename": "Carlos", "surname": "Sainz", "constructor": "Ferrari", "laps": 57, "points": 18 },
-    { "position": 3, "forename": "Lewis", "surname": "Hamilton", "constructor": "Mercedes", "laps": 57, "points": 15 },
-    { "position": 4, "forename": "George", "surname": "Russell", "constructor": "Mercedes", "laps": 57, "points": 12 },
-    { "position": 5, "forename": "Kevin", "surname": "Magnussen", "constructor": "Haas F1 Team", "laps": 57, "points": 10 },
-    { "position": 6, "forename": "Valtteri", "surname": "Bottas", "constructor": "Alfa Romeo", "laps": 57, "points": 8 },
-    { "position": 7, "forename": "Esteban", "surname": "Ocon", "constructor": "Alpine F1 Team", "laps": 57, "points": 6 },
-    { "position": 8, "forename": "Yuki", "surname": "Tsunoda", "constructor": "AlphaTauri", "laps": 57, "points": 4 },
-    { "position": 9, "forename": "Fernando", "surname": "Alonso", "constructor": "Alpine F1 Team", "laps": 57, "points": 2 },
-    { "position": 10, "forename": "Guanyu", "surname": "Zhou", "constructor": "Alfa Romeo", "laps": 57, "points": 1 }
-];
 
 const constructorResults = [
     { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
@@ -193,8 +151,8 @@ function createRaceCard(raceGrid, race) {
     resultsButton.addEventListener("click", async () => {
         displayRaceDetails(race);
         await displayQualifyResults(race.id);
-        displayTop3Racers(top3Racers);
-        displayFinalResults(finalResults);
+        await displayTop3Racers(race.id);
+        await displayFinalResults(race.id);
     });
 }
 
@@ -280,7 +238,13 @@ async function displayQualifyResults(raceId) {
 }
 
 
-function displayTop3Racers(top3Racers) {
+async function displayTop3Racers(raceId) {
+
+    const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
+    const finalResults = await fetchAndStoreData(finalUrl);
+    const top3Racers = finalResults.filter(result => result.position <= 3)
+    console.log(top3Racers);
+
     const detailsColumn = document.querySelector(".ui.two.column.grid");
     const segment = document.createElement("div");
     segment.classList = "column top3";
@@ -293,7 +257,9 @@ function displayTop3Racers(top3Racers) {
     detailsColumn.appendChild(segment);
 }
 
-function displayFinalResults(finalResults) {
+async function displayFinalResults(raceId) {
+    const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
+    const finalResults = await fetchAndStoreData(finalUrl);
     const detailsColumn = document.querySelector(".column.top3");
     const divTable = createTableContainer("Race Results");
     const table = createFinalResultsTable(finalResults);
@@ -399,7 +365,7 @@ function createTop3RacersTableBody(top3Racers) {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false, driverResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, driverResults));
 
         tbody.appendChild(row)
     });
@@ -413,9 +379,9 @@ function createFinalResultsTableBody(finalResults) {
     finalResults.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, "", true, false, driverResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, driverResults));
         // row.appendChild(createLinkCell(result.constructor, "", false, true));
-        row.appendChild(createLinkCell(result.constructor, "#", false, true, constructorResults));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, constructorResults));
 
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));

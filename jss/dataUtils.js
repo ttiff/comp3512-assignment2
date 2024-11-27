@@ -33,3 +33,26 @@ export async function fetchAndStoreData(url) {
 
     return data[url];
 }
+
+export async function fetchDriverDetails(driverId) {
+    const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
+    try {
+        const driverDetails = await fetchAndStoreData(driverUrl);
+        return driverDetails;
+    } catch (error) {
+        console.error("Error fetching driver details:", error);
+        return null;
+    }
+}
+
+export async function fetchConstructorDetails(constructorId) {
+    const constructorUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/constructors.php?id=${constructorId}`;
+    try {
+        const constructorDetails = await fetchAndStoreData(constructorUrl);
+        return constructorDetails;
+    } catch (error) {
+        console.error("Error fetching constructor details:", error);
+        return null;
+    }
+}
+

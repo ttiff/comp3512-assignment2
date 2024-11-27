@@ -1,5 +1,5 @@
 import { createNavigationBar, switchStylesheet } from "./script.js";
-import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage } from './dataUtils.js';
+import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails } from './dataUtils.js';
 
 
 // // Sample data for races; replace with API data when available
@@ -347,8 +347,8 @@ function createQualifyingTableBody(qualifyingResults) {
 
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, qualifyingResults));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, constructorResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -365,7 +365,7 @@ function createTop3RacersTableBody(top3Racers) {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, driverResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
 
         tbody.appendChild(row)
     });
@@ -379,9 +379,9 @@ function createFinalResultsTableBody(finalResults) {
     finalResults.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, driverResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
         // row.appendChild(createLinkCell(result.constructor, "", false, true));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, constructorResults));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
 
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));
@@ -443,7 +443,7 @@ function createCell(textContent) {
 // }
 
 
-function createLinkCell(textContent, href, isDriver = false, isConstructor = false, details = null) {
+function createLinkCell(textContent, href, isDriver = false, isConstructor = false, id = null) {
     const cell = document.createElement("td");
     const link = document.createElement("a");
     link.className = "underline-link";
@@ -451,24 +451,35 @@ function createLinkCell(textContent, href, isDriver = false, isConstructor = fal
     link.textContent = textContent;
 
     // If it's a driver link, add a click event
-    if (isDriver && details) {
-        link.addEventListener("click", (e) => {
+    if (isDriver && id) {
+        link.addEventListener("click", async (e) => {
             e.preventDefault(); // Prevent default link behavior
-            displayDriverPopup(details);
+            const driverDetails = await fetchDriverDetails(id);
+            if (driverDetails) {
+                displayDriverPopup(driverDetails);
+            } else {
+                alert("Failed to load driver details.");
+            }
         });
     }
 
     // If it's a constructor link, add a click event
-    if (isConstructor && details) {
-        link.addEventListener("click", (e) => {
+    if (isConstructor && id) {
+        link.addEventListener("click", async (e) => {
             e.preventDefault(); // Prevent default link behavior
-            displayConstructorPopup(details);
+            const constructorDetails = await fetchConstructorDetails(id);
+            if (constructorDetails) {
+                displayConstructorPopup(constructorDetails);
+            } else {
+                alert("Failed to load constructor details.");
+            }
         });
     }
 
     cell.appendChild(link);
     return cell;
 }
+
 
 // Function to create a detail paragraph
 function createDetailParagraph(labelText, valueText) {
@@ -572,9 +583,9 @@ function createConstructorDetails(constructor, targetElement) {
     segment.appendChild(title);
 
     //need to update this
-    segment.appendChild(createDetailParagraph("Name", "John Doe"));
-    segment.appendChild(createDetailParagraph("Nationality", "Add Nationality"));
-    const infoLink = createInfoLink("Constructor Biography", "Add URL");
+    segment.appendChild(createDetailParagraph("Name", constructor.name));
+    segment.appendChild(createDetailParagraph("Nationality", constructor.nationality));
+    const infoLink = createInfoLink("Constructor Biography", constructor.url);
     segment.appendChild(infoLink);
 
 
@@ -656,10 +667,10 @@ function createDriverDetails(driver, targetElement) {
     title.textContent = "Driver Details";
     detailsContainer.appendChild(title);
 
-    detailsContainer.appendChild(createDetailParagraph("Name", "John Doe"));
-    detailsContainer.appendChild(createDetailParagraph("Nationality", "Add Nationality"));
-    detailsContainer.appendChild(createDetailParagraph("Age", "28"));
-    const infoLink = createInfoLink("Driver Biography", "#");
+    detailsContainer.appendChild(createDetailParagraph("Name", `${driver.forename} ${driver.surname}`));
+    detailsContainer.appendChild(createDetailParagraph("Nationality", driver.nationality));
+    detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driver.dob)));
+    const infoLink = createInfoLink("Driver Biography", driver.url);
     detailsContainer.appendChild(infoLink);
 
     segment.appendChild(detailsContainer);
@@ -684,4 +695,20 @@ function createDriversTable(driverResults) {
     table.appendChild(tbody);
 
     return table;
+}
+
+function calculateAge(dob) {
+    if (!dob) return "N/A"; // Handle cases where dob is null or undefined
+
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Adjust age if the current month/day is before the birth month/day
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
 }

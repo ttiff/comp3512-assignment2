@@ -203,7 +203,7 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
 
     resultsButton.addEventListener("click", () => {
         displayRaceDetails(race);
-        displayQualifyResults(race.id, qualifyingResults);
+        displayQualifyResults(race.id, qualifyingResults, results);
         displayTop3Racers(race.id, results);
         displayFinalResults(race.id, results);
         console.log(qualifyingResults);
@@ -297,7 +297,7 @@ function displayRaceDetails(race) {
 //     }
 // }
 
-function displayQualifyResults(raceId, qualifyingResults) {
+function displayQualifyResults(raceId, qualifyingResults, results) {
     const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
 
     if (filteredResults.length > 0) {
@@ -306,7 +306,7 @@ function displayQualifyResults(raceId, qualifyingResults) {
         segment.className = "ui two column grid";
 
         const divTable = createTableContainer("Qualifying Results");
-        const table = createQualifyingResultsTable(filteredResults);
+        const table = createQualifyingResultsTable(filteredResults, results);
         divTable.appendChild(table);
 
         segment.appendChild(divTable);
@@ -392,7 +392,7 @@ function createTableContainer(titleText) {
     return divTable;
 }
 
-function createQualifyingResultsTable(qualifyingResults) {
+function createQualifyingResultsTable(qualifyingResults, results) {
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
 
@@ -400,7 +400,7 @@ function createQualifyingResultsTable(qualifyingResults) {
     const thead = createTableHeaders(headers);
     table.appendChild(thead);
 
-    const tbody = createQualifyingTableBody(qualifyingResults);
+    const tbody = createQualifyingTableBody(qualifyingResults, results);
     table.appendChild(tbody);
 
     return table;
@@ -452,7 +452,7 @@ function createTableHeaders(headers) {
 }
 
 
-function createQualifyingTableBody(qualifyingResults) {
+function createQualifyingTableBody(qualifyingResults, results) {
     console.log("QUALIFYING");
     console.log(qualifyingResults);
     const tbody = document.createElement("tbody");
@@ -468,8 +468,8 @@ function createQualifyingTableBody(qualifyingResults) {
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
         // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
 
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, qualifyingResults));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, qualifyingResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
@@ -490,7 +490,7 @@ function createTop3RacersTableBody(top3Racers) {
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, top3Racers));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, top3Racers, result.race.year));
 
         tbody.appendChild(row)
     });
@@ -516,8 +516,9 @@ function createFinalResultsTableBody(finalResults) {
         // // row.appendChild(createLinkCell(result.constructor, "", false, true));
         // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
 
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, finalResults));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, finalResults, result.race.year));
+        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults, result.race.year));
 
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));
@@ -533,9 +534,9 @@ function createConstructorTableBody(results) {
     const tbody = document.createElement("tbody");
     results.forEach(result => {
         const row = document.createElement("tr");
-        row.appendChild(createCell(result.round));
-        row.appendChild(createCell(result.circuit));
-        row.appendChild(createCell(`${result.forename} ${result.surname}`));
+        row.appendChild(createCell(result.race.round));
+        row.appendChild(createCell(result.race.name));
+        row.appendChild(createCell(`${result.driver.forename} ${result.driver.surname}`));
         row.appendChild(createCell(result.position));
         row.appendChild(createCell(result.points));
 
@@ -550,8 +551,8 @@ function createDriversTableBody(results) {
     const tbody = document.createElement("tbody");
     results.forEach(result => {
         const row = document.createElement("tr");
-        row.appendChild(createCell(result.round));
-        row.appendChild(createCell(result.circuit));
+        row.appendChild(createCell(result.race.round));
+        row.appendChild(createCell(result.race.name));
         row.appendChild(createCell(result.position));
         row.appendChild(createCell(result.points));
 
@@ -625,7 +626,8 @@ function createLinkCell(
     isDriver = false,
     isConstructor = false,
     id,
-    results
+    results,
+    season
 ) {
     const cell = document.createElement("td");
     const link = document.createElement("a");
@@ -637,7 +639,7 @@ function createLinkCell(
     if (isDriver) {
         link.addEventListener("click", (e) => {
             e.preventDefault();
-            displayDriverPopup(id, results);
+            displayDriverPopup(id, results, season);
         });
     }
 
@@ -645,7 +647,7 @@ function createLinkCell(
     if (isConstructor) {
         link.addEventListener("click", (e) => {
             e.preventDefault();
-            displayConstructorPopup(id, results);
+            displayConstructorPopup(id, results, season);
         });
     }
 
@@ -799,50 +801,117 @@ function createInfoLink(linkText, url) {
 //     }
 // }
 
-function displayConstructorPopup(id, constructors) {
-    // Filter constructor data for the given ref
-    const filteredResults = constructors.filter(c => c.constructor.id === id);
+// function displayConstructorPopup(id, constructors, season) {
+//     console.log(constructors);
+//     // Filter constructor data for the given ref
+//     // const filteredResults = constructors.filter(c => c.constructor.id === id);
+//     const filteredResults = constructors.filter(
+//         c => c.constructor.id === id && c.race.year === season
+//     );
 
-    if (filteredResults.length > 0) {
-        const constructorPopup = document.querySelector("#constructor");
-        constructorPopup.innerHTML = ""; // Clear previous content
-        const overlay = document.querySelector("#modal-overlay");
-        overlay.style.display = "block";
+//     const constructorDetails = fetchConstructorDetails(id);
 
-        // Only create details once
-        const constructorDetail = filteredResults[0]; // Get the first match (avoid looping unnecessarily)
-        createConstructorDetails(constructorDetail, constructorPopup);
+//     console.log('constructor details')
+//     console.log(constructorDetails);
 
-        const closeButtonTop = document.createElement("button");
-        closeButtonTop.className = "close-button-top";
-        closeButtonTop.textContent = "X";
+//     console.log('ALLLLLLL')
+//     console.log(filteredResults)
+//     if (filteredResults.length > 0) {
+//         const constructorPopup = document.querySelector("#constructor");
+//         constructorPopup.innerHTML = ""; // Clear previous content
+//         const overlay = document.querySelector("#modal-overlay");
+//         overlay.style.display = "block";
 
-        closeButtonTop.addEventListener("click", () => {
-            constructorPopup.style.display = "none";
-            overlay.style.display = "none";
-        });
+//         // Only create details once
+//         // const constructorDetail = filteredResults[0]; // Get the first match (avoid looping unnecessarily)
+//         createConstructorDetails(filteredResults, constructorDetails, constructorPopup);
 
-        constructorPopup.appendChild(closeButtonTop);
+//         const closeButtonTop = document.createElement("button");
+//         closeButtonTop.className = "close-button-top";
+//         closeButtonTop.textContent = "X";
 
-        const closeButton = document.createElement("button");
-        closeButton.className = "ui button";
-        closeButton.textContent = "Close";
-        closeButton.addEventListener("click", () => {
-            constructorPopup.style.display = "none";
-            overlay.style.display = "none";
-        });
-        constructorPopup.appendChild(closeButton);
+//         closeButtonTop.addEventListener("click", () => {
+//             constructorPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
 
-        constructorPopup.style.display = "block";
-    } else {
-        console.warn(`No constructor found with ref ${ref}`);
+//         constructorPopup.appendChild(closeButtonTop);
+
+//         const closeButton = document.createElement("button");
+//         closeButton.className = "ui button";
+//         closeButton.textContent = "Close";
+//         closeButton.addEventListener("click", () => {
+//             constructorPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
+//         constructorPopup.appendChild(closeButton);
+
+//         constructorPopup.style.display = "block";
+//     } else {
+//         console.warn(`No constructor found with ref ${ref}`);
+//     }
+// }
+
+async function displayConstructorPopup(id, constructors, season) {
+    console.log(constructors);
+
+    // Filter constructor data for the given id and season
+    const filteredResults = constructors.filter(
+        c => c.constructor.id === id && c.race.year === season
+    );
+
+    console.log('Filtered Results:', filteredResults);
+
+    try {
+        // Await the result of fetchConstructorDetails
+        const constructorDetails = await fetchConstructorDetails(id);
+
+        console.log('Constructor Details:', constructorDetails);
+
+        if (filteredResults.length > 0) {
+            const constructorPopup = document.querySelector("#constructor");
+            constructorPopup.innerHTML = ""; // Clear previous content
+            const overlay = document.querySelector("#modal-overlay");
+            overlay.style.display = "block";
+
+            // Create and display constructor details
+            createConstructorDetails(filteredResults, constructorDetails, constructorPopup);
+
+            // Add a close button (top-right)
+            const closeButtonTop = document.createElement("button");
+            closeButtonTop.className = "close-button-top";
+            closeButtonTop.textContent = "X";
+            closeButtonTop.addEventListener("click", () => {
+                constructorPopup.style.display = "none";
+                overlay.style.display = "none";
+            });
+            constructorPopup.appendChild(closeButtonTop);
+
+            // Add a regular close button (bottom)
+            const closeButton = document.createElement("button");
+            closeButton.className = "ui button";
+            closeButton.textContent = "Close";
+            closeButton.addEventListener("click", () => {
+                constructorPopup.style.display = "none";
+                overlay.style.display = "none";
+            });
+            constructorPopup.appendChild(closeButton);
+
+            constructorPopup.style.display = "block";
+        } else {
+            console.warn(`No constructor found with ID ${id} for season ${season}`);
+        }
+    } catch (error) {
+        console.error("Error fetching constructor details:", error);
     }
 }
 
 
 
-function createConstructorDetails(constructor, targetElement) {
-    console.log(constructor)
+
+function createConstructorDetails(results, constructorDetails, targetElement) {
+    console.log("CONSTRUCTORSSS")
+    console.log(results)
     const column = document.createElement("div");
     column.className = "twelve wide column"; // Add column class
 
@@ -854,9 +923,9 @@ function createConstructorDetails(constructor, targetElement) {
     segment.appendChild(title);
 
     //need to update this
-    segment.appendChild(createDetailParagraph("Name", constructor.name));
-    segment.appendChild(createDetailParagraph("Nationality", constructor.nationality));
-    const infoLink = createInfoLink("Constructor Biography", constructor.url);
+    segment.appendChild(createDetailParagraph("Name", constructorDetails.name));
+    segment.appendChild(createDetailParagraph("Nationality", constructorDetails.nationality));
+    const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
     segment.appendChild(infoLink);
 
 
@@ -864,7 +933,7 @@ function createConstructorDetails(constructor, targetElement) {
 
     targetElement.append(column);
 
-    targetElement.append(createConstructorsTable(constructorResults))
+    targetElement.append(createConstructorsTable(results))
 }
 
 function createConstructorsTable(constructorResults) {
@@ -916,51 +985,107 @@ function createConstructorsTable(constructorResults) {
 // }
 
 
-function displayDriverPopup(id, drivers) {
-    console.log("ID received for driver:", id);
-    console.log("Available drivers:", drivers);
-    const filteredDriver = drivers.find(driver => driver.driver.id === id);
-    console.log("Filtered driver:", filteredDriver);
+// function displayDriverPopup(id, drivers) {
+//     console.log("ID received for driver:", id);
+//     console.log("Available drivers:", drivers);
+//     const filteredDriver = drivers.find(driver => driver.driver.id === id);
+//     console.log("Filtered driver:", filteredDriver);
 
-    // Filter driver data for the given ID
-    // const filteredDriver = drivers.find(driver => driver.id === id);
+//     // Filter driver data for the given ID
+//     // const filteredDriver = drivers.find(driver => driver.id === id);
 
-    if (filteredDriver) {
-        const driverPopup = document.querySelector("#driver");
-        driverPopup.innerHTML = ""; // Clear previous content
-        const overlay = document.querySelector("#modal-overlay");
-        overlay.style.display = "block";
+//     if (filteredDriver) {
+//         const driverPopup = document.querySelector("#driver");
+//         driverPopup.innerHTML = ""; // Clear previous content
+//         const overlay = document.querySelector("#modal-overlay");
+//         overlay.style.display = "block";
 
-        // Display the details for the selected driver
-        createDriverDetails(filteredDriver, driverPopup);
+//         // Display the details for the selected driver
+//         createDriverDetails(filteredDriver, driverPopup);
 
-        const closeButtonTop = document.createElement("button");
-        closeButtonTop.className = "close-button-top";
-        closeButtonTop.textContent = "X";
+//         const closeButtonTop = document.createElement("button");
+//         closeButtonTop.className = "close-button-top";
+//         closeButtonTop.textContent = "X";
 
-        closeButtonTop.addEventListener("click", () => {
-            driverPopup.style.display = "none";
-            overlay.style.display = "none";
-        });
+//         closeButtonTop.addEventListener("click", () => {
+//             driverPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
 
-        driverPopup.appendChild(closeButtonTop);
+//         driverPopup.appendChild(closeButtonTop);
 
-        const closeButton = document.createElement("button");
-        closeButton.className = "ui button";
-        closeButton.textContent = "Close";
-        closeButton.addEventListener("click", () => {
-            driverPopup.style.display = "none";
-            overlay.style.display = "none";
-        });
-        driverPopup.appendChild(closeButton);
+//         const closeButton = document.createElement("button");
+//         closeButton.className = "ui button";
+//         closeButton.textContent = "Close";
+//         closeButton.addEventListener("click", () => {
+//             driverPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
+//         driverPopup.appendChild(closeButton);
 
-        driverPopup.style.display = "block";
-    } else {
-        console.warn(`No driver found with ID ${id}`);
+//         driverPopup.style.display = "block";
+//     } else {
+//         console.warn(`No driver found with ID ${id}`);
+//     }
+// }
+
+async function displayDriverPopup(id, constructors, season) {
+    console.log("driver pop up");
+    console.log(constructors);
+
+    // Filter constructor data for the given id and season
+    const filteredResults = constructors.filter(
+        c => c.driver.id === id && c.race.year === season
+    );
+
+    console.log('Filtered Results:', filteredResults);
+
+    try {
+        // Await the result of fetchConstructorDetails
+        const constructorDetails = await fetchDriverDetails(id);
+
+        console.log('Constructor Details:', constructorDetails);
+
+        if (filteredResults.length > 0) {
+            const driverPopup = document.querySelector("#driver");
+            driverPopup.innerHTML = ""; // Clear previous content
+            const overlay = document.querySelector("#modal-overlay");
+            overlay.style.display = "block";
+
+            // Create and display constructor details
+            createDriverDetails(filteredResults, constructorDetails, driverPopup);
+
+            // Add a close button (top-right)
+            const closeButtonTop = document.createElement("button");
+            closeButtonTop.className = "close-button-top";
+            closeButtonTop.textContent = "X";
+            closeButtonTop.addEventListener("click", () => {
+                driverPopup.style.display = "none";
+                overlay.style.display = "none";
+            });
+            driverPopup.appendChild(closeButtonTop);
+
+            // Add a regular close button (bottom)
+            const closeButton = document.createElement("button");
+            closeButton.className = "ui button";
+            closeButton.textContent = "Close";
+            closeButton.addEventListener("click", () => {
+                driverPopup.style.display = "none";
+                overlay.style.display = "none";
+            });
+            driverPopup.appendChild(closeButton);
+
+            driverPopup.style.display = "block";
+        } else {
+            console.warn(`No constructor found with ID ${id} for season ${season}`);
+        }
+    } catch (error) {
+        console.error("Error fetching constructor details:", error);
     }
 }
 
-function createDriverDetails(driver, targetElement) {
+
+function createDriverDetails(driver, driverDetails, targetElement) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
@@ -984,10 +1109,10 @@ function createDriverDetails(driver, targetElement) {
     title.textContent = "Driver Details";
     detailsContainer.appendChild(title);
 
-    detailsContainer.appendChild(createDetailParagraph("Name", `${driver.forename} ${driver.surname}`));
-    detailsContainer.appendChild(createDetailParagraph("Nationality", driver.nationality));
-    detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driver.dob)));
-    const infoLink = createInfoLink("Driver Biography", driver.url);
+    detailsContainer.appendChild(createDetailParagraph("Name", `${driverDetails.forename} ${driverDetails.surname}`));
+    detailsContainer.appendChild(createDetailParagraph("Nationality", driverDetails.nationality));
+    detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driverDetails.dob)));
+    const infoLink = createInfoLink("Driver Biography", driverDetails.url);
     detailsContainer.appendChild(infoLink);
 
     segment.appendChild(detailsContainer);
@@ -996,7 +1121,7 @@ function createDriverDetails(driver, targetElement) {
 
     targetElement.appendChild(column);
 
-    targetElement.appendChild(createDriversTable(driverResults || []));
+    targetElement.appendChild(createDriversTable(driver || []));
 }
 
 function createDriversTable(driverResults) {

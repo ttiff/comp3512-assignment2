@@ -34,8 +34,16 @@ export async function fetchAndStoreData(url) {
     return data[url];
 }
 
-export async function fetchDriverDetails(driverId) {
-    const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
+export async function fetchDriverDetails(driverRef, season) {
+    // const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
+    console.log("trouble shooting");
+    console.log(driverRef);
+    console.log(season);
+    const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/driverResults.php?%20driver=${driverRef}&season=${season}`;
+
+    console.log("Fetching driver details from:", driverUrl);
+
+
     try {
         const driverDetails = await fetchAndStoreData(driverUrl);
         return driverDetails;

@@ -64,10 +64,22 @@ export async function renderRaces(seasonYear) {
     try {
         // Fetch race data for the selected season
         const racesUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/races.php?season=${seasonYear}`;
-        const races = await fetchAndStoreData(racesUrl);
+        const qualifyingUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php?season=${seasonYear}`;
+        const resultsUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?season=${seasonYear}`;
+
+        const resultsArray = await Promise.all([
+            fetchAndStoreData(racesUrl),
+            fetchAndStoreData(qualifyingUrl),
+            fetchAndStoreData(resultsUrl)
+        ]);
+
+        const races = resultsArray[0];
+        const qualifyingResults = resultsArray[1];
+        const results = resultsArray[2];
+
 
         if (races) {
-            renderRaceList(raceGrid, races);
+            renderRaceList(raceGrid, races, qualifyingResults, results);
         } else {
             alert("No races found for the selected season.");
         }
@@ -113,9 +125,50 @@ function createRaceListColumn(parent, seasonYear) {
     return raceGrid;
 }
 
-// Function to create each race card
-function createRaceCard(raceGrid, race) {
-    console.log(race);
+// // Function to create each race card
+// function createRaceCard(raceGrid, race) {
+//     console.log(race);
+//     const raceColumn = document.createElement("div");
+//     raceColumn.className = "column";
+//     raceGrid.appendChild(raceColumn);
+
+//     const card = document.createElement("div");
+//     card.className = "ui card";
+//     raceColumn.appendChild(card);
+
+//     const contentDiv = document.createElement("div");
+//     contentDiv.className = "content";
+//     card.appendChild(contentDiv);
+
+//     const raceHeader = document.createElement("div");
+//     raceHeader.className = "header";
+//     raceHeader.textContent = `Round ${race.round}`;
+//     contentDiv.appendChild(raceHeader);
+
+//     const meta = document.createElement("div");
+//     meta.className = "meta";
+//     meta.textContent = race.name;
+//     contentDiv.appendChild(meta);
+
+//     const extraContent = document.createElement("div");
+//     extraContent.className = "extra content";
+//     card.appendChild(extraContent);
+
+//     const resultsButton = document.createElement("a");
+//     resultsButton.className = "ui tiny button fluid";
+//     resultsButton.href = `#`; //replace with eventhandler
+//     resultsButton.textContent = "Results";
+//     extraContent.appendChild(resultsButton);
+
+//     resultsButton.addEventListener("click", async () => {
+//         displayRaceDetails(race);
+//         await displayQualifyResults(race.id);
+//         await displayTop3Racers(race.id);
+//         await displayFinalResults(race.id);
+//     });
+// }
+
+function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
     raceGrid.appendChild(raceColumn);
@@ -144,24 +197,31 @@ function createRaceCard(raceGrid, race) {
 
     const resultsButton = document.createElement("a");
     resultsButton.className = "ui tiny button fluid";
-    resultsButton.href = `#`; //replace with eventhandler
+    resultsButton.href = "#";
     resultsButton.textContent = "Results";
     extraContent.appendChild(resultsButton);
 
-    resultsButton.addEventListener("click", async () => {
+    resultsButton.addEventListener("click", () => {
         displayRaceDetails(race);
-        await displayQualifyResults(race.id);
-        await displayTop3Racers(race.id);
-        await displayFinalResults(race.id);
+        displayQualifyResults(race.id, qualifyingResults);
+        displayTop3Racers(race.id, results);
+        displayFinalResults(race.id, results);
+        console.log(qualifyingResults);
     });
 }
 
+
 // Function to filter races by season and render race cards
-function renderRaceList(raceGrid, races) {
-    // const seasonRaces = races.filter(race => race.year === seasonYear);
-    // seasonRaces.forEach(race => createRaceCard(raceGrid, race));
-    races.forEach(race => createRaceCard(raceGrid, race));
+// function renderRaceList(raceGrid, races) {
+//     // const seasonRaces = races.filter(race => race.year === seasonYear);
+//     // seasonRaces.forEach(race => createRaceCard(raceGrid, race));
+//     races.forEach(race => createRaceCard(raceGrid, race));
+// }
+
+function renderRaceList(raceGrid, races, qualifyingResults, results) {
+    races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
 }
+
 
 // Function to create the right column for the details message
 function createDetailsColumn(parent, seasonYear) {
@@ -219,53 +279,107 @@ function displayRaceDetails(race) {
 //     detailsColumn.appendChild(segment);
 // }
 
-async function displayQualifyResults(raceId) {
-    const qualifyingUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php?race=${raceId}`;
-    const qualifyingResults = await fetchAndStoreData(qualifyingUrl);
+// async function displayQualifyResults(raceId) {
+//     const qualifyingUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php?race=${raceId}`;
+//     const qualifyingResults = await fetchAndStoreData(qualifyingUrl);
 
-    if (qualifyingResults) {
+//     if (qualifyingResults) {
+//         const detailsColumn = document.querySelector(".eleven.wide.column");
+//         const segment = document.createElement("div");
+//         segment.className = "ui two column grid";
+
+//         const divTable = createTableContainer("Qualifying Results");
+//         const table = createQualifyingResultsTable(qualifyingResults);
+//         divTable.appendChild(table);
+
+//         segment.appendChild(divTable);
+//         detailsColumn.appendChild(segment);
+//     }
+// }
+
+function displayQualifyResults(raceId, qualifyingResults) {
+    const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
+
+    if (filteredResults.length > 0) {
         const detailsColumn = document.querySelector(".eleven.wide.column");
         const segment = document.createElement("div");
         segment.className = "ui two column grid";
 
         const divTable = createTableContainer("Qualifying Results");
-        const table = createQualifyingResultsTable(qualifyingResults);
+        const table = createQualifyingResultsTable(filteredResults);
         divTable.appendChild(table);
 
         segment.appendChild(divTable);
         detailsColumn.appendChild(segment);
+    } else {
+        console.warn(`No qualifying results found for race ID ${raceId}`);
     }
 }
 
 
-async function displayTop3Racers(raceId) {
 
-    const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
-    const finalResults = await fetchAndStoreData(finalUrl);
-    const top3Racers = finalResults.filter(result => result.position <= 3)
-    console.log(top3Racers);
+// async function displayTop3Racers(raceId) {
 
-    const detailsColumn = document.querySelector(".ui.two.column.grid");
-    const segment = document.createElement("div");
-    segment.classList = "column top3";
-    const divTable = createTableContainer("Top 3 Racers");
+//     const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
+//     const finalResults = await fetchAndStoreData(finalUrl);
+//     const top3Racers = finalResults.filter(result => result.position <= 3)
+//     console.log(top3Racers);
 
-    const table = createTop3RacersTable(top3Racers);
-    divTable.appendChild(table);
+//     const detailsColumn = document.querySelector(".ui.two.column.grid");
+//     const segment = document.createElement("div");
+//     segment.classList = "column top3";
+//     const divTable = createTableContainer("Top 3 Racers");
 
-    segment.appendChild(divTable);
-    detailsColumn.appendChild(segment);
+//     const table = createTop3RacersTable(top3Racers);
+//     divTable.appendChild(table);
+
+//     segment.appendChild(divTable);
+//     detailsColumn.appendChild(segment);
+// }
+
+function displayTop3Racers(raceId, results) {
+    const filteredResults = results.filter(r => r.race.id === raceId && r.position <= 3);
+
+    if (filteredResults.length > 0) {
+        const detailsColumn = document.querySelector(".ui.two.column.grid");
+        const segment = document.createElement("div");
+        segment.classList = "column top3";
+        const divTable = createTableContainer("Top 3 Racers");
+        const table = createTop3RacersTable(filteredResults);
+        divTable.appendChild(table);
+
+        segment.appendChild(divTable);
+        detailsColumn.appendChild(segment);
+    } else {
+        console.warn(`No top 3 racers found for race ID ${raceId}`);
+    }
 }
 
-async function displayFinalResults(raceId) {
-    const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
-    const finalResults = await fetchAndStoreData(finalUrl);
-    const detailsColumn = document.querySelector(".column.top3");
-    const divTable = createTableContainer("Race Results");
-    const table = createFinalResultsTable(finalResults);
-    divTable.append(table);
-    detailsColumn.appendChild(divTable);
+
+// async function displayFinalResults(raceId) {
+//     const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
+//     const finalResults = await fetchAndStoreData(finalUrl);
+//     const detailsColumn = document.querySelector(".column.top3");
+//     const divTable = createTableContainer("Race Results");
+//     const table = createFinalResultsTable(finalResults);
+//     divTable.append(table);
+//     detailsColumn.appendChild(divTable);
+// }
+
+function displayFinalResults(raceId, results) {
+    const filteredResults = results.filter(r => r.race.id === raceId);
+
+    if (filteredResults.length > 0) {
+        const detailsColumn = document.querySelector(".column.top3");
+        const divTable = createTableContainer("Race Results");
+        const table = createFinalResultsTable(filteredResults);
+        divTable.appendChild(table);
+        detailsColumn.appendChild(divTable);
+    } else {
+        console.warn(`No final results found for race ID ${raceId}`);
+    }
 }
+
 
 function createTableContainer(titleText) {
     const divTable = document.createElement("div");
@@ -339,16 +453,24 @@ function createTableHeaders(headers) {
 
 
 function createQualifyingTableBody(qualifyingResults) {
+    console.log("QUALIFYING");
     console.log(qualifyingResults);
     const tbody = document.createElement("tbody");
 
     qualifyingResults.forEach(result => {
+        console.log(result.driver.ref)
+        console.log(result.race.year)
         const row = document.createElement("tr");
 
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
+        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
+
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, qualifyingResults));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, qualifyingResults));
+
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -365,7 +487,10 @@ function createTop3RacersTableBody(top3Racers) {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
         // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, top3Racers));
 
         tbody.appendChild(row)
     });
@@ -376,12 +501,23 @@ function createTop3RacersTableBody(top3Racers) {
 
 function createFinalResultsTableBody(finalResults) {
     const tbody = document.createElement("tbody");
+    console.log('HEEERE');
+    console.log(finalResults);
     finalResults.forEach(result => {
+        console.log('YEAAAAAAAAAAR');
+        console.log(result.race.year);
+        console.log(result.driver.ref);
+        console.log(result);
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
-        // row.appendChild(createLinkCell(result.constructor, "", false, true));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
+        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, null, result.driver.ref, result.race.year));
+
+        // // row.appendChild(createLinkCell(result.constructor, "", false, true));
+        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
+
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, finalResults));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults));
 
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));
@@ -443,36 +579,73 @@ function createCell(textContent) {
 // }
 
 
-function createLinkCell(textContent, href, isDriver = false, isConstructor = false, id = null) {
+// function createLinkCell(textContent, href, isDriver = false, isConstructor = false, id = null, driverRef = null, season = null) {
+//     const cell = document.createElement("td");
+//     const link = document.createElement("a");
+//     link.className = "underline-link";
+//     link.href = href;
+//     link.textContent = textContent;
+
+//     // If it's a driver link, add a click event
+//     if (isDriver && driverRef) {
+//         link.addEventListener("click", async (e) => {
+//             e.preventDefault(); // Prevent default link behavior
+//             const driverDetails = await fetchDriverDetails(driverRef, season);
+//             console.log("driver details");
+//             console.log(driverDetails);
+//             if (driverDetails) {
+//                 displayDriverPopup(driverDetails);
+//             } else {
+//                 alert("Failed to load driver details.");
+//             }
+//         });
+//     }
+
+//     // If it's a constructor link, add a click event
+//     if (isConstructor && id) {
+//         link.addEventListener("click", async (e) => {
+//             e.preventDefault(); // Prevent default link behavior
+//             const constructorDetails = await fetchConstructorDetails(id);
+//             if (constructorDetails) {
+//                 displayConstructorPopup(constructorDetails);
+//             } else {
+//                 alert("Failed to load constructor details.");
+//             }
+//         });
+//     }
+
+//     cell.appendChild(link);
+//     return cell;
+// }
+
+
+function createLinkCell(
+    textContent,
+    href,
+    isDriver = false,
+    isConstructor = false,
+    id,
+    results
+) {
     const cell = document.createElement("td");
     const link = document.createElement("a");
     link.className = "underline-link";
     link.href = href;
     link.textContent = textContent;
 
-    // If it's a driver link, add a click event
-    if (isDriver && id) {
-        link.addEventListener("click", async (e) => {
-            e.preventDefault(); // Prevent default link behavior
-            const driverDetails = await fetchDriverDetails(id);
-            if (driverDetails) {
-                displayDriverPopup(driverDetails);
-            } else {
-                alert("Failed to load driver details.");
-            }
+    // Driver link
+    if (isDriver) {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayDriverPopup(id, results);
         });
     }
 
-    // If it's a constructor link, add a click event
-    if (isConstructor && id) {
-        link.addEventListener("click", async (e) => {
-            e.preventDefault(); // Prevent default link behavior
-            const constructorDetails = await fetchConstructorDetails(id);
-            if (constructorDetails) {
-                displayConstructorPopup(constructorDetails);
-            } else {
-                alert("Failed to load constructor details.");
-            }
+    // Constructor link
+    if (isConstructor) {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayConstructorPopup(id, results);
         });
     }
 
@@ -539,36 +712,134 @@ function createInfoLink(linkText, url) {
 // }
 
 
-function displayConstructorPopup(constructor) {
-    const constructorPopup = document.querySelector("#constructor");
-    constructorPopup.innerHTML = ""; // Clear previous content
-    const overlay = document.querySelector("#modal-overlay");
-    overlay.style.display = "block";
+// function displayConstructorPopup(id, constructor) {
+//     const filteredResults = constructor.filter(qr => qr.race.id === raceId);
+//     const constructorPopup = document.querySelector("#constructor");
+//     constructorPopup.innerHTML = ""; // Clear previous content
+//     const overlay = document.querySelector("#modal-overlay");
+//     overlay.style.display = "block";
 
-    createConstructorDetails(constructor, constructorPopup);
+//     createConstructorDetails(constructor, constructorPopup);
 
-    const closeButtonTop = document.createElement("button");
-    closeButtonTop.className = "close-button-top";
-    closeButtonTop.textContent = "X";
+//     const closeButtonTop = document.createElement("button");
+//     closeButtonTop.className = "close-button-top";
+//     closeButtonTop.textContent = "X";
 
-    closeButtonTop.addEventListener("click", () => {
-        constructorPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
+//     closeButtonTop.addEventListener("click", () => {
+//         constructorPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
 
-    constructorPopup.appendChild(closeButtonTop);
+//     constructorPopup.appendChild(closeButtonTop);
 
-    const closeButton = document.createElement("button");
-    closeButton.className = "ui button";
-    closeButton.textContent = "Close";
-    closeButton.addEventListener("click", () => {
-        constructorPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
-    constructorPopup.appendChild(closeButton);
+//     const closeButton = document.createElement("button");
+//     closeButton.className = "ui button";
+//     closeButton.textContent = "Close";
+//     closeButton.addEventListener("click", () => {
+//         constructorPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
+//     constructorPopup.appendChild(closeButton);
 
-    constructorPopup.style.display = "block";
+//     constructorPopup.style.display = "block";
+// }
+
+// function displayConstructorPopup(ref, constructors) {
+//     // Filter constructor data for the given ID
+//     // const filteredResults = constructors.filter(c => c.id === id);
+//     // const filteredResults = constructors.find(c => c.constructor.id === id);
+//     // const filteredResults = constructors.find(c => c.constructor.ref === ref);
+//     const filteredResults = constructors.filter(c => c.constructor.ref === ref);
+
+//     // const filteredResults = constructors.find(c => Number(c.constructor.id) === Number(id));
+
+
+
+//     // console.log("pop up");
+//     // console.log(filteredResults);
+
+//     // console.log("Provided ID:", id, "Type:", typeof id);
+//     // console.log("Constructors Array:", constructors);
+//     // console.log("Constructor IDs:", constructors.map(c => c.constructor.id));
+
+//     if (filteredResults.length > 0) {
+//         const constructorPopup = document.querySelector("#constructor");
+//         constructorPopup.innerHTML = ""; // Clear previous content
+//         const overlay = document.querySelector("#modal-overlay");
+//         overlay.style.display = "block";
+
+//         // Display details for the filtered constructor
+//         filteredResults.forEach(constructorDetail => {
+//             createConstructorDetails(constructorDetail, constructorPopup);
+//         });
+
+//         const closeButtonTop = document.createElement("button");
+//         closeButtonTop.className = "close-button-top";
+//         closeButtonTop.textContent = "X";
+
+//         closeButtonTop.addEventListener("click", () => {
+//             constructorPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
+
+//         constructorPopup.appendChild(closeButtonTop);
+
+//         const closeButton = document.createElement("button");
+//         closeButton.className = "ui button";
+//         closeButton.textContent = "Close";
+//         closeButton.addEventListener("click", () => {
+//             constructorPopup.style.display = "none";
+//             overlay.style.display = "none";
+//         });
+//         constructorPopup.appendChild(closeButton);
+
+//         constructorPopup.style.display = "block";
+//     } else {
+//         console.warn(`No constructor found with ID ${id}`);
+//     }
+// }
+
+function displayConstructorPopup(id, constructors) {
+    // Filter constructor data for the given ref
+    const filteredResults = constructors.filter(c => c.constructor.id === id);
+
+    if (filteredResults.length > 0) {
+        const constructorPopup = document.querySelector("#constructor");
+        constructorPopup.innerHTML = ""; // Clear previous content
+        const overlay = document.querySelector("#modal-overlay");
+        overlay.style.display = "block";
+
+        // Only create details once
+        const constructorDetail = filteredResults[0]; // Get the first match (avoid looping unnecessarily)
+        createConstructorDetails(constructorDetail, constructorPopup);
+
+        const closeButtonTop = document.createElement("button");
+        closeButtonTop.className = "close-button-top";
+        closeButtonTop.textContent = "X";
+
+        closeButtonTop.addEventListener("click", () => {
+            constructorPopup.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        constructorPopup.appendChild(closeButtonTop);
+
+        const closeButton = document.createElement("button");
+        closeButton.className = "ui button";
+        closeButton.textContent = "Close";
+        closeButton.addEventListener("click", () => {
+            constructorPopup.style.display = "none";
+            overlay.style.display = "none";
+        });
+        constructorPopup.appendChild(closeButton);
+
+        constructorPopup.style.display = "block";
+    } else {
+        console.warn(`No constructor found with ref ${ref}`);
+    }
 }
+
+
 
 function createConstructorDetails(constructor, targetElement) {
     console.log(constructor)
@@ -611,36 +882,82 @@ function createConstructorsTable(constructorResults) {
     return table;
 }
 
-function displayDriverPopup(driver) {
-    console.log(driver);
-    const driverPopup = document.querySelector("#driver");
-    driverPopup.innerHTML = ""; // Clear previous content
-    const overlay = document.querySelector("#modal-overlay");
-    overlay.style.display = "block";
+// function displayDriverPopup(id, driver) {
+//     console.log("DRIVER")
+//     console.log(driver);
+//     const driverPopup = document.querySelector("#driver");
+//     driverPopup.innerHTML = ""; // Clear previous content
+//     const overlay = document.querySelector("#modal-overlay");
+//     overlay.style.display = "block";
 
-    createDriverDetails(driver, driverPopup);
+//     createDriverDetails(driver, driverPopup);
 
-    const closeButtonTop = document.createElement("button");
-    closeButtonTop.className = "close-button-top";
-    closeButtonTop.textContent = "X";
+//     const closeButtonTop = document.createElement("button");
+//     closeButtonTop.className = "close-button-top";
+//     closeButtonTop.textContent = "X";
 
-    closeButtonTop.addEventListener("click", () => {
-        driverPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
+//     closeButtonTop.addEventListener("click", () => {
+//         driverPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
 
-    driverPopup.appendChild(closeButtonTop);
+//     driverPopup.appendChild(closeButtonTop);
 
-    const closeButton = document.createElement("button");
-    closeButton.className = "ui button";
-    closeButton.textContent = "Close";
-    closeButton.addEventListener("click", () => {
-        driverPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
-    driverPopup.appendChild(closeButton);
+//     const closeButton = document.createElement("button");
+//     closeButton.className = "ui button";
+//     closeButton.textContent = "Close";
+//     closeButton.addEventListener("click", () => {
+//         driverPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
+//     driverPopup.appendChild(closeButton);
 
-    driverPopup.style.display = "block";
+//     driverPopup.style.display = "block";
+// }
+
+
+function displayDriverPopup(id, drivers) {
+    console.log("ID received for driver:", id);
+    console.log("Available drivers:", drivers);
+    const filteredDriver = drivers.find(driver => driver.driver.id === id);
+    console.log("Filtered driver:", filteredDriver);
+
+    // Filter driver data for the given ID
+    // const filteredDriver = drivers.find(driver => driver.id === id);
+
+    if (filteredDriver) {
+        const driverPopup = document.querySelector("#driver");
+        driverPopup.innerHTML = ""; // Clear previous content
+        const overlay = document.querySelector("#modal-overlay");
+        overlay.style.display = "block";
+
+        // Display the details for the selected driver
+        createDriverDetails(filteredDriver, driverPopup);
+
+        const closeButtonTop = document.createElement("button");
+        closeButtonTop.className = "close-button-top";
+        closeButtonTop.textContent = "X";
+
+        closeButtonTop.addEventListener("click", () => {
+            driverPopup.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        driverPopup.appendChild(closeButtonTop);
+
+        const closeButton = document.createElement("button");
+        closeButton.className = "ui button";
+        closeButton.textContent = "Close";
+        closeButton.addEventListener("click", () => {
+            driverPopup.style.display = "none";
+            overlay.style.display = "none";
+        });
+        driverPopup.appendChild(closeButton);
+
+        driverPopup.style.display = "block";
+    } else {
+        console.warn(`No driver found with ID ${id}`);
+    }
 }
 
 function createDriverDetails(driver, targetElement) {

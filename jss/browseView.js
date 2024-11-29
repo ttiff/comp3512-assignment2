@@ -345,7 +345,7 @@ function displayTop3Racers(raceId, results) {
         const segment = document.createElement("div");
         segment.classList = "column top3";
         const divTable = createTableContainer("Top 3 Racers");
-        const table = createTop3RacersTable(filteredResults);
+        const table = createTop3RacersTable(filteredResults, results);
         divTable.appendChild(table);
 
         segment.appendChild(divTable);
@@ -372,7 +372,7 @@ function displayFinalResults(raceId, results) {
     if (filteredResults.length > 0) {
         const detailsColumn = document.querySelector(".column.top3");
         const divTable = createTableContainer("Race Results");
-        const table = createFinalResultsTable(filteredResults);
+        const table = createFinalResultsTable(filteredResults, results);
         divTable.appendChild(table);
         detailsColumn.appendChild(divTable);
     } else {
@@ -406,7 +406,7 @@ function createQualifyingResultsTable(qualifyingResults, results) {
     return table;
 }
 
-function createTop3RacersTable(top3Racers) {
+function createTop3RacersTable(top3Racers, results) {
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
 
@@ -414,14 +414,14 @@ function createTop3RacersTable(top3Racers) {
     const thead = createTableHeaders(headers);
     table.appendChild(thead);
 
-    const tbody = createTop3RacersTableBody(top3Racers);
+    const tbody = createTop3RacersTableBody(top3Racers, results);
     table.appendChild(tbody);
 
     return table;
 
 }
 
-function createFinalResultsTable(finalResults) {
+function createFinalResultsTable(finalResults, results) {
 
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
@@ -430,7 +430,7 @@ function createFinalResultsTable(finalResults) {
     const thead = createTableHeaders(headers);
     table.appendChild(thead);
 
-    const tbody = createFinalResultsTableBody(finalResults);
+    const tbody = createFinalResultsTableBody(finalResults, results);
     table.appendChild(tbody);
 
     return table;
@@ -481,7 +481,7 @@ function createQualifyingTableBody(qualifyingResults, results) {
     return tbody;
 }
 
-function createTop3RacersTableBody(top3Racers) {
+function createTop3RacersTableBody(top3Racers, results) {
     const tbody = document.createElement("tbody");
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
@@ -490,7 +490,7 @@ function createTop3RacersTableBody(top3Racers) {
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
         // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, top3Racers, result.race.year));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
 
         tbody.appendChild(row)
     });
@@ -499,7 +499,7 @@ function createTop3RacersTableBody(top3Racers) {
 }
 
 
-function createFinalResultsTableBody(finalResults) {
+function createFinalResultsTableBody(finalResults, results) {
     const tbody = document.createElement("tbody");
     console.log('HEEERE');
     console.log(finalResults);
@@ -516,9 +516,9 @@ function createFinalResultsTableBody(finalResults) {
         // // row.appendChild(createLinkCell(result.constructor, "", false, true));
         // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
 
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, finalResults, result.race.year));
+        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
         // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults, result.race.year));
+        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));

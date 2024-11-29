@@ -7,7 +7,6 @@ export function retrieveStorage() {
     return JSON.parse(sessionStorage.getItem('dashboardData')) || {};
 }
 
-
 export function removeStorage() {
     sessionStorage.removeItem('dashboardData');
 }
@@ -35,13 +34,10 @@ export async function fetchAndStoreData(url) {
 }
 
 export async function fetchDriverDetails(driverId) {
-    // const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
     const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
-    // const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/driverResults.php?%20driver=${driverRef}&season=${season}`;
 
     console.log("Driver ID:", driverId);
     console.log("Driver URL:", driverUrl);
-
 
     try {
         const driverDetails = await fetchAndStoreData(driverUrl);

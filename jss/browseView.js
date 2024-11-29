@@ -1,58 +1,6 @@
 import { createNavigationBar, switchStylesheet } from "./script.js";
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails } from './dataUtils.js';
 
-
-// // Sample data for races; replace with API data when available
-
-const constructorResults = [
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", "round": 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", "round": 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 }
-];
-
-const driverResults = [
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 6, "points": 8 },
-    { "name": "Ferrari", "nationality": "swiss", "url": "youtube.com", round: 1, "circuit": "Bahrain Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 10, "points": 1 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Guanyu", "surname": "Zhou", "position": 11, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 },
-    { "name": "Mercedes", "nationality": "swiss", "url": "youtube.com", round: 2, "circuit": "Saudi Arabian Grand Prix", "forename": "Valtteri", "surname": "Bottas", "position": 0, "points": 0 }
-
-];
-
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing browse view content
@@ -125,49 +73,7 @@ function createRaceListColumn(parent, seasonYear) {
     return raceGrid;
 }
 
-// // Function to create each race card
-// function createRaceCard(raceGrid, race) {
-//     console.log(race);
-//     const raceColumn = document.createElement("div");
-//     raceColumn.className = "column";
-//     raceGrid.appendChild(raceColumn);
-
-//     const card = document.createElement("div");
-//     card.className = "ui card";
-//     raceColumn.appendChild(card);
-
-//     const contentDiv = document.createElement("div");
-//     contentDiv.className = "content";
-//     card.appendChild(contentDiv);
-
-//     const raceHeader = document.createElement("div");
-//     raceHeader.className = "header";
-//     raceHeader.textContent = `Round ${race.round}`;
-//     contentDiv.appendChild(raceHeader);
-
-//     const meta = document.createElement("div");
-//     meta.className = "meta";
-//     meta.textContent = race.name;
-//     contentDiv.appendChild(meta);
-
-//     const extraContent = document.createElement("div");
-//     extraContent.className = "extra content";
-//     card.appendChild(extraContent);
-
-//     const resultsButton = document.createElement("a");
-//     resultsButton.className = "ui tiny button fluid";
-//     resultsButton.href = `#`; //replace with eventhandler
-//     resultsButton.textContent = "Results";
-//     extraContent.appendChild(resultsButton);
-
-//     resultsButton.addEventListener("click", async () => {
-//         displayRaceDetails(race);
-//         await displayQualifyResults(race.id);
-//         await displayTop3Racers(race.id);
-//         await displayFinalResults(race.id);
-//     });
-// }
-
+// Function to create each race card
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
@@ -206,17 +112,9 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
         displayQualifyResults(race.id, qualifyingResults, results);
         displayTop3Racers(race.id, results);
         displayFinalResults(race.id, results);
-        console.log(qualifyingResults);
     });
 }
 
-
-// Function to filter races by season and render race cards
-// function renderRaceList(raceGrid, races) {
-//     // const seasonRaces = races.filter(race => race.year === seasonYear);
-//     // seasonRaces.forEach(race => createRaceCard(raceGrid, race));
-//     races.forEach(race => createRaceCard(raceGrid, race));
-// }
 
 function renderRaceList(raceGrid, races, qualifyingResults, results) {
     races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
@@ -262,40 +160,6 @@ function displayRaceDetails(race) {
     const infoLink = createInfoLink("Race Information", race.url);
     segment.appendChild(infoLink);
 }
-// Function to display the qualifying results for selected race
-// function displayQualifyResults(qualifyingResults) {
-//     const detailsColumn = document.querySelector(".eleven.wide.column");
-//     const segment = document.createElement("div");
-//     segment.className = "ui two column grid";
-
-//     const divTable = createTableContainer("Qualifying Results");
-
-//     // Create and append the table
-//     const table = createQualifyingResultsTable(qualifyingResults);
-//     divTable.appendChild(table);
-
-//     // Append to segment and details column
-//     segment.appendChild(divTable);
-//     detailsColumn.appendChild(segment);
-// }
-
-// async function displayQualifyResults(raceId) {
-//     const qualifyingUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php?race=${raceId}`;
-//     const qualifyingResults = await fetchAndStoreData(qualifyingUrl);
-
-//     if (qualifyingResults) {
-//         const detailsColumn = document.querySelector(".eleven.wide.column");
-//         const segment = document.createElement("div");
-//         segment.className = "ui two column grid";
-
-//         const divTable = createTableContainer("Qualifying Results");
-//         const table = createQualifyingResultsTable(qualifyingResults);
-//         divTable.appendChild(table);
-
-//         segment.appendChild(divTable);
-//         detailsColumn.appendChild(segment);
-//     }
-// }
 
 function displayQualifyResults(raceId, qualifyingResults, results) {
     const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
@@ -316,27 +180,6 @@ function displayQualifyResults(raceId, qualifyingResults, results) {
     }
 }
 
-
-
-// async function displayTop3Racers(raceId) {
-
-//     const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
-//     const finalResults = await fetchAndStoreData(finalUrl);
-//     const top3Racers = finalResults.filter(result => result.position <= 3)
-//     console.log(top3Racers);
-
-//     const detailsColumn = document.querySelector(".ui.two.column.grid");
-//     const segment = document.createElement("div");
-//     segment.classList = "column top3";
-//     const divTable = createTableContainer("Top 3 Racers");
-
-//     const table = createTop3RacersTable(top3Racers);
-//     divTable.appendChild(table);
-
-//     segment.appendChild(divTable);
-//     detailsColumn.appendChild(segment);
-// }
-
 function displayTop3Racers(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId && r.position <= 3);
 
@@ -354,17 +197,6 @@ function displayTop3Racers(raceId, results) {
         console.warn(`No top 3 racers found for race ID ${raceId}`);
     }
 }
-
-
-// async function displayFinalResults(raceId) {
-//     const finalUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?race=${raceId}`;
-//     const finalResults = await fetchAndStoreData(finalUrl);
-//     const detailsColumn = document.querySelector(".column.top3");
-//     const divTable = createTableContainer("Race Results");
-//     const table = createFinalResultsTable(finalResults);
-//     divTable.append(table);
-//     detailsColumn.appendChild(divTable);
-// }
 
 function displayFinalResults(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId);
@@ -453,21 +285,12 @@ function createTableHeaders(headers) {
 
 
 function createQualifyingTableBody(qualifyingResults, results) {
-    console.log("QUALIFYING");
-    console.log(qualifyingResults);
     const tbody = document.createElement("tbody");
 
     qualifyingResults.forEach(result => {
-        console.log(result.driver.ref)
-        console.log(result.race.year)
         const row = document.createElement("tr");
 
         row.appendChild(createCell(result.position));
-        // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
-        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
-
         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
@@ -486,10 +309,6 @@ function createTop3RacersTableBody(top3Racers, results) {
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        // row.appendChild(createLinkCell(`${result.forename} ${result.surname}`, ""));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.ref, result.race.year));
         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
 
         tbody.appendChild(row)
@@ -501,23 +320,10 @@ function createTop3RacersTableBody(top3Racers, results) {
 
 function createFinalResultsTableBody(finalResults, results) {
     const tbody = document.createElement("tbody");
-    console.log('HEEERE');
-    console.log(finalResults);
     finalResults.forEach(result => {
-        console.log('YEAAAAAAAAAAR');
-        console.log(result.race.year);
-        console.log(result.driver.ref);
-        console.log(result);
         const row = document.createElement("tr");
         row.appendChild(createCell(result.position));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.driverRef, result.driver.year));
-        // row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, null, result.driver.ref, result.race.year));
-
-        // // row.appendChild(createLinkCell(result.constructor, "", false, true));
-        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id));
-
         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-        // row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, finalResults));
         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
         row.appendChild(createCell(result.laps));
@@ -568,57 +374,6 @@ function createCell(textContent) {
     cell.textContent = textContent;
     return cell;
 }
-
-// function createLinkCell(textContent, href) {
-//     const cell = document.createElement("td");
-//     const link = document.createElement("a");
-//     link.className = "underline-link";
-//     link.href = href;
-//     link.textContent = textContent;
-//     cell.appendChild(link);
-//     return cell;
-// }
-
-
-// function createLinkCell(textContent, href, isDriver = false, isConstructor = false, id = null, driverRef = null, season = null) {
-//     const cell = document.createElement("td");
-//     const link = document.createElement("a");
-//     link.className = "underline-link";
-//     link.href = href;
-//     link.textContent = textContent;
-
-//     // If it's a driver link, add a click event
-//     if (isDriver && driverRef) {
-//         link.addEventListener("click", async (e) => {
-//             e.preventDefault(); // Prevent default link behavior
-//             const driverDetails = await fetchDriverDetails(driverRef, season);
-//             console.log("driver details");
-//             console.log(driverDetails);
-//             if (driverDetails) {
-//                 displayDriverPopup(driverDetails);
-//             } else {
-//                 alert("Failed to load driver details.");
-//             }
-//         });
-//     }
-
-//     // If it's a constructor link, add a click event
-//     if (isConstructor && id) {
-//         link.addEventListener("click", async (e) => {
-//             e.preventDefault(); // Prevent default link behavior
-//             const constructorDetails = await fetchConstructorDetails(id);
-//             if (constructorDetails) {
-//                 displayConstructorPopup(constructorDetails);
-//             } else {
-//                 alert("Failed to load constructor details.");
-//             }
-//         });
-//     }
-
-//     cell.appendChild(link);
-//     return cell;
-// }
-
 
 function createLinkCell(
     textContent,
@@ -688,185 +443,16 @@ function createInfoLink(linkText, url) {
 }
 
 
-// Main function to render the races and details message
-// export function renderRaces(seasonYear) {
-//     const browseView = document.querySelector("#browse");
-//     browseView.innerHTML = ""; // Clear existing browse view content
-//     const mainContainer = setupMainContainer();
-
-//     createNavigationBar(view => {
-//         const homeView = document.querySelector("#home");
-//         if (view === "home") {
-//             homeView.classList.remove("hidden");
-//             browseView.classList.add("hidden");
-//             switchStylesheet("home");
-//         } else {
-//             homeView.classList.add("hidden");
-//             browseView.classList.remove("hidden");
-//             switchStylesheet("browse");
-//         }
-//     });
-
-//     const mainGrid = createMainGrid(browseView);
-//     const raceGrid = createRaceListColumn(mainGrid, seasonYear);
-//     renderRaceList(raceGrid, seasonYear);
-//     createDetailsColumn(mainGrid, seasonYear);
-// }
-
-
-// function displayConstructorPopup(id, constructor) {
-//     const filteredResults = constructor.filter(qr => qr.race.id === raceId);
-//     const constructorPopup = document.querySelector("#constructor");
-//     constructorPopup.innerHTML = ""; // Clear previous content
-//     const overlay = document.querySelector("#modal-overlay");
-//     overlay.style.display = "block";
-
-//     createConstructorDetails(constructor, constructorPopup);
-
-//     const closeButtonTop = document.createElement("button");
-//     closeButtonTop.className = "close-button-top";
-//     closeButtonTop.textContent = "X";
-
-//     closeButtonTop.addEventListener("click", () => {
-//         constructorPopup.style.display = "none";
-//         overlay.style.display = "none";
-//     });
-
-//     constructorPopup.appendChild(closeButtonTop);
-
-//     const closeButton = document.createElement("button");
-//     closeButton.className = "ui button";
-//     closeButton.textContent = "Close";
-//     closeButton.addEventListener("click", () => {
-//         constructorPopup.style.display = "none";
-//         overlay.style.display = "none";
-//     });
-//     constructorPopup.appendChild(closeButton);
-
-//     constructorPopup.style.display = "block";
-// }
-
-// function displayConstructorPopup(ref, constructors) {
-//     // Filter constructor data for the given ID
-//     // const filteredResults = constructors.filter(c => c.id === id);
-//     // const filteredResults = constructors.find(c => c.constructor.id === id);
-//     // const filteredResults = constructors.find(c => c.constructor.ref === ref);
-//     const filteredResults = constructors.filter(c => c.constructor.ref === ref);
-
-//     // const filteredResults = constructors.find(c => Number(c.constructor.id) === Number(id));
-
-
-
-//     // console.log("pop up");
-//     // console.log(filteredResults);
-
-//     // console.log("Provided ID:", id, "Type:", typeof id);
-//     // console.log("Constructors Array:", constructors);
-//     // console.log("Constructor IDs:", constructors.map(c => c.constructor.id));
-
-//     if (filteredResults.length > 0) {
-//         const constructorPopup = document.querySelector("#constructor");
-//         constructorPopup.innerHTML = ""; // Clear previous content
-//         const overlay = document.querySelector("#modal-overlay");
-//         overlay.style.display = "block";
-
-//         // Display details for the filtered constructor
-//         filteredResults.forEach(constructorDetail => {
-//             createConstructorDetails(constructorDetail, constructorPopup);
-//         });
-
-//         const closeButtonTop = document.createElement("button");
-//         closeButtonTop.className = "close-button-top";
-//         closeButtonTop.textContent = "X";
-
-//         closeButtonTop.addEventListener("click", () => {
-//             constructorPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-
-//         constructorPopup.appendChild(closeButtonTop);
-
-//         const closeButton = document.createElement("button");
-//         closeButton.className = "ui button";
-//         closeButton.textContent = "Close";
-//         closeButton.addEventListener("click", () => {
-//             constructorPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-//         constructorPopup.appendChild(closeButton);
-
-//         constructorPopup.style.display = "block";
-//     } else {
-//         console.warn(`No constructor found with ID ${id}`);
-//     }
-// }
-
-// function displayConstructorPopup(id, constructors, season) {
-//     console.log(constructors);
-//     // Filter constructor data for the given ref
-//     // const filteredResults = constructors.filter(c => c.constructor.id === id);
-//     const filteredResults = constructors.filter(
-//         c => c.constructor.id === id && c.race.year === season
-//     );
-
-//     const constructorDetails = fetchConstructorDetails(id);
-
-//     console.log('constructor details')
-//     console.log(constructorDetails);
-
-//     console.log('ALLLLLLL')
-//     console.log(filteredResults)
-//     if (filteredResults.length > 0) {
-//         const constructorPopup = document.querySelector("#constructor");
-//         constructorPopup.innerHTML = ""; // Clear previous content
-//         const overlay = document.querySelector("#modal-overlay");
-//         overlay.style.display = "block";
-
-//         // Only create details once
-//         // const constructorDetail = filteredResults[0]; // Get the first match (avoid looping unnecessarily)
-//         createConstructorDetails(filteredResults, constructorDetails, constructorPopup);
-
-//         const closeButtonTop = document.createElement("button");
-//         closeButtonTop.className = "close-button-top";
-//         closeButtonTop.textContent = "X";
-
-//         closeButtonTop.addEventListener("click", () => {
-//             constructorPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-
-//         constructorPopup.appendChild(closeButtonTop);
-
-//         const closeButton = document.createElement("button");
-//         closeButton.className = "ui button";
-//         closeButton.textContent = "Close";
-//         closeButton.addEventListener("click", () => {
-//             constructorPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-//         constructorPopup.appendChild(closeButton);
-
-//         constructorPopup.style.display = "block";
-//     } else {
-//         console.warn(`No constructor found with ref ${ref}`);
-//     }
-// }
-
 async function displayConstructorPopup(id, constructors, season) {
-    console.log(constructors);
 
     // Filter constructor data for the given id and season
     const filteredResults = constructors.filter(
         c => c.constructor.id === id && c.race.year === season
     );
 
-    console.log('Filtered Results:', filteredResults);
-
     try {
         // Await the result of fetchConstructorDetails
         const constructorDetails = await fetchConstructorDetails(id);
-
-        console.log('Constructor Details:', constructorDetails);
 
         if (filteredResults.length > 0) {
             const constructorPopup = document.querySelector("#constructor");
@@ -910,8 +496,6 @@ async function displayConstructorPopup(id, constructors, season) {
 
 
 function createConstructorDetails(results, constructorDetails, targetElement) {
-    console.log("CONSTRUCTORSSS")
-    console.log(results)
     const column = document.createElement("div");
     column.className = "twelve wide column"; // Add column class
 
@@ -951,100 +535,16 @@ function createConstructorsTable(constructorResults) {
     return table;
 }
 
-// function displayDriverPopup(id, driver) {
-//     console.log("DRIVER")
-//     console.log(driver);
-//     const driverPopup = document.querySelector("#driver");
-//     driverPopup.innerHTML = ""; // Clear previous content
-//     const overlay = document.querySelector("#modal-overlay");
-//     overlay.style.display = "block";
-
-//     createDriverDetails(driver, driverPopup);
-
-//     const closeButtonTop = document.createElement("button");
-//     closeButtonTop.className = "close-button-top";
-//     closeButtonTop.textContent = "X";
-
-//     closeButtonTop.addEventListener("click", () => {
-//         driverPopup.style.display = "none";
-//         overlay.style.display = "none";
-//     });
-
-//     driverPopup.appendChild(closeButtonTop);
-
-//     const closeButton = document.createElement("button");
-//     closeButton.className = "ui button";
-//     closeButton.textContent = "Close";
-//     closeButton.addEventListener("click", () => {
-//         driverPopup.style.display = "none";
-//         overlay.style.display = "none";
-//     });
-//     driverPopup.appendChild(closeButton);
-
-//     driverPopup.style.display = "block";
-// }
-
-
-// function displayDriverPopup(id, drivers) {
-//     console.log("ID received for driver:", id);
-//     console.log("Available drivers:", drivers);
-//     const filteredDriver = drivers.find(driver => driver.driver.id === id);
-//     console.log("Filtered driver:", filteredDriver);
-
-//     // Filter driver data for the given ID
-//     // const filteredDriver = drivers.find(driver => driver.id === id);
-
-//     if (filteredDriver) {
-//         const driverPopup = document.querySelector("#driver");
-//         driverPopup.innerHTML = ""; // Clear previous content
-//         const overlay = document.querySelector("#modal-overlay");
-//         overlay.style.display = "block";
-
-//         // Display the details for the selected driver
-//         createDriverDetails(filteredDriver, driverPopup);
-
-//         const closeButtonTop = document.createElement("button");
-//         closeButtonTop.className = "close-button-top";
-//         closeButtonTop.textContent = "X";
-
-//         closeButtonTop.addEventListener("click", () => {
-//             driverPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-
-//         driverPopup.appendChild(closeButtonTop);
-
-//         const closeButton = document.createElement("button");
-//         closeButton.className = "ui button";
-//         closeButton.textContent = "Close";
-//         closeButton.addEventListener("click", () => {
-//             driverPopup.style.display = "none";
-//             overlay.style.display = "none";
-//         });
-//         driverPopup.appendChild(closeButton);
-
-//         driverPopup.style.display = "block";
-//     } else {
-//         console.warn(`No driver found with ID ${id}`);
-//     }
-// }
-
 async function displayDriverPopup(id, constructors, season) {
-    console.log("driver pop up");
-    console.log(constructors);
 
     // Filter constructor data for the given id and season
     const filteredResults = constructors.filter(
         c => c.driver.id === id && c.race.year === season
     );
 
-    console.log('Filtered Results:', filteredResults);
-
     try {
         // Await the result of fetchConstructorDetails
         const constructorDetails = await fetchDriverDetails(id);
-
-        console.log('Constructor Details:', constructorDetails);
 
         if (filteredResults.length > 0) {
             const driverPopup = document.querySelector("#driver");

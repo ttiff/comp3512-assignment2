@@ -61,3 +61,25 @@ export async function fetchConstructorDetails(constructorId) {
         return null;
     }
 }
+
+
+export function getFavorites() {
+    return JSON.parse(localStorage.getItem('favorites')) || { drivers: [], constructors: [], circuits: [] };
+}
+
+export function toggleFavorite(type, id) {
+    const favorites = getFavorites();
+    const index = favorites[type].indexOf(id);
+    if (index === -1) {
+        favorites[type].push(id);
+    } else {
+        favorites[type].splice(index, 1);
+    }
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    return favorites;
+}
+
+export function isFavorite(type, id) {
+    const favorites = getFavorites();
+    return favorites[type].includes(id);
+}

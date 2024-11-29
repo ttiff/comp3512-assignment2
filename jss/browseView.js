@@ -1,5 +1,5 @@
 import { createNavigationBar, switchStylesheet } from "./script.js";
-import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails } from './dataUtils.js';
+import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
 
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
@@ -73,7 +73,100 @@ function createRaceListColumn(parent, seasonYear) {
     return raceGrid;
 }
 
-// Function to create each race card
+// // Function to create each race card
+// function createRaceCard(raceGrid, race, qualifyingResults, results) {
+//     const raceColumn = document.createElement("div");
+//     raceColumn.className = "column";
+//     raceGrid.appendChild(raceColumn);
+
+//     const card = document.createElement("div");
+//     card.className = "ui card";
+//     raceColumn.appendChild(card);
+
+//     const contentDiv = document.createElement("div");
+//     contentDiv.className = "content";
+//     card.appendChild(contentDiv);
+
+//     const raceHeader = document.createElement("div");
+//     raceHeader.className = "header";
+//     raceHeader.textContent = `Round ${race.round}`;
+//     contentDiv.appendChild(raceHeader);
+
+//     const meta = document.createElement("div");
+//     meta.className = "meta";
+//     meta.textContent = race.name;
+//     contentDiv.appendChild(meta);
+
+//     const extraContent = document.createElement("div");
+//     extraContent.className = "extra content";
+//     card.appendChild(extraContent);
+
+//     const resultsButton = document.createElement("a");
+//     resultsButton.className = "ui tiny button fluid";
+//     resultsButton.href = "#";
+//     resultsButton.textContent = "Results";
+//     extraContent.appendChild(resultsButton);
+
+//     resultsButton.addEventListener("click", () => {
+//         displayRaceDetails(race, results);
+//         displayQualifyResults(race.id, qualifyingResults, results);
+//         displayTop3Racers(race.id, results);
+//         displayFinalResults(race.id, results);
+//     });
+// }
+
+// function createRaceCard(raceGrid, race, qualifyingResults, results) {
+//     const raceColumn = document.createElement("div");
+//     raceColumn.className = "column";
+//     raceGrid.appendChild(raceColumn);
+
+//     const card = document.createElement("div");
+//     card.className = "ui card";
+//     raceColumn.appendChild(card);
+
+//     const contentDiv = document.createElement("div");
+//     contentDiv.className = "content";
+//     card.appendChild(contentDiv);
+
+//     const raceHeader = document.createElement("div");
+//     raceHeader.className = "header";
+//     raceHeader.textContent = `Round ${race.round}`;
+//     contentDiv.appendChild(raceHeader);
+
+//     const meta = document.createElement("div");
+//     meta.className = "meta";
+//     meta.textContent = race.name;
+
+//     // Add heart icon for favorite circuit
+//     const heartIcon = document.createElement("i");
+//     heartIcon.className = `heart icon ${isFavorite("circuits", race.circuit.id) ? "red" : ""}`;
+//     heartIcon.style.cursor = "pointer";
+
+//     heartIcon.addEventListener("click", () => {
+//         const updatedFavorites = toggleFavorite("circuits", race.circuit.id);
+//         heartIcon.classList.toggle("red", isFavorite("circuits", race.circuit.id));
+//     });
+
+//     meta.appendChild(heartIcon);
+//     contentDiv.appendChild(meta);
+
+//     const extraContent = document.createElement("div");
+//     extraContent.className = "extra content";
+//     card.appendChild(extraContent);
+
+//     const resultsButton = document.createElement("a");
+//     resultsButton.className = "ui tiny button fluid";
+//     resultsButton.href = "#";
+//     resultsButton.textContent = "Results";
+//     extraContent.appendChild(resultsButton);
+
+//     resultsButton.addEventListener("click", () => {
+//         displayRaceDetails(race, results);
+//         displayQualifyResults(race.id, qualifyingResults, results);
+//         displayTop3Racers(race.id, results);
+//         displayFinalResults(race.id, results);
+//     });
+// }
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
@@ -95,6 +188,7 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const meta = document.createElement("div");
     meta.className = "meta";
     meta.textContent = race.name;
+
     contentDiv.appendChild(meta);
 
     const extraContent = document.createElement("div");
@@ -305,6 +399,26 @@ function createTableHeaders(headers) {
 }
 
 
+// function createQualifyingTableBody(qualifyingResults, results) {
+//     const tbody = document.createElement("tbody");
+
+//     qualifyingResults.forEach(result => {
+//         const row = document.createElement("tr");
+
+//         row.appendChild(createCell(result.position));
+//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
+//         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
+
+//         row.appendChild(createCell(result.q1));
+//         row.appendChild(createCell(result.q2));
+//         row.appendChild(createCell(result.q3));
+
+//         tbody.appendChild(row);
+//     });
+
+//     return tbody;
+// }
+
 function createQualifyingTableBody(qualifyingResults, results) {
     const tbody = document.createElement("tbody");
 
@@ -312,9 +426,38 @@ function createQualifyingTableBody(qualifyingResults, results) {
         const row = document.createElement("tr");
 
         row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
+        const driverCell = document.createElement("td");
+        const driverLink = document.createElement("a");
+        driverLink.href = "#";
+        driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
+        driverLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayDriverPopup(result.driver.id, results, result.race.year);
+        });
+        driverCell.appendChild(driverLink);
+
+        if (isFavorite("drivers", result.driver.id)) {
+            const driverHeartIcon = document.createElement("i");
+            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverCell.appendChild(driverHeartIcon);
+        }
+        row.appendChild(driverCell);
+
+        // Add Constructor Cell with Link and Heart Icon
+        const constructorCell = document.createElement("td");
+        const constructorLink = document.createElement("a");
+        constructorLink.href = "#";
+        constructorLink.textContent = result.constructor.name;
+        constructorLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayConstructorPopup(result.constructor.id, results, result.race.year); // Opens constructor pop-up
+        });
+        constructorCell.appendChild(constructorLink);
+
+        row.appendChild(constructorCell);
+
+        // Add Q1, Q2, and Q3 Cells
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -325,37 +468,125 @@ function createQualifyingTableBody(qualifyingResults, results) {
     return tbody;
 }
 
+// function createTop3RacersTableBody(top3Racers, results) {
+//     const tbody = document.createElement("tbody");
+//     top3Racers.forEach(result => {
+//         const row = document.createElement("tr");
+//         row.appendChild(createCell(result.position));
+//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
+
+//         tbody.appendChild(row)
+//     });
+
+//     return tbody
+// }
+
 function createTop3RacersTableBody(top3Racers, results) {
     const tbody = document.createElement("tbody");
+
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
-        row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
 
-        tbody.appendChild(row)
+        // Add Position Cell
+        row.appendChild(createCell(result.position));
+
+        // Add Driver Cell with Link and Heart Icon
+        const driverCell = document.createElement("td");
+        const driverLink = document.createElement("a");
+        driverLink.href = "#";
+        driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
+        driverLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayDriverPopup(result.driver.id, results, result.race.year); // Opens driver pop-up
+        });
+        driverCell.appendChild(driverLink);
+
+        if (isFavorite("drivers", result.driver.id)) {
+            const driverHeartIcon = document.createElement("i");
+            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverCell.appendChild(driverHeartIcon);
+        }
+
+        row.appendChild(driverCell);
+
+        tbody.appendChild(row);
     });
 
-    return tbody
+    return tbody;
 }
 
+
+// function createFinalResultsTableBody(finalResults, results) {
+//     const tbody = document.createElement("tbody");
+//     finalResults.forEach(result => {
+//         const row = document.createElement("tr");
+//         row.appendChild(createCell(result.position));
+//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
+//         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
+
+//         row.appendChild(createCell(result.laps));
+//         row.appendChild(createCell(result.points));
+
+//         tbody.appendChild(row)
+//     });
+
+//     return tbody
+
+// }
 
 function createFinalResultsTableBody(finalResults, results) {
     const tbody = document.createElement("tbody");
+
     finalResults.forEach(result => {
         const row = document.createElement("tr");
-        row.appendChild(createCell(result.position));
-        row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-        row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
 
+        // Add Position Cell
+        row.appendChild(createCell(result.position));
+
+        // Add Driver Cell with Link and Heart Icon
+        const driverCell = document.createElement("td");
+        const driverLink = document.createElement("a");
+        driverLink.href = "#";
+        driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
+        driverLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayDriverPopup(result.driver.id, results, result.race.year); // Opens driver pop-up
+        });
+        driverCell.appendChild(driverLink);
+
+
+        if (isFavorite("drivers", result.driver.id)) {
+            const driverHeartIcon = document.createElement("i");
+            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverCell.appendChild(driverHeartIcon);
+        }
+
+
+        row.appendChild(driverCell);
+
+        // Add Constructor Cell with Link and Heart Icon
+        const constructorCell = document.createElement("td");
+        const constructorLink = document.createElement("a");
+        constructorLink.href = "#";
+        constructorLink.textContent = result.constructor.name;
+        constructorLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            displayConstructorPopup(result.constructor.id, results, result.race.year); // Opens constructor pop-up
+        });
+        constructorCell.appendChild(constructorLink);
+
+        row.appendChild(constructorCell);
+
+        // Add Laps and Points Cells
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));
 
-        tbody.appendChild(row)
+        tbody.appendChild(row);
     });
 
-    return tbody
-
+    return tbody;
 }
+
 
 function createConstructorTableBody(results) {
     const tbody = document.createElement("tbody");
@@ -605,24 +836,55 @@ async function displayDriverPopup(id, constructors, season) {
     }
 }
 
-
 function createDriverDetails(driver, driverDetails, targetElement) {
+    console.log("Driver Details:", driverDetails);
+    console.log("Driver ID:", driverDetails.id);
+
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
     const segment = document.createElement("div");
     segment.className = "ui segment driver-details-container";
 
+
+    const favoriteIcon = document.createElement("i");
+    const driverId = driverDetails.driverId;
+    console.log("Driver ID:", driverId);
+
+    favoriteIcon.className = isFavorite("drivers", driverId)
+        ? "heart icon red heart-icon"
+        : "heart outline icon heart-icon";
+
+    // Add click event to toggle favorite state
+    favoriteIcon.addEventListener("click", () => {
+        console.log("Toggling favorite for driver ID:", driverId);
+        toggleFavorite("drivers", driverId); // Toggle favorite
+        const isNowFavorite = isFavorite("drivers", driverId); // Check new state
+        console.log("Favorites after toggle:", getFavorites());
+        console.log("Is favorite after toggle:", isNowFavorite);
+        favoriteIcon.className = isNowFavorite
+            ? "heart icon red heart-icon"
+            : "heart outline icon heart-icon";
+    });
+
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "favorite-icon-wrapper";
+    iconWrapper.appendChild(favoriteIcon);
+
+    segment.appendChild(iconWrapper);
+
+    // Driver Image
     const imageContainer = document.createElement("div");
     imageContainer.className = "driver-image";
 
     const image = document.createElement("img");
-    image.src = '../img/profile.png';
+    image.src = "../img/profile.png";
     image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
     imageContainer.appendChild(image);
 
     segment.appendChild(imageContainer);
 
+    // Driver Details Container
     const detailsContainer = document.createElement("div");
     detailsContainer.className = "driver-details";
 
@@ -633,6 +895,7 @@ function createDriverDetails(driver, driverDetails, targetElement) {
     detailsContainer.appendChild(createDetailParagraph("Name", `${driverDetails.forename} ${driverDetails.surname}`));
     detailsContainer.appendChild(createDetailParagraph("Nationality", driverDetails.nationality));
     detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driverDetails.dob)));
+
     const infoLink = createInfoLink("Driver Biography", driverDetails.url);
     detailsContainer.appendChild(infoLink);
 

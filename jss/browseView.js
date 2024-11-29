@@ -108,7 +108,7 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     extraContent.appendChild(resultsButton);
 
     resultsButton.addEventListener("click", () => {
-        displayRaceDetails(race);
+        displayRaceDetails(race, results);
         displayQualifyResults(race.id, qualifyingResults, results);
         displayTop3Racers(race.id, results);
         displayFinalResults(race.id, results);
@@ -137,9 +137,9 @@ function createDetailsColumn(parent, seasonYear) {
 }
 
 // Function to display detailed information for a selected race
-function displayRaceDetails(race) {
-    const detailsColumn = document.querySelector(".eleven.wide.column");
 
+function displayRaceDetails(race, results) {
+    const detailsColumn = document.querySelector(".eleven.wide.column");
     detailsColumn.textContent = ""; // Clear existing details
 
     const segment = document.createElement("div");
@@ -152,7 +152,27 @@ function displayRaceDetails(race) {
 
     segment.appendChild(createDetailParagraph("Race Name", race.name));
     segment.appendChild(createDetailParagraph("Round", race.round));
-    segment.appendChild(createDetailParagraph("Circuit Name", race.circuit.name));
+
+    // Create a paragraph for the Circuit Name
+    const circuitParagraph = document.createElement("p");
+
+    const circuitLabel = document.createElement("span");
+    circuitLabel.className = "label-bold";
+    circuitLabel.textContent = "Circuit Name: ";
+
+    const circuitLink = document.createElement("a");
+    circuitLink.href = "#";
+    circuitLink.textContent = race.circuit.name;
+    circuitLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        displayCircuitPopup(race.circuit.id, race, race.year); // Your popup function
+    });
+
+    circuitParagraph.appendChild(circuitLabel);
+    circuitParagraph.appendChild(circuitLink);
+
+    segment.appendChild(circuitParagraph); // Add the paragraph to the segment
+
     segment.appendChild(createDetailParagraph("Location", race.circuit.location));
     segment.appendChild(createDetailParagraph("Country", race.circuit.country));
     segment.appendChild(createDetailParagraph("Date of Race", race.date));
@@ -160,6 +180,7 @@ function displayRaceDetails(race) {
     const infoLink = createInfoLink("Race Information", race.url);
     segment.appendChild(infoLink);
 }
+
 
 function displayQualifyResults(raceId, qualifyingResults, results) {
     const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
@@ -653,4 +674,76 @@ function calculateAge(dob) {
     }
 
     return age;
+}
+
+
+function displayCircuitPopup(id, race, season) {
+    console.log(race);
+
+    const circuitPopup = document.querySelector("#circuit");
+    circuitPopup.innerHTML = ""; // Clear previous content
+    const overlay = document.querySelector("#modal-overlay");
+    overlay.style.display = "block";
+
+    // Create and display constructor details
+    createCircuitDetails(race, circuitPopup);
+
+    // Add a close button (top-right)
+    const closeButtonTop = document.createElement("button");
+    closeButtonTop.className = "close-button-top";
+    closeButtonTop.textContent = "X";
+    closeButtonTop.addEventListener("click", () => {
+        circuitPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+    circuitPopup.appendChild(closeButtonTop);
+
+    // Add a regular close button (bottom)
+    const closeButton = document.createElement("button");
+    closeButton.className = "ui button circuit-close-button";
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", () => {
+        circuitPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+    circuitPopup.appendChild(closeButton);
+
+    circuitPopup.style.display = "block";
+
+}
+function createCircuitDetails(driver, targetElement) {
+    const column = document.createElement("div");
+    column.className = "twelve wide column";
+
+    const segment = document.createElement("div");
+    segment.className = "ui segment driver-details-container";
+
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "driver-image";
+
+    const image = document.createElement("img");
+    image.src = '../img/profile.png';
+    imageContainer.appendChild(image);
+
+    segment.appendChild(imageContainer);
+
+    const detailsContainer = document.createElement("div");
+    detailsContainer.className = "driver-details";
+
+    const title = document.createElement("h2");
+    title.textContent = "Circuit Details";
+    detailsContainer.appendChild(title);
+
+    detailsContainer.appendChild(createDetailParagraph("Name", driver.circuit.name));
+    detailsContainer.appendChild(createDetailParagraph("Location", driver.circuit.location));
+    detailsContainer.appendChild(createDetailParagraph("Country", driver.circuit.country));
+    const infoLink = createInfoLink("Circuit Biography", driver.circuit.url);
+    detailsContainer.appendChild(infoLink);
+
+    segment.appendChild(detailsContainer);
+
+    column.appendChild(segment);
+
+    targetElement.appendChild(column);
+
 }

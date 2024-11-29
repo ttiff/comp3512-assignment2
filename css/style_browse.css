@@ -103,6 +103,24 @@ main {
     box-sizing: border-box;
 }
 
+#circuit {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
 
 #modal-overlay {
     position: fixed;
@@ -157,4 +175,9 @@ main {
 
 .driver-details {
     flex: 1;
+}
+
+#circuit .ui.button {
+    margin-top: 20px;
+    /* Push the button lower */
 }

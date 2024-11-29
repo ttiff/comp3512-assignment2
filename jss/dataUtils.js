@@ -61,4 +61,3 @@ export async function fetchConstructorDetails(constructorId) {
         return null;
     }
 }
-

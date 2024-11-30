@@ -455,6 +455,12 @@ function createQualifyingTableBody(qualifyingResults, results) {
         });
         constructorCell.appendChild(constructorLink);
 
+        if (isFavorite("constructors", result.constructor.id)) {
+            const driverHeartIcon = document.createElement("i");
+            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            constructorCell.appendChild(driverHeartIcon);
+        }
+
         row.appendChild(constructorCell);
 
         // Add Q1, Q2, and Q3 Cells
@@ -574,6 +580,12 @@ function createFinalResultsTableBody(finalResults, results) {
             displayConstructorPopup(result.constructor.id, results, result.race.year); // Opens constructor pop-up
         });
         constructorCell.appendChild(constructorLink);
+
+        if (isFavorite("constructors", result.constructor.id)) {
+            const driverHeartIcon = document.createElement("i");
+            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            constructorCell.appendChild(driverHeartIcon);
+        }
 
         row.appendChild(constructorCell);
 
@@ -745,31 +757,66 @@ async function displayConstructorPopup(id, constructors, season) {
 }
 
 
+function createConstructorDetails(constructor, constructorDetails, targetElement) {
+    console.log("Constructor Details:", constructorDetails);
+    console.log("Constructor ID:", constructorDetails.constructorId);
 
-
-function createConstructorDetails(results, constructorDetails, targetElement) {
     const column = document.createElement("div");
-    column.className = "twelve wide column"; // Add column class
+    column.className = "twelve wide column";
 
     const segment = document.createElement("div");
-    segment.className = "ui segment";
+    segment.className = "ui segment driver-details-container";
+
+
+    const favoriteIcon = document.createElement("i");
+    const constructorId = constructorDetails.constructorId;
+    console.log("Constructor ID:", constructorId);
+
+    favoriteIcon.className = isFavorite("constructors", constructorId)
+        ? "heart icon red heart-icon"
+        : "heart outline icon heart-icon";
+
+    // Add click event to toggle favorite state
+    favoriteIcon.addEventListener("click", () => {
+        console.log("Toggling favorite for driver ID:", constructorId);
+        toggleFavorite("constructors", constructorId); // Toggle favorite
+        const isNowFavorite = isFavorite("constructors", constructorId); // Check new state
+        console.log("Favorites after toggle:", getFavorites());
+        console.log("Is favorite after toggle:", isNowFavorite);
+        favoriteIcon.className = isNowFavorite
+            ? "heart icon red heart-icon"
+            : "heart outline icon heart-icon";
+    });
+
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "favorite-icon-wrapper";
+    iconWrapper.appendChild(favoriteIcon);
+
+    segment.appendChild(iconWrapper);
+
+
+    const detailsContainer = document.createElement("div");
+    detailsContainer.className = "driver-details";
 
     const title = document.createElement("h2");
     title.textContent = "Constructor Details";
-    segment.appendChild(title);
+    detailsContainer.appendChild(title);
 
-    //need to update this
-    segment.appendChild(createDetailParagraph("Name", constructorDetails.name));
-    segment.appendChild(createDetailParagraph("Nationality", constructorDetails.nationality));
+
+    detailsContainer.appendChild(createDetailParagraph("Name", constructorDetails.name));
+    detailsContainer.appendChild(createDetailParagraph("Nationality", constructorDetails.nationality));
+
+
     const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
-    segment.appendChild(infoLink);
+    detailsContainer.appendChild(infoLink);
 
+    segment.appendChild(detailsContainer);
 
     column.appendChild(segment);
 
-    targetElement.append(column);
+    targetElement.appendChild(column);
 
-    targetElement.append(createConstructorsTable(results))
+    targetElement.append(createConstructorsTable(constructor))
 }
 
 function createConstructorsTable(constructorResults) {

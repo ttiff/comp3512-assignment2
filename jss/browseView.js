@@ -1,4 +1,3 @@
-import { createNavigationBar, switchStylesheet } from "./script.js";
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
 
 export let races = null;
@@ -781,13 +780,6 @@ function calculateAge(dob) {
     const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    // Adjust age if the current month/day is before the birth month/day
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-
     return age;
 }
 

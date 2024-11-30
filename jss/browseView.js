@@ -450,7 +450,7 @@ function createQualifyingTableBody(qualifyingResults, results) {
         driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
         driverLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayDriverPopup(result.driver.id, results, result.race.year);
+            displayDriverPopup(result.driver.id, results, result.race.year, result.race.id);
         });
         driverCell.appendChild(driverLink);
 
@@ -468,7 +468,7 @@ function createQualifyingTableBody(qualifyingResults, results) {
         constructorLink.textContent = result.constructor.name;
         constructorLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayConstructorPopup(result.constructor.id, results, result.race.year); // Opens constructor pop-up
+            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id); // Opens constructor pop-up
         });
         constructorCell.appendChild(constructorLink);
 
@@ -520,7 +520,7 @@ function createTop3RacersTableBody(top3Racers, results) {
         driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
         driverLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayDriverPopup(result.driver.id, results, result.race.year); // Opens driver pop-up
+            displayDriverPopup(result.driver.id, results, result.race.year, result.race.id); // Opens driver pop-up
         });
         driverCell.appendChild(driverLink);
 
@@ -573,7 +573,7 @@ function createFinalResultsTableBody(finalResults, results) {
         driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
         driverLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayDriverPopup(result.driver.id, results, result.race.year); // Opens driver pop-up
+            displayDriverPopup(result.driver.id, results, result.race.year, result.race.id);
         });
         driverCell.appendChild(driverLink);
 
@@ -594,7 +594,7 @@ function createFinalResultsTableBody(finalResults, results) {
         constructorLink.textContent = result.constructor.name;
         constructorLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayConstructorPopup(result.constructor.id, results, result.race.year); // Opens constructor pop-up
+            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id); // Opens constructor pop-up
         });
         constructorCell.appendChild(constructorLink);
 
@@ -724,7 +724,7 @@ function createInfoLink(linkText, url) {
 }
 
 
-async function displayConstructorPopup(id, constructors, season) {
+async function displayConstructorPopup(id, constructors, season, raceid) {
 
     // Filter constructor data for the given id and season
     const filteredResults = constructors.filter(
@@ -742,7 +742,7 @@ async function displayConstructorPopup(id, constructors, season) {
             overlay.style.display = "block";
 
             // Create and display constructor details
-            createConstructorDetails(filteredResults, constructorDetails, constructorPopup);
+            createConstructorDetails(filteredResults, constructorDetails, constructorPopup, raceid);
 
             // Add a close button (top-right)
             const closeButtonTop = document.createElement("button");
@@ -774,9 +774,9 @@ async function displayConstructorPopup(id, constructors, season) {
 }
 
 
-function createConstructorDetails(constructor, constructorDetails, targetElement) {
+function createConstructorDetails(constructor, constructorDetails, targetElement, raceId) {
     console.log("Constructor Details:", constructorDetails);
-    console.log("Constructor ID:", constructorDetails.constructorId);
+    console.log("Race ID:", raceId);
 
     const column = document.createElement("div");
     column.className = "twelve wide column";
@@ -784,25 +784,25 @@ function createConstructorDetails(constructor, constructorDetails, targetElement
     const segment = document.createElement("div");
     segment.className = "ui segment driver-details-container";
 
-
     const favoriteIcon = document.createElement("i");
     const constructorId = constructorDetails.constructorId;
-    console.log("Constructor ID:", constructorId);
 
     favoriteIcon.className = isFavorite("constructors", constructorId)
         ? "heart icon red heart-icon"
         : "heart outline icon heart-icon";
 
-    // Add click event to toggle favorite state
     favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for driver ID:", constructorId);
-        toggleFavorite("constructors", constructorId); // Toggle favorite
-        const isNowFavorite = isFavorite("constructors", constructorId); // Check new state
-        console.log("Favorites after toggle:", getFavorites());
-        console.log("Is favorite after toggle:", isNowFavorite);
+        console.log("Toggling favorite for constructor ID:", constructorId);
+        toggleFavorite("constructors", constructorId);
+
+        // Update only the favorite icon state
+        const isNowFavorite = isFavorite("constructors", constructorId);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
+
+        // Update the race details without re-rendering the entire tables
+        updateRaceTables(raceId);
     });
 
     const iconWrapper = document.createElement("div");
@@ -811,7 +811,6 @@ function createConstructorDetails(constructor, constructorDetails, targetElement
 
     segment.appendChild(iconWrapper);
 
-
     const detailsContainer = document.createElement("div");
     detailsContainer.className = "driver-details";
 
@@ -819,21 +818,17 @@ function createConstructorDetails(constructor, constructorDetails, targetElement
     title.textContent = "Constructor Details";
     detailsContainer.appendChild(title);
 
-
     detailsContainer.appendChild(createDetailParagraph("Name", constructorDetails.name));
     detailsContainer.appendChild(createDetailParagraph("Nationality", constructorDetails.nationality));
-
 
     const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
     detailsContainer.appendChild(infoLink);
 
     segment.appendChild(detailsContainer);
-
     column.appendChild(segment);
 
     targetElement.appendChild(column);
-
-    targetElement.append(createConstructorsTable(constructor))
+    targetElement.append(createConstructorsTable(constructor));
 }
 
 function createConstructorsTable(constructorResults) {
@@ -851,7 +846,7 @@ function createConstructorsTable(constructorResults) {
     return table;
 }
 
-async function displayDriverPopup(id, constructors, season) {
+async function displayDriverPopup(id, constructors, season, raceid) {
 
     // Filter constructor data for the given id and season
     const filteredResults = constructors.filter(
@@ -869,7 +864,7 @@ async function displayDriverPopup(id, constructors, season) {
             overlay.style.display = "block";
 
             // Create and display constructor details
-            createDriverDetails(filteredResults, constructorDetails, driverPopup);
+            createDriverDetails(filteredResults, constructorDetails, driverPopup, raceid);
 
             // Add a close button (top-right)
             const closeButtonTop = document.createElement("button");
@@ -900,9 +895,9 @@ async function displayDriverPopup(id, constructors, season) {
     }
 }
 
-function createDriverDetails(driver, driverDetails, targetElement) {
+function createDriverDetails(driver, driverDetails, targetElement, raceId) {
     console.log("Driver Details:", driverDetails);
-    console.log("Driver ID:", driverDetails.id);
+    console.log("Race ID:", raceId);
 
     const column = document.createElement("div");
     column.className = "twelve wide column";
@@ -910,25 +905,25 @@ function createDriverDetails(driver, driverDetails, targetElement) {
     const segment = document.createElement("div");
     segment.className = "ui segment driver-details-container";
 
-
     const favoriteIcon = document.createElement("i");
     const driverId = driverDetails.driverId;
-    console.log("Driver ID:", driverId);
 
     favoriteIcon.className = isFavorite("drivers", driverId)
         ? "heart icon red heart-icon"
         : "heart outline icon heart-icon";
 
-    // Add click event to toggle favorite state
     favoriteIcon.addEventListener("click", () => {
         console.log("Toggling favorite for driver ID:", driverId);
-        toggleFavorite("drivers", driverId); // Toggle favorite
-        const isNowFavorite = isFavorite("drivers", driverId); // Check new state
-        console.log("Favorites after toggle:", getFavorites());
-        console.log("Is favorite after toggle:", isNowFavorite);
+        toggleFavorite("drivers", driverId);
+
+        // Update only the favorite icon state
+        const isNowFavorite = isFavorite("drivers", driverId);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
+
+        // Update the race details without re-rendering the entire tables
+        updateRaceTables(raceId);
     });
 
     const iconWrapper = document.createElement("div");
@@ -937,18 +932,6 @@ function createDriverDetails(driver, driverDetails, targetElement) {
 
     segment.appendChild(iconWrapper);
 
-    // Driver Image
-    const imageContainer = document.createElement("div");
-    imageContainer.className = "driver-image";
-
-    const image = document.createElement("img");
-    image.src = "../img/profile.png";
-    image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
-    imageContainer.appendChild(image);
-
-    segment.appendChild(imageContainer);
-
-    // Driver Details Container
     const detailsContainer = document.createElement("div");
     detailsContainer.className = "driver-details";
 
@@ -964,9 +947,7 @@ function createDriverDetails(driver, driverDetails, targetElement) {
     detailsContainer.appendChild(infoLink);
 
     segment.appendChild(detailsContainer);
-
     column.appendChild(segment);
-
     targetElement.appendChild(column);
 
     targetElement.appendChild(createDriversTable(driver || []));
@@ -1114,4 +1095,11 @@ function createCircuitDetails(driver, targetElement) {
     column.appendChild(segment);
 
     targetElement.appendChild(column);
+}
+
+function updateRaceTables(raceId) {
+    displayRaceDetails(races.find(r => r.id === raceId), results);
+    displayQualifyResults(raceId, qualifyingResults, results);
+    displayTop3Racers(raceId, results);
+    displayFinalResults(raceId, results);
 }

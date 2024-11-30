@@ -441,14 +441,26 @@ function createTableHeaders(headers, sortMapping, data, renderCallback) {
     return thead;
 }
 
+
 function createQualifyingTableBody(qualifyingResults, results) {
     const tbody = document.createElement("tbody");
 
     qualifyingResults.forEach(result => {
         const row = document.createElement("tr");
 
-        row.appendChild(createCell(result.position));
+        const positionCell = document.createElement("td");
+        const positionText = document.createTextNode(result.position);
+        positionCell.appendChild(positionText);
 
+        if (result.position <= 10) {
+            const qualifiedIcon = document.createElement("i");
+            qualifiedIcon.className = "qualified-icon fas fa-check-circle";
+            positionCell.appendChild(qualifiedIcon);
+        }
+
+        row.appendChild(positionCell);
+
+        // Create Driver Cell
         const driverCell = document.createElement("td");
         const driverLink = document.createElement("a");
         driverLink.href = "#";
@@ -457,6 +469,7 @@ function createQualifyingTableBody(qualifyingResults, results) {
             e.preventDefault();
             displayDriverPopup(result.driver.id, results, result.race.year, result.race.id);
         });
+
         driverCell.appendChild(driverLink);
 
         if (isFavorite("drivers", result.driver.id)) {
@@ -464,9 +477,10 @@ function createQualifyingTableBody(qualifyingResults, results) {
             driverHeartIcon.className = "heart icon red heart-icon";
             driverCell.appendChild(driverHeartIcon);
         }
+
         row.appendChild(driverCell);
 
-        // Add Constructor Cell with Link and Heart Icon
+        // Create Constructor Cell
         const constructorCell = document.createElement("td");
         const constructorLink = document.createElement("a");
         constructorLink.href = "#";
@@ -475,16 +489,18 @@ function createQualifyingTableBody(qualifyingResults, results) {
             e.preventDefault();
             displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id);
         });
+
         constructorCell.appendChild(constructorLink);
 
         if (isFavorite("constructors", result.constructor.id)) {
-            const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon";
-            constructorCell.appendChild(driverHeartIcon);
+            const constructorHeartIcon = document.createElement("i");
+            constructorHeartIcon.className = "heart icon red heart-icon";
+            constructorCell.appendChild(constructorHeartIcon);
         }
 
         row.appendChild(constructorCell);
 
+        // Add Q1, Q2, and Q3 cells
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -495,14 +511,37 @@ function createQualifyingTableBody(qualifyingResults, results) {
     return tbody;
 }
 
-
 function createTop3RacersTableBody(top3Racers, results) {
     const tbody = document.createElement("tbody");
 
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
 
-        row.appendChild(createCell(result.position));
+        const positionCell = document.createElement("td");
+
+        const medalIcon = document.createElement("i");
+        medalIcon.className = "medal-icon";
+        switch (result.position) {
+            case 1:
+                medalIcon.classList.add("fas", "fa-trophy", "gold-medal");
+                break;
+            case 2:
+                medalIcon.classList.add("fas", "fa-trophy", "silver-medal");
+                break;
+            case 3:
+                medalIcon.classList.add("fas", "fa-trophy", "bronze-medal");
+                break;
+            default:
+                break;
+        }
+
+        positionCell.appendChild(medalIcon);
+
+        // Add Position Number
+        const positionText = document.createTextNode(` ${result.position}`);
+        positionCell.appendChild(positionText);
+
+        row.appendChild(positionCell);
 
         const driverCell = document.createElement("td");
         const driverLink = document.createElement("a");

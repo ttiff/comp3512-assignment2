@@ -244,3 +244,32 @@ main {
     height: auto;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+.medal-icon {
+    margin-right: 5px;
+    /* Space between medal and position number */
+    font-size: 1.0rem;
+    /* Adjust size of the medal icon */
+    vertical-align: middle;
+    /* Align icon with text */
+}
+
+.gold-medal {
+    color: gold;
+}
+
+.silver-medal {
+    color: silver;
+}
+
+.bronze-medal {
+    color: #cd7f32;
+}
+
+.qualified-icon {
+    font-size: 0.8rem;
+    color: green;
+    margin-left: 5px;
+    vertical-align: middle;
+    display: inline-block;
+}

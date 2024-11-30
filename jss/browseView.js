@@ -4,6 +4,27 @@ export let races = null;
 export let qualifyingResults = null;
 export let results = null;
 
+
+function getNestedProperty(obj, path) {
+    return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+}
+
+function sortData(data, key, order = "asc") {
+    return data.sort((a, b) => {
+        const valA = getNestedProperty(a, key);
+        const valB = getNestedProperty(b, key);
+
+        // Handle strings (case-insensitive)
+        const valueA = typeof valA === "string" ? valA.toLowerCase() : valA;
+        const valueB = typeof valB === "string" ? valB.toLowerCase() : valB;
+
+        if (valueA < valueB) return order === "asc" ? -1 : 1;
+        if (valueA > valueB) return order === "asc" ? 1 : -1;
+        return 0;
+    });
+}
+
+
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing browse view content
@@ -265,7 +286,20 @@ function createQualifyingResultsTable(qualifyingResults, results) {
     table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver", "Constructor", "Q1", "Q2", "Q3"];
-    const thead = createTableHeaders(headers);
+    const sortMapping = {
+        "Position": "position",
+        "Driver": "driver.surname",
+        "Constructor": "constructor.name",
+        "Q1": "q1",
+        "Q2": "q2",
+        "Q3": "q3",
+    };
+
+    const thead = createTableHeaders(headers, sortMapping, qualifyingResults, (sortedData) => {
+        const newTbody = createQualifyingTableBody(sortedData, results);
+        table.replaceChild(newTbody, table.querySelector("tbody"));
+    });
+
     table.appendChild(thead);
 
     const tbody = createQualifyingTableBody(qualifyingResults, results);
@@ -275,43 +309,108 @@ function createQualifyingResultsTable(qualifyingResults, results) {
 }
 
 function createTop3RacersTable(top3Racers, results) {
+    console.log(top3Racers);
+    console.log(results);
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver"];
-    const thead = createTableHeaders(headers);
+    const sortMapping = {
+        "Position": "position",
+        "Driver": "driver.surname",
+    };
+
+    // Create headers with sorting functionality
+    const thead = createTableHeaders(headers, sortMapping, top3Racers, (sortedData) => {
+        const newTbody = createTop3RacersTableBody(sortedData, results);
+        table.replaceChild(newTbody, table.querySelector("tbody"));
+    });
+
     table.appendChild(thead);
 
     const tbody = createTop3RacersTableBody(top3Racers, results);
     table.appendChild(tbody);
 
     return table;
-
 }
 
 function createFinalResultsTable(finalResults, results) {
-
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Position", "Driver", "Constructor", "Laps", "Points"];
-    const thead = createTableHeaders(headers);
+    const sortMapping = {
+        "Position": "position",
+        "Driver": "driver.surname",
+        "Constructor": "constructor.name",
+        "Laps": "laps",
+        "Points": "points",
+    };
+
+    const thead = createTableHeaders(headers, sortMapping, finalResults, (sortedData) => {
+        const newTbody = createFinalResultsTableBody(sortedData, results);
+        table.replaceChild(newTbody, table.querySelector("tbody"));
+    });
+
     table.appendChild(thead);
 
     const tbody = createFinalResultsTableBody(finalResults, results);
     table.appendChild(tbody);
 
     return table;
-
 }
 
-function createTableHeaders(headers) {
+
+function createPopUpTableHeaders(headers) {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
     headers.forEach(headerText => {
         const th = document.createElement("th");
         th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    return thead;
+}
+
+function createTableHeaders(headers, sortMapping, data, renderCallback) {
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    headers.forEach((headerText) => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+
+        if (sortMapping[headerText]) {
+            th.classList.add("sortable");
+            th.dataset.sortKey = sortMapping[headerText];
+            th.dataset.sortOrder = "asc"; // Default sort order
+
+            th.addEventListener("click", () => {
+                const sortKey = th.dataset.sortKey;
+                const order = th.dataset.sortOrder;
+
+                // Toggle sort order
+                th.dataset.sortOrder = order === "asc" ? "desc" : "asc";
+
+                // Remove active class from all headers
+                const allHeaders = th.parentNode.querySelectorAll(".sortable");
+                allHeaders.forEach(header => {
+                    header.classList.remove("active", "asc", "desc");
+                });
+
+                // Add active class to the clicked header
+                th.classList.add("active");
+                th.classList.add(order); // Add 'asc' or 'desc' class
+
+                // Sort data and re-render the table
+                const sortedData = sortData([...data], sortKey, order);
+                renderCallback(sortedData);
+            });
+        }
+
         headerRow.appendChild(th);
     });
 
@@ -339,7 +438,7 @@ function createQualifyingTableBody(qualifyingResults, results) {
 
         if (isFavorite("drivers", result.driver.id)) {
             const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverHeartIcon.className = "heart icon red heart-icon";
             driverCell.appendChild(driverHeartIcon);
         }
         row.appendChild(driverCell);
@@ -363,7 +462,6 @@ function createQualifyingTableBody(qualifyingResults, results) {
 
         row.appendChild(constructorCell);
 
-        // Add Q1, Q2, and Q3 Cells
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -643,7 +741,7 @@ function createConstructorsTable(constructorResults) {
     table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Round", "Circuit", "Driver", "Position", "Points"];
-    const thead = createTableHeaders(headers);
+    const thead = createPopUpTableHeaders(headers);
     table.appendChild(thead);
 
     const tbody = createConstructorTableBody(constructorResults);
@@ -765,7 +863,7 @@ function createDriversTable(driverResults) {
     table.className = "ui celled striped single line very compact left aligned table";
 
     const headers = ["Round", "Circuit", "Position", "Points"];
-    const thead = createTableHeaders(headers);
+    const thead = createPopUpTableHeaders(headers);
     table.appendChild(thead);
 
     const tbody = createDriversTableBody(driverResults);

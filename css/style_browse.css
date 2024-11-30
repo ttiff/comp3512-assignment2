@@ -204,3 +204,19 @@ main {
     margin-left: 5px;
     font-size: 0.80rem;
 }
+
+.sortable {
+    cursor: pointer;
+}
+
+.sortable.active.asc::after {
+    content: " ▼";
+    color: #007bff;
+    font-size: 0.6em;
+}
+
+.sortable.active.desc::after {
+    content: " ▲";
+    color: #007bff;
+    font-size: 0.6em;
+}

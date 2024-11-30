@@ -201,16 +201,39 @@ function displayRaceDetails(race, results) {
     circuitLink.textContent = race.circuit.name;
     circuitLink.addEventListener("click", (e) => {
         e.preventDefault();
-        displayCircuitPopup(race.circuit.id, race, race.year); // Your popup function
+        displayCircuitPopup(race.circuit.id, race, race.year);
     });
 
     circuitParagraph.appendChild(circuitLabel);
     circuitParagraph.appendChild(circuitLink);
 
-    segment.appendChild(circuitParagraph); // Add the paragraph to the segment
+    segment.appendChild(circuitParagraph);
 
     segment.appendChild(createDetailParagraph("Location", race.circuit.location));
-    segment.appendChild(createDetailParagraph("Country", race.circuit.country));
+
+    const countryParagraph = document.createElement("p");
+    countryParagraph.className = "country-details";
+
+    const countryLabel = document.createElement("span");
+    countryLabel.className = "label-bold";
+    countryLabel.textContent = "Country: ";
+
+    const countryValue = document.createElement("span");
+    countryValue.className = "country-name";
+    countryValue.textContent = ` ${race.circuit.country}`;
+
+    const countryCode = getCountryCodeByCountry(race.circuit.country);
+    const flagImg = document.createElement("img");
+    flagImg.className = "country-flag";
+    flagImg.src = getFlagUrl(countryCode);
+    flagImg.alt = `${race.circuit.country} flag`;
+
+    countryParagraph.appendChild(countryLabel);
+    countryParagraph.appendChild(countryValue);
+    countryParagraph.appendChild(flagImg);
+
+    segment.appendChild(countryParagraph);
+
     segment.appendChild(createDetailParagraph("Date of Race", race.date));
 
     const infoLink = createInfoLink("Race Information", race.url);
@@ -723,7 +746,30 @@ function createConstructorDetails(constructor, constructorDetails, targetElement
     detailsContainer.appendChild(title);
 
     detailsContainer.appendChild(createDetailParagraph("Name", constructorDetails.name));
-    detailsContainer.appendChild(createDetailParagraph("Nationality", constructorDetails.nationality));
+
+    const countryParagraph = document.createElement("p");
+    countryParagraph.className = "country-details";
+
+    const countryLabel = document.createElement("span");
+    countryLabel.className = "label-bold";
+    countryLabel.textContent = "Nationality: ";
+
+    const countryValue = document.createElement("span");
+    countryValue.className = "country-name";
+    countryValue.textContent = ` ${constructorDetails.nationality}`;
+
+    // Get the country code and flag URL
+    const countryCode = getCountryCodeByNationality(constructorDetails.nationality);
+    const flagImg = document.createElement("img");
+    flagImg.className = "country-flag";
+    flagImg.src = getFlagUrl(countryCode);
+    flagImg.alt = `${constructorDetails.nationality} flag`;
+
+    countryParagraph.appendChild(countryLabel);
+    countryParagraph.appendChild(countryValue);
+    countryParagraph.appendChild(flagImg);
+
+    detailsContainer.appendChild(countryParagraph);
 
     const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
     detailsContainer.appendChild(infoLink);
@@ -809,6 +855,16 @@ function createDriverDetails(driver, driverDetails, targetElement, raceId) {
     const segment = document.createElement("div");
     segment.className = "ui segment driver-details-container";
 
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "driver-image";
+
+    const image = document.createElement("img");
+    image.src = '../img/profile.png';
+    image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
+    imageContainer.appendChild(image);
+
+    segment.appendChild(imageContainer);
+
     const favoriteIcon = document.createElement("i");
     const driverId = driverDetails.driverId;
 
@@ -844,7 +900,32 @@ function createDriverDetails(driver, driverDetails, targetElement, raceId) {
     detailsContainer.appendChild(title);
 
     detailsContainer.appendChild(createDetailParagraph("Name", `${driverDetails.forename} ${driverDetails.surname}`));
-    detailsContainer.appendChild(createDetailParagraph("Nationality", driverDetails.nationality));
+
+    const countryParagraph = document.createElement("p");
+    countryParagraph.className = "country-details";
+
+    const countryLabel = document.createElement("span");
+    countryLabel.className = "label-bold";
+    countryLabel.textContent = "Nationality: ";
+
+    const countryValue = document.createElement("span");
+    countryValue.className = "country-name";
+    countryValue.textContent = ` ${driverDetails.nationality}`;
+
+    // Get the country code and flag URL
+    const countryCode = getCountryCodeByNationality(driverDetails.nationality);
+    const flagImg = document.createElement("img");
+    flagImg.className = "country-flag";
+    flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
+    flagImg.alt = `${driverDetails.nationality} flag`;
+
+    countryParagraph.appendChild(countryLabel);
+    countryParagraph.appendChild(countryValue);
+    countryParagraph.appendChild(flagImg);
+
+    detailsContainer.appendChild(countryParagraph);
+
+
     detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driverDetails.dob)));
 
     const infoLink = createInfoLink("Driver Biography", driverDetails.url);
@@ -983,7 +1064,31 @@ function createCircuitDetails(driver, targetElement) {
 
     detailsContainer.appendChild(createDetailParagraph("Name", driver.circuit.name));
     detailsContainer.appendChild(createDetailParagraph("Location", driver.circuit.location));
-    detailsContainer.appendChild(createDetailParagraph("Country", driver.circuit.country));
+
+    const countryParagraph = document.createElement("p");
+    countryParagraph.className = "country-details";
+
+    const countryLabel = document.createElement("span");
+    countryLabel.className = "label-bold";
+    countryLabel.textContent = "Country: ";
+
+    const countryValue = document.createElement("span");
+    countryValue.className = "country-name";
+    countryValue.textContent = ` ${driver.circuit.country}`;
+
+    const countryCode = getCountryCodeByCountry(driver.circuit.country);
+    const flagImg = document.createElement("img");
+    flagImg.className = "country-flag";
+    flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
+    flagImg.alt = `${driver.circuit.country} flag`;
+
+    countryParagraph.appendChild(countryLabel);
+    countryParagraph.appendChild(countryValue);
+    countryParagraph.appendChild(flagImg);
+
+    detailsContainer.appendChild(countryParagraph);
+
+
     const infoLink = createInfoLink("Circuit Biography", driver.circuit.url);
     detailsContainer.appendChild(infoLink);
 
@@ -999,4 +1104,74 @@ function updateRaceTables(raceId) {
     displayQualifyResults(raceId, qualifyingResults, results);
     displayTop3Racers(raceId, results);
     displayFinalResults(raceId, results);
+}
+
+function getFlagUrl(countryCode) {
+    return `https://flagcdn.com/w40/${countryCode}.png`;
+}
+
+function getCountryCodeByCountry(country) {
+    const countryCodes = {
+        'Bahrain': 'bh',
+        'Saudi Arabia': 'sa',
+        'Australia': 'au',
+        'Italy': 'it',
+        'USA': 'us',
+        'Spain': 'es',
+        'Monaco': 'mc',
+        'Azerbaijan': 'az',
+        'Canada': 'ca',
+        'UK': 'gb',
+        'Austria': 'at',
+        'France': 'fr',
+        'Hungary': 'hu',
+        'Belgium': 'be',
+        'Netherlands': 'nl',
+        'Singapore': 'sg',
+        'Japan': 'jp',
+        'Mexico': 'mx',
+        'Brazil': 'br',
+        'UAE': 'ae',
+        'Germany': 'de',
+        'Switzerland': 'ch',
+        'Thailand': 'th',
+        'China': 'cn',
+        'Denmark': 'dk',
+        'Finland': 'fi',
+        'Japan': 'jp',
+        'South Africa': 'za',
+        'India': 'in'
+    };
+
+    const defaultFlag = 'un';
+
+    return countryCodes[country] || defaultFlag;
+}
+
+
+function getCountryCodeByNationality(nationality) {
+    const nationalityCodes = {
+        'Monegasque': 'mc',
+        'Spanish': 'es',
+        'British': 'gb',
+        'Danish': 'dk',
+        'Finnish': 'fi',
+        'French': 'fr',
+        'Japanese': 'jp',
+        'Chinese': 'cn',
+        'German': 'de',
+        'Canadian': 'ca',
+        'Thai': 'th',
+        'Australian': 'au',
+        'Mexican': 'mx',
+        'Dutch': 'nl',
+        'Swiss': 'ch',
+        'Italian': 'it',
+        'American': 'us',
+        'Austrian': 'at'
+    };
+
+    const defaultFlag = 'un';
+
+    return nationalityCodes[nationality] || defaultFlag;
 }

@@ -220,3 +220,27 @@ main {
     color: #007bff;
     font-size: 0.6em;
 }
+
+
+.country-details {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.label-bold {
+    font-weight: bold;
+    margin-right: 3px;
+}
+
+.country-name {
+    margin-right: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.country-flag {
+    width: 20px;
+    height: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

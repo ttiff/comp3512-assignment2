@@ -1,6 +1,10 @@
 import { createNavigationBar, switchStylesheet } from "./script.js";
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
 
+export let races = null;
+export let qualifyingResults = null;
+export let results = null;
+
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing browse view content
@@ -21,10 +25,10 @@ export async function renderRaces(seasonYear) {
             fetchAndStoreData(resultsUrl)
         ]);
 
-        const races = resultsArray[0];
-        const qualifyingResults = resultsArray[1];
-        const results = resultsArray[2];
 
+        races = resultsArray[0];
+        qualifyingResults = resultsArray[1];
+        results = resultsArray[2];
 
         if (races) {
             renderRaceList(raceGrid, races, qualifyingResults, results);
@@ -167,6 +171,8 @@ function createRaceListColumn(parent, seasonYear) {
 //         displayFinalResults(race.id, results);
 //     });
 // }
+
+
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
@@ -187,7 +193,16 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
 
     const meta = document.createElement("div");
     meta.className = "meta";
-    meta.textContent = race.name;
+
+    const raceName = document.createElement("span");
+    raceName.textContent = race.name;
+    meta.appendChild(raceName);
+
+    if (isFavorite("circuits", race.id)) {
+        const raceHeartIcon = document.createElement("i");
+        raceHeartIcon.className = "heart icon red heart-icon";
+        meta.appendChild(raceHeartIcon);
+    }
 
     contentDiv.appendChild(meta);
 
@@ -204,10 +219,12 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     resultsButton.addEventListener("click", () => {
         displayRaceDetails(race, results);
         displayQualifyResults(race.id, qualifyingResults, results);
+        console.log(race.id)
         displayTop3Racers(race.id, results);
         displayFinalResults(race.id, results);
     });
 }
+
 
 
 function renderRaceList(raceGrid, races, qualifyingResults, results) {
@@ -1021,12 +1038,54 @@ function displayCircuitPopup(id, race, season) {
     circuitPopup.style.display = "block";
 
 }
+
 function createCircuitDetails(driver, targetElement) {
+    console.log("Circuit Details:", driver);
+    console.log("Circuit ID:", driver.id);
+
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
     const segment = document.createElement("div");
     segment.className = "ui segment driver-details-container";
+
+
+    const favoriteIcon = document.createElement("i");
+    const circuitId = driver.id;
+    console.log("Constructor ID:", circuitId);
+
+    favoriteIcon.className = isFavorite("constructors", circuitId)
+        ? "heart icon red heart-icon"
+        : "heart outline icon heart-icon";
+
+    favoriteIcon.addEventListener("click", () => {
+        console.log("Toggling favorite for race ID:", circuitId);
+        toggleFavorite("circuits", circuitId);
+
+        // Immediately update the icon
+        const isNowFavorite = isFavorite("circuits", circuitId);
+        console.log("Is now favorite:", isNowFavorite);
+        favoriteIcon.className = isNowFavorite
+            ? "heart icon red heart-icon"
+            : "heart outline icon heart-icon";
+
+        // Re-render only the race list (left column)
+        const raceGrid = document.querySelector("#race-grid");
+        raceGrid.innerHTML = ""; // Clear race grid
+        renderRaceList(raceGrid, races, qualifyingResults, results); // Re-render races
+
+        // Re-display the current race details
+        displayRaceDetails(driver, results); // Replace `driver` with the specific race object
+        displayQualifyResults(driver.id, qualifyingResults, results);
+        displayTop3Racers(driver.id, results);
+        displayFinalResults(driver.id, results);
+    });
+
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "favorite-icon-wrapper";
+    iconWrapper.appendChild(favoriteIcon);
+
+    segment.appendChild(iconWrapper);
 
     const imageContainer = document.createElement("div");
     imageContainer.className = "driver-image";
@@ -1055,5 +1114,4 @@ function createCircuitDetails(driver, targetElement) {
     column.appendChild(segment);
 
     targetElement.appendChild(column);
-
 }

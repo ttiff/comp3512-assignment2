@@ -77,102 +77,7 @@ function createRaceListColumn(parent, seasonYear) {
     return raceGrid;
 }
 
-// // Function to create each race card
-// function createRaceCard(raceGrid, race, qualifyingResults, results) {
-//     const raceColumn = document.createElement("div");
-//     raceColumn.className = "column";
-//     raceGrid.appendChild(raceColumn);
-
-//     const card = document.createElement("div");
-//     card.className = "ui card";
-//     raceColumn.appendChild(card);
-
-//     const contentDiv = document.createElement("div");
-//     contentDiv.className = "content";
-//     card.appendChild(contentDiv);
-
-//     const raceHeader = document.createElement("div");
-//     raceHeader.className = "header";
-//     raceHeader.textContent = `Round ${race.round}`;
-//     contentDiv.appendChild(raceHeader);
-
-//     const meta = document.createElement("div");
-//     meta.className = "meta";
-//     meta.textContent = race.name;
-//     contentDiv.appendChild(meta);
-
-//     const extraContent = document.createElement("div");
-//     extraContent.className = "extra content";
-//     card.appendChild(extraContent);
-
-//     const resultsButton = document.createElement("a");
-//     resultsButton.className = "ui tiny button fluid";
-//     resultsButton.href = "#";
-//     resultsButton.textContent = "Results";
-//     extraContent.appendChild(resultsButton);
-
-//     resultsButton.addEventListener("click", () => {
-//         displayRaceDetails(race, results);
-//         displayQualifyResults(race.id, qualifyingResults, results);
-//         displayTop3Racers(race.id, results);
-//         displayFinalResults(race.id, results);
-//     });
-// }
-
-// function createRaceCard(raceGrid, race, qualifyingResults, results) {
-//     const raceColumn = document.createElement("div");
-//     raceColumn.className = "column";
-//     raceGrid.appendChild(raceColumn);
-
-//     const card = document.createElement("div");
-//     card.className = "ui card";
-//     raceColumn.appendChild(card);
-
-//     const contentDiv = document.createElement("div");
-//     contentDiv.className = "content";
-//     card.appendChild(contentDiv);
-
-//     const raceHeader = document.createElement("div");
-//     raceHeader.className = "header";
-//     raceHeader.textContent = `Round ${race.round}`;
-//     contentDiv.appendChild(raceHeader);
-
-//     const meta = document.createElement("div");
-//     meta.className = "meta";
-//     meta.textContent = race.name;
-
-//     // Add heart icon for favorite circuit
-//     const heartIcon = document.createElement("i");
-//     heartIcon.className = `heart icon ${isFavorite("circuits", race.circuit.id) ? "red" : ""}`;
-//     heartIcon.style.cursor = "pointer";
-
-//     heartIcon.addEventListener("click", () => {
-//         const updatedFavorites = toggleFavorite("circuits", race.circuit.id);
-//         heartIcon.classList.toggle("red", isFavorite("circuits", race.circuit.id));
-//     });
-
-//     meta.appendChild(heartIcon);
-//     contentDiv.appendChild(meta);
-
-//     const extraContent = document.createElement("div");
-//     extraContent.className = "extra content";
-//     card.appendChild(extraContent);
-
-//     const resultsButton = document.createElement("a");
-//     resultsButton.className = "ui tiny button fluid";
-//     resultsButton.href = "#";
-//     resultsButton.textContent = "Results";
-//     extraContent.appendChild(resultsButton);
-
-//     resultsButton.addEventListener("click", () => {
-//         displayRaceDetails(race, results);
-//         displayQualifyResults(race.id, qualifyingResults, results);
-//         displayTop3Racers(race.id, results);
-//         displayFinalResults(race.id, results);
-//     });
-// }
-
-
+// Function to create each race card
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
@@ -415,27 +320,6 @@ function createTableHeaders(headers) {
     return thead;
 }
 
-
-// function createQualifyingTableBody(qualifyingResults, results) {
-//     const tbody = document.createElement("tbody");
-
-//     qualifyingResults.forEach(result => {
-//         const row = document.createElement("tr");
-
-//         row.appendChild(createCell(result.position));
-//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-//         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
-
-//         row.appendChild(createCell(result.q1));
-//         row.appendChild(createCell(result.q2));
-//         row.appendChild(createCell(result.q3));
-
-//         tbody.appendChild(row);
-//     });
-
-//     return tbody;
-// }
-
 function createQualifyingTableBody(qualifyingResults, results) {
     const tbody = document.createElement("tbody");
 
@@ -468,13 +352,13 @@ function createQualifyingTableBody(qualifyingResults, results) {
         constructorLink.textContent = result.constructor.name;
         constructorLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id); // Opens constructor pop-up
+            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id);
         });
         constructorCell.appendChild(constructorLink);
 
         if (isFavorite("constructors", result.constructor.id)) {
             const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverHeartIcon.className = "heart icon red heart-icon";
             constructorCell.appendChild(driverHeartIcon);
         }
 
@@ -491,18 +375,6 @@ function createQualifyingTableBody(qualifyingResults, results) {
     return tbody;
 }
 
-// function createTop3RacersTableBody(top3Racers, results) {
-//     const tbody = document.createElement("tbody");
-//     top3Racers.forEach(result => {
-//         const row = document.createElement("tr");
-//         row.appendChild(createCell(result.position));
-//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-
-//         tbody.appendChild(row)
-//     });
-
-//     return tbody
-// }
 
 function createTop3RacersTableBody(top3Racers, results) {
     const tbody = document.createElement("tbody");
@@ -510,23 +382,21 @@ function createTop3RacersTableBody(top3Racers, results) {
     top3Racers.forEach(result => {
         const row = document.createElement("tr");
 
-        // Add Position Cell
         row.appendChild(createCell(result.position));
 
-        // Add Driver Cell with Link and Heart Icon
         const driverCell = document.createElement("td");
         const driverLink = document.createElement("a");
         driverLink.href = "#";
         driverLink.textContent = `${result.driver.forename} ${result.driver.surname}`;
         driverLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayDriverPopup(result.driver.id, results, result.race.year, result.race.id); // Opens driver pop-up
+            displayDriverPopup(result.driver.id, results, result.race.year, result.race.id);
         });
         driverCell.appendChild(driverLink);
 
         if (isFavorite("drivers", result.driver.id)) {
             const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverHeartIcon.className = "heart icon red heart-icon";
             driverCell.appendChild(driverHeartIcon);
         }
 
@@ -538,35 +408,14 @@ function createTop3RacersTableBody(top3Racers, results) {
     return tbody;
 }
 
-
-// function createFinalResultsTableBody(finalResults, results) {
-//     const tbody = document.createElement("tbody");
-//     finalResults.forEach(result => {
-//         const row = document.createElement("tr");
-//         row.appendChild(createCell(result.position));
-//         row.appendChild(createLinkCell(`${result.driver.forename} ${result.driver.surname}`, "", true, false, result.driver.id, results, result.race.year));
-//         row.appendChild(createLinkCell(result.constructor.name, "#", false, true, result.constructor.id, results, result.race.year));
-
-//         row.appendChild(createCell(result.laps));
-//         row.appendChild(createCell(result.points));
-
-//         tbody.appendChild(row)
-//     });
-
-//     return tbody
-
-// }
-
 function createFinalResultsTableBody(finalResults, results) {
     const tbody = document.createElement("tbody");
 
     finalResults.forEach(result => {
         const row = document.createElement("tr");
 
-        // Add Position Cell
         row.appendChild(createCell(result.position));
 
-        // Add Driver Cell with Link and Heart Icon
         const driverCell = document.createElement("td");
         const driverLink = document.createElement("a");
         driverLink.href = "#";
@@ -580,21 +429,19 @@ function createFinalResultsTableBody(finalResults, results) {
 
         if (isFavorite("drivers", result.driver.id)) {
             const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverHeartIcon.className = "heart icon red heart-icon";
             driverCell.appendChild(driverHeartIcon);
         }
 
-
         row.appendChild(driverCell);
 
-        // Add Constructor Cell with Link and Heart Icon
         const constructorCell = document.createElement("td");
         const constructorLink = document.createElement("a");
         constructorLink.href = "#";
         constructorLink.textContent = result.constructor.name;
         constructorLink.addEventListener("click", (e) => {
             e.preventDefault();
-            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id); // Opens constructor pop-up
+            displayConstructorPopup(result.constructor.id, results, result.race.year, result.race.id);
         });
         constructorCell.appendChild(constructorLink);
 
@@ -606,7 +453,6 @@ function createFinalResultsTableBody(finalResults, results) {
 
         row.appendChild(constructorCell);
 
-        // Add Laps and Points Cells
         row.appendChild(createCell(result.laps));
         row.appendChild(createCell(result.points));
 
@@ -655,42 +501,6 @@ function createCell(textContent) {
     cell.textContent = textContent;
     return cell;
 }
-
-function createLinkCell(
-    textContent,
-    href,
-    isDriver = false,
-    isConstructor = false,
-    id,
-    results,
-    season
-) {
-    const cell = document.createElement("td");
-    const link = document.createElement("a");
-    link.className = "underline-link";
-    link.href = href;
-    link.textContent = textContent;
-
-    // Driver link
-    if (isDriver) {
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            displayDriverPopup(id, results, season);
-        });
-    }
-
-    // Constructor link
-    if (isConstructor) {
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            displayConstructorPopup(id, results, season);
-        });
-    }
-
-    cell.appendChild(link);
-    return cell;
-}
-
 
 // Function to create a detail paragraph
 function createDetailParagraph(labelText, valueText) {
@@ -741,10 +551,8 @@ async function displayConstructorPopup(id, constructors, season, raceid) {
             const overlay = document.querySelector("#modal-overlay");
             overlay.style.display = "block";
 
-            // Create and display constructor details
             createConstructorDetails(filteredResults, constructorDetails, constructorPopup, raceid);
 
-            // Add a close button (top-right)
             const closeButtonTop = document.createElement("button");
             closeButtonTop.className = "close-button-top";
             closeButtonTop.textContent = "X";
@@ -754,7 +562,6 @@ async function displayConstructorPopup(id, constructors, season, raceid) {
             });
             constructorPopup.appendChild(closeButtonTop);
 
-            // Add a regular close button (bottom)
             const closeButton = document.createElement("button");
             closeButton.className = "ui button";
             closeButton.textContent = "Close";

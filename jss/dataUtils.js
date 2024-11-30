@@ -1,14 +1,14 @@
 
 export function updateStorage(data) {
-    sessionStorage.setItem('dashboardData', JSON.stringify(data));
+    localStorage.setItem('dashboardData', JSON.stringify(data));
 }
 
 export function retrieveStorage() {
-    return JSON.parse(sessionStorage.getItem('dashboardData')) || {};
+    return JSON.parse(localStorage.getItem('dashboardData')) || {};
 }
 
 export function removeStorage() {
-    sessionStorage.removeItem('dashboardData');
+    localStorage.removeItem('dashboardData');
 }
 
 export async function fetchAndStoreData(url) {
@@ -21,7 +21,7 @@ export async function fetchAndStoreData(url) {
             if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
             const result = await response.json();
 
-            // Add fetched data to the storage object and update session storage
+            // Add fetched data to the storage object and update local storage
             data[url] = result;
             updateStorage(data);
         } catch (error) {

@@ -46,9 +46,9 @@ export async function renderRaces(seasonYear) {
         ]);
 
 
-        races = resultsArray[0];
-        qualifyingResults = resultsArray[1];
-        results = resultsArray[2];
+        races = sortData(resultsArray[0], "round");
+        qualifyingResults = sortData(resultsArray[1], "position");
+        results = sortData(resultsArray[2], "position");
 
         if (races) {
             renderRaceList(raceGrid, races, qualifyingResults, results);

@@ -722,14 +722,14 @@ async function displayConstructorPopup(id, constructors, season, raceid) {
                 overlay.style.display = "none";
             });
             constructorPopup.appendChild(closeButtonTop);
-
             const closeButton = document.createElement("button");
-            closeButton.className = "ui button";
+            closeButton.className = "ui button close-button";
             closeButton.textContent = "Close";
             closeButton.addEventListener("click", () => {
                 constructorPopup.style.display = "none";
                 overlay.style.display = "none";
             });
+
             constructorPopup.appendChild(closeButton);
 
             constructorPopup.style.display = "block";
@@ -869,14 +869,14 @@ async function displayDriverPopup(id, constructors, season, raceid) {
             });
             driverPopup.appendChild(closeButtonTop);
 
-            // Add a regular close button (bottom)
             const closeButton = document.createElement("button");
-            closeButton.className = "ui button";
+            closeButton.className = "ui button close-button";
             closeButton.textContent = "Close";
             closeButton.addEventListener("click", () => {
                 driverPopup.style.display = "none";
                 overlay.style.display = "none";
             });
+
             driverPopup.appendChild(closeButton);
 
             driverPopup.style.display = "block";
@@ -1027,9 +1027,8 @@ function displayCircuitPopup(id, race, season) {
     });
     circuitPopup.appendChild(closeButtonTop);
 
-    // Add a regular close button (bottom)
     const closeButton = document.createElement("button");
-    closeButton.className = "ui button circuit-close-button";
+    closeButton.className = "ui button close-button";
     closeButton.textContent = "Close";
     closeButton.addEventListener("click", () => {
         circuitPopup.style.display = "none";

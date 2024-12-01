@@ -154,6 +154,23 @@ main {
     transform: scale(1.1);
 }
 
+.ui.button.close-button {
+    position: absolute;
+    right: 20px;
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+
+.ui.button.close-button:hover {
+    background-color: #b22222;
+}
+
+
 .driver-details-container {
     display: flex;
     align-items: flex-start;
@@ -309,16 +326,13 @@ main {
     font-size: 1.5em;
     cursor: pointer;
     color: #333;
-    /* Adjust for visibility */
     font-weight: bold;
 }
 
 #favorites-popup .close-button-top:hover {
     color: red;
-    /* Highlight on hover */
 }
 
 .item .fa-heart {
     margin-right: 8px;
-    /* Adjust space as needed */
 }

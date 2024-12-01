@@ -74,7 +74,7 @@ main {
     transform: translate(-50%, -50%);
     background: white;
     border: 1px solid #ccc;
-    padding: 20px;
+    padding: 25px;
     z-index: 1000;
     display: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -92,7 +92,7 @@ main {
     transform: translate(-50%, -50%);
     background: white;
     border: 1px solid #ccc;
-    padding: 20px;
+    padding: 25px;
     z-index: 1000;
     display: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -110,7 +110,7 @@ main {
     transform: translate(-50%, -50%);
     background: white;
     border: 1px solid #ccc;
-    padding: 20px;
+    padding: 25px;
     z-index: 1000;
     display: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -135,27 +135,22 @@ main {
 
 .close-button-top {
     position: absolute;
-    top: 4px;
-    right: 5px;
-    background: #3b3e43;
-    border: 1px solid #3b3e43;
-    font-size: 0.8rem;
-    font-weight: bold;
+    top: 3px;
+    right: 2px;
+    background: none;
+    border: none;
+    font-size: 1.0rem;
     cursor: pointer;
-    color: white;
-    width: 17px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    color: #333;
+    font-weight: bold;
     transition: transform 0.2s, background-color 0.2s;
 }
 
 .close-button-top:hover {
-    background: #b22222;
-    border: 1px solid #b22222;
-    color: white;
+    color: red;
+    /* background: #b22222;
+    border: 1px solid #b22222; */
+    /* color: white; */
     transform: scale(1.1);
 }
 
@@ -272,4 +267,58 @@ main {
     margin-left: 5px;
     vertical-align: middle;
     display: inline-block;
+}
+
+#favorites-popup {
+    display: none;
+    /* Hide the popup initially */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1100;
+    width: 80%;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+#favorites-popup h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#favorites-popup ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+#favorites-popup li {
+    margin-bottom: 5px;
+}
+
+#favorites-popup .close-button-top {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #333;
+    /* Adjust for visibility */
+    font-weight: bold;
+}
+
+#favorites-popup .close-button-top:hover {
+    color: red;
+    /* Highlight on hover */
+}
+
+.item .fa-heart {
+    margin-right: 8px;
+    /* Adjust space as needed */
 }

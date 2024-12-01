@@ -1216,3 +1216,50 @@ function getCountryCodeByNationality(nationality) {
 
     return nationalityCodes[nationality] || defaultFlag;
 }
+
+export function displayFavoritesPopup() {
+    const favoritesPopup = document.querySelector("#favorites-popup");
+    const overlay = document.querySelector("#modal-overlay");
+
+    favoritesPopup.innerHTML = "";
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "close-button-top";
+    closeButton.textContent = "✖";
+    closeButton.addEventListener("click", () => {
+        favoritesPopup.style.display = "none";
+        overlay.style.display = "none";
+    });
+    favoritesPopup.appendChild(closeButton);
+
+    const favorites = getFavorites();
+
+    addFavoritesSection(favoritesPopup, "Circuits", favorites.circuits);
+
+    addFavoritesSection(favoritesPopup, "Drivers", favorites.drivers);
+
+    addFavoritesSection(favoritesPopup, "Constructors", favorites.constructors);
+
+    favoritesPopup.style.display = "block";
+    overlay.style.display = "block";
+}
+
+function addFavoritesSection(container, title, items) {
+    const sectionHeader = document.createElement("h3");
+    sectionHeader.textContent = title;
+    container.appendChild(sectionHeader);
+
+    const list = document.createElement("ul");
+    if (items.length === 0) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.textContent = `No ${title.toLowerCase()} favorited.`;
+        container.appendChild(emptyMessage);
+    } else {
+        items.forEach(item => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `ID: ${item}`;
+            list.appendChild(listItem);
+        });
+        container.appendChild(list);
+    }
+}

@@ -1,4 +1,4 @@
-import { renderRaces } from "./browseView.js";
+import { renderRaces, displayFavoritesPopup } from "./browseView.js";
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage } from './dataUtils.js';
 
 
@@ -12,7 +12,11 @@ export function createNavigationBar(switchViewCallback) {
     const homeLink = document.createElement("a");
     homeLink.className = "item";
     homeLink.href = "#";
-    homeLink.innerHTML = '<i class="fas fa-home"></i>';
+
+    const homeIcon = document.createElement("i");
+    homeIcon.className = "fas fa-home";
+    homeLink.appendChild(homeIcon);
+
     homeLink.addEventListener("click", () => {
         switchViewCallback("home");
     });
@@ -20,10 +24,32 @@ export function createNavigationBar(switchViewCallback) {
     const githubLink = document.createElement("a");
     githubLink.className = "item";
     githubLink.href = "https://github.com/ttiff/comp3512-assignment2";
-    githubLink.innerHTML = '<i class="fab fa-github"></i>';
+
+    const githubIcon = document.createElement("i");
+    githubIcon.className = "fab fa-github";
+    githubLink.appendChild(githubIcon);
+
+
+    const favoritesButton = document.createElement("a");
+    favoritesButton.className = "item";
+    favoritesButton.href = "#";
+
+    const icon = document.createElement("i");
+    icon.className = "fas fa-heart";
+    favoritesButton.appendChild(icon);
+
+    const text = document.createTextNode(" Favorites");
+    favoritesButton.appendChild(text);
+
+    favoritesButton.addEventListener("click", () => {
+        displayFavoritesPopup();
+    });
+
+    menuContainer.appendChild(favoritesButton);
 
     menuContainer.appendChild(homeLink);
     menuContainer.appendChild(githubLink);
+    menuContainer.appendChild(favoritesButton);
     headerContainer.appendChild(menuContainer);
 }
 

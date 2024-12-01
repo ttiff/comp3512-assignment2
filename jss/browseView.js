@@ -696,9 +696,11 @@ function createInfoLink(linkText, url) {
 async function displayConstructorPopup(id, constructors, season, raceid) {
 
     // Filter constructor data for the given id and season
-    const filteredResults = constructors.filter(
+    let filteredResults = constructors.filter(
         c => c.constructor.id === id && c.race.year === season
     );
+
+    filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
     try {
         // Await the result of fetchConstructorDetails
@@ -838,9 +840,11 @@ function createConstructorsTable(constructorResults) {
 async function displayDriverPopup(id, constructors, season, raceid) {
 
     // Filter constructor data for the given id and season
-    const filteredResults = constructors.filter(
+    let filteredResults = constructors.filter(
         c => c.driver.id === id && c.race.year === season
     );
+
+    filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
     try {
         // Await the result of fetchConstructorDetails

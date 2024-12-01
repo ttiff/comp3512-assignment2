@@ -898,7 +898,7 @@ function createDriverDetails(driver, driverDetails, targetElement, raceId) {
     imageContainer.className = "driver-image";
 
     const image = document.createElement("img");
-    image.src = '../img/profile.png';
+    image.src = `https://placehold.co/300x200?text=${driverDetails.forename || "Driver"}+${driverDetails.surname || "Image"}`;
     image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
     imageContainer.appendChild(image);
 
@@ -1089,7 +1089,9 @@ function createCircuitDetails(driver, targetElement) {
     imageContainer.className = "driver-image";
 
     const image = document.createElement("img");
-    image.src = '../img/profile.png';
+    // image.src = '../img/profile.png';
+    // image.src = `https://placehold.co/text=${driver.circuit.name || "Circuit"}`;
+    image.src = `https://placehold.co/300x200?text=${driver.circuit.name || "Circuit"}`;
     imageContainer.appendChild(image);
 
     segment.appendChild(imageContainer);

@@ -180,6 +180,13 @@ select {
     display: none;
 }
 
-.item .fa-heart {
+.ui.dark.menu a.item {
+    color: #ffffff !important;
+    font-size: 1.1em;
+    padding: 15px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.ui.dark.menu a.item i {
     margin-right: 8px;
 }

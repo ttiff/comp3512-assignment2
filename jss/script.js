@@ -17,6 +17,9 @@ export function createNavigationBar(switchViewCallback) {
     homeIcon.className = "fas fa-home";
     homeLink.appendChild(homeIcon);
 
+    const homeText = document.createTextNode(" Home");
+    homeLink.appendChild(homeText);
+
     homeLink.addEventListener("click", () => {
         switchViewCallback("home");
     });
@@ -29,29 +32,31 @@ export function createNavigationBar(switchViewCallback) {
     githubIcon.className = "fab fa-github";
     githubLink.appendChild(githubIcon);
 
+    const githubText = document.createTextNode(" GitHub");
+    githubLink.appendChild(githubText);
 
     const favoritesButton = document.createElement("a");
     favoritesButton.className = "item";
     favoritesButton.href = "#";
 
-    const icon = document.createElement("i");
-    icon.className = "fas fa-heart";
-    favoritesButton.appendChild(icon);
+    const favoritesIcon = document.createElement("i");
+    favoritesIcon.className = "fas fa-heart";
+    favoritesButton.appendChild(favoritesIcon);
 
-    const text = document.createTextNode(" Favorites");
-    favoritesButton.appendChild(text);
+    const favoritesText = document.createTextNode(" Favorites");
+    favoritesButton.appendChild(favoritesText);
 
     favoritesButton.addEventListener("click", () => {
         displayFavoritesPopup();
     });
 
-    menuContainer.appendChild(favoritesButton);
-
+    // Append all items to the menu container
     menuContainer.appendChild(homeLink);
     menuContainer.appendChild(githubLink);
     menuContainer.appendChild(favoritesButton);
     headerContainer.appendChild(menuContainer);
 }
+
 
 
 function switchView(view) {

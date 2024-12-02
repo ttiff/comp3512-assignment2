@@ -1220,6 +1220,52 @@ function getCountryCodeByNationality(nationality) {
     return nationalityCodes[nationality] || defaultFlag;
 }
 
+
+function createLookup(results) {
+    const lookups = {
+        circuits: {},
+        drivers: {},
+        constructors: {},
+    };
+
+    results.forEach(result => {
+        if (result.race && result.race.id && result.race.name) {
+            lookups.circuits[result.race.id] = result.race.name;
+        }
+
+        if (result.driver && result.driver.id && result.driver.forename && result.driver.surname) {
+            lookups.drivers[result.driver.id] = `${result.driver.forename} ${result.driver.surname}`;
+        }
+
+        if (result.constructor && result.constructor.id && result.constructor.name) {
+            lookups.constructors[result.constructor.id] = result.constructor.name;
+        }
+    });
+
+    return lookups;
+}
+
+function addFavoritesSection(container, title, items, lookup) {
+    const sectionHeader = document.createElement("h3");
+    sectionHeader.textContent = title;
+    container.appendChild(sectionHeader);
+
+    const list = document.createElement("ul");
+    if (items.length === 0) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.textContent = `No ${title.toLowerCase()} favorited.`;
+        container.appendChild(emptyMessage);
+    } else {
+        items.forEach(id => {
+            const listItem = document.createElement("li");
+            listItem.textContent = lookup[id] || `ID: ${id} (unknown name)`;
+            list.appendChild(listItem);
+        });
+        container.appendChild(list);
+    }
+}
+
+
 export function displayFavoritesPopup() {
     const favoritesPopup = document.querySelector("#favorites-popup");
     const overlay = document.querySelector("#modal-overlay");
@@ -1237,32 +1283,18 @@ export function displayFavoritesPopup() {
 
     const favorites = getFavorites();
 
-    addFavoritesSection(favoritesPopup, "Circuits", favorites.circuits);
+    if (!results || results.length === 0) {
+        const noFavoritesMessage = document.createElement("p");
+        noFavoritesMessage.textContent = "You haven't added any favorites yet.";
+        favoritesPopup.appendChild(noFavoritesMessage);
+    } else {
+        const lookups = createLookup(results);
 
-    addFavoritesSection(favoritesPopup, "Drivers", favorites.drivers);
-
-    addFavoritesSection(favoritesPopup, "Constructors", favorites.constructors);
+        addFavoritesSection(favoritesPopup, "Circuits", favorites.circuits, lookups.circuits);
+        addFavoritesSection(favoritesPopup, "Drivers", favorites.drivers, lookups.drivers);
+        addFavoritesSection(favoritesPopup, "Constructors", favorites.constructors, lookups.constructors);
+    }
 
     favoritesPopup.style.display = "block";
     overlay.style.display = "block";
-}
-
-function addFavoritesSection(container, title, items) {
-    const sectionHeader = document.createElement("h3");
-    sectionHeader.textContent = title;
-    container.appendChild(sectionHeader);
-
-    const list = document.createElement("ul");
-    if (items.length === 0) {
-        const emptyMessage = document.createElement("p");
-        emptyMessage.textContent = `No ${title.toLowerCase()} favorited.`;
-        container.appendChild(emptyMessage);
-    } else {
-        items.forEach(item => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `ID: ${item}`;
-            list.appendChild(listItem);
-        });
-        container.appendChild(list);
-    }
 }

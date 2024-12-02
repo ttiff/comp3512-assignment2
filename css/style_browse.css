@@ -333,6 +333,6 @@ main {
     color: red;
 }
 
-.item .fa-heart {
+.ui.dark.menu a.item i {
     margin-right: 8px;
 }

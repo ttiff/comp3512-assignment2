@@ -1,29 +1,9 @@
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
+import { getNestedProperty, sortData } from './utils.js';
 
 export let races = null;
 export let qualifyingResults = null;
 export let results = null;
-
-
-function getNestedProperty(obj, path) {
-    return path.split('.').reduce((acc, key) => acc && acc[key], obj);
-}
-
-function sortData(data, key, order = "asc") {
-    return data.sort((a, b) => {
-        const valA = getNestedProperty(a, key);
-        const valB = getNestedProperty(b, key);
-
-        // Handle strings (case-insensitive)
-        const valueA = typeof valA === "string" ? valA.toLowerCase() : valA;
-        const valueB = typeof valB === "string" ? valB.toLowerCase() : valB;
-
-        if (valueA < valueB) return order === "asc" ? -1 : 1;
-        if (valueA > valueB) return order === "asc" ? 1 : -1;
-        return 0;
-    });
-}
-
 
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");

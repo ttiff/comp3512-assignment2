@@ -1,6 +1,7 @@
 import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
-import { getNestedProperty, sortData } from './utils.js';
+import { getNestedProperty, sortData, getFlagUrl, getCountryCodeByCountry, getCountryCodeByNationality, createDetailParagraph, createInfoLink } from './utils.js';
 import { createConstructorsTable, createDriversTable, createTableHeaders, createPopUpTableHeaders, createQualifyingResultsTable, createTop3RacersTable, createCell, createFinalResultsTable, createQualifyingTableBody, createTop3RacersTableBody, createFinalResultsTableBody, createConstructorTableBody, createDriversTableBody } from './tableUtils.js';
+import { displayConstructorPopup, displayDriverPopup, displayCircuitPopup } from './popupUtils.js';
 
 
 export let races = null;
@@ -79,10 +80,10 @@ function createRaceListColumn(parent, seasonYear) {
     return raceGrid;
 }
 
-// Function to create each race card
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
+    raceColumn.setAttribute("race-id", race.id);
     raceGrid.appendChild(raceColumn);
 
     const card = document.createElement("div");
@@ -105,11 +106,11 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     raceName.textContent = race.name;
     meta.appendChild(raceName);
 
-    if (isFavorite("circuits", race.id)) {
-        const raceHeartIcon = document.createElement("i");
-        raceHeartIcon.className = "heart icon red heart-icon";
-        meta.appendChild(raceHeartIcon);
-    }
+    const raceHeartIcon = document.createElement("i");
+    raceHeartIcon.className = isFavorite("circuits", race.id)
+        ? "heart icon red heart-icon"
+        : "heart outline icon heart-icon";
+    meta.appendChild(raceHeartIcon);
 
     contentDiv.appendChild(meta);
 
@@ -126,15 +127,13 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     resultsButton.addEventListener("click", () => {
         displayRaceDetails(race, results);
         displayQualifyResults(race.id, qualifyingResults, results);
-        console.log(race.id)
         displayTop3Racers(race.id, results);
         displayFinalResults(race.id, results);
     });
 }
 
 
-
-function renderRaceList(raceGrid, races, qualifyingResults, results) {
+export function renderRaceList(raceGrid, races, qualifyingResults, results) {
     races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
 }
 
@@ -156,7 +155,7 @@ function createDetailsColumn(parent, seasonYear) {
 
 // Function to display detailed information for a selected race
 
-function displayRaceDetails(race, results) {
+export function displayRaceDetails(race, results) {
     const detailsColumn = document.querySelector(".eleven.wide.column");
     detailsColumn.textContent = ""; // Clear existing details
 
@@ -223,7 +222,7 @@ function displayRaceDetails(race, results) {
 }
 
 
-function displayQualifyResults(raceId, qualifyingResults, results) {
+export function displayQualifyResults(raceId, qualifyingResults, results) {
     const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
 
     if (filteredResults.length > 0) {
@@ -242,7 +241,7 @@ function displayQualifyResults(raceId, qualifyingResults, results) {
     }
 }
 
-function displayTop3Racers(raceId, results) {
+export function displayTop3Racers(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId && r.position <= 3);
 
     if (filteredResults.length > 0) {
@@ -260,7 +259,7 @@ function displayTop3Racers(raceId, results) {
     }
 }
 
-function displayFinalResults(raceId, results) {
+export function displayFinalResults(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId);
 
     if (filteredResults.length > 0) {
@@ -643,166 +642,166 @@ function createTableContainer(titleText) {
 //     return cell;
 // }
 
-// Function to create a detail paragraph
-function createDetailParagraph(labelText, valueText) {
-    const paragraph = document.createElement("p");
+// // Function to create a detail paragraph
+// function createDetailParagraph(labelText, valueText) {
+//     const paragraph = document.createElement("p");
 
-    const label = document.createElement("span");
-    label.className = "label-bold";
-    label.textContent = `${labelText}: `;
+//     const label = document.createElement("span");
+//     label.className = "label-bold";
+//     label.textContent = `${labelText}: `;
 
-    const value = document.createElement("span");
-    value.textContent = valueText;
+//     const value = document.createElement("span");
+//     value.textContent = valueText;
 
-    paragraph.appendChild(label);
-    paragraph.appendChild(value);
+//     paragraph.appendChild(label);
+//     paragraph.appendChild(value);
 
-    return paragraph;
-}
+//     return paragraph;
+// }
 
-// Function to create a link element
-function createInfoLink(linkText, url) {
-    const paragraph = document.createElement("p");
+// // Function to create a link element
+// function createInfoLink(linkText, url) {
+//     const paragraph = document.createElement("p");
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.textContent = linkText;
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.target = "_blank";
+//     link.textContent = linkText;
 
-    paragraph.appendChild(link);
+//     paragraph.appendChild(link);
 
-    return paragraph;
-}
-
-
-export async function displayConstructorPopup(id, constructors, season, raceid) {
-
-    // Filter constructor data for the given id and season
-    let filteredResults = constructors.filter(
-        c => c.constructor.id === id && c.race.year === season
-    );
-
-    filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
-
-    try {
-        // Await the result of fetchConstructorDetails
-        const constructorDetails = await fetchConstructorDetails(id);
-
-        if (filteredResults.length > 0) {
-            const constructorPopup = document.querySelector("#constructor");
-            constructorPopup.innerHTML = ""; // Clear previous content
-            const overlay = document.querySelector("#modal-overlay");
-            overlay.style.display = "block";
-
-            createConstructorDetails(filteredResults, constructorDetails, constructorPopup, raceid);
-
-            const closeButtonTop = document.createElement("button");
-            closeButtonTop.className = "close-button-top";
-            closeButtonTop.textContent = "X";
-            closeButtonTop.addEventListener("click", () => {
-                constructorPopup.style.display = "none";
-                overlay.style.display = "none";
-            });
-            constructorPopup.appendChild(closeButtonTop);
-            const closeButton = document.createElement("button");
-            closeButton.className = "ui button close-button";
-            closeButton.textContent = "Close";
-            closeButton.addEventListener("click", () => {
-                constructorPopup.style.display = "none";
-                overlay.style.display = "none";
-            });
-
-            constructorPopup.appendChild(closeButton);
-
-            constructorPopup.style.display = "block";
-        } else {
-            console.warn(`No constructor found with ID ${id} for season ${season}`);
-        }
-    } catch (error) {
-        console.error("Error fetching constructor details:", error);
-    }
-}
+//     return paragraph;
+// }
 
 
-function createConstructorDetails(constructor, constructorDetails, targetElement, raceId) {
-    console.log("Constructor Details:", constructorDetails);
-    console.log("Race ID:", raceId);
+// export async function displayConstructorPopup(id, constructors, season, raceid) {
 
-    const column = document.createElement("div");
-    column.className = "twelve wide column";
+//     // Filter constructor data for the given id and season
+//     let filteredResults = constructors.filter(
+//         c => c.constructor.id === id && c.race.year === season
+//     );
 
-    const segment = document.createElement("div");
-    segment.className = "ui segment driver-details-container";
+//     filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
-    const favoriteIcon = document.createElement("i");
-    const constructorId = constructorDetails.constructorId;
+//     try {
+//         // Await the result of fetchConstructorDetails
+//         const constructorDetails = await fetchConstructorDetails(id);
 
-    favoriteIcon.className = isFavorite("constructors", constructorId)
-        ? "heart icon red heart-icon"
-        : "heart outline icon heart-icon";
+//         if (filteredResults.length > 0) {
+//             const constructorPopup = document.querySelector("#constructor");
+//             constructorPopup.innerHTML = ""; // Clear previous content
+//             const overlay = document.querySelector("#modal-overlay");
+//             overlay.style.display = "block";
 
-    favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for constructor ID:", constructorId);
-        toggleFavorite("constructors", constructorId);
+//             createConstructorDetails(filteredResults, constructorDetails, constructorPopup, raceid);
 
-        // Update only the favorite icon state
-        const isNowFavorite = isFavorite("constructors", constructorId);
-        favoriteIcon.className = isNowFavorite
-            ? "heart icon red heart-icon"
-            : "heart outline icon heart-icon";
+//             const closeButtonTop = document.createElement("button");
+//             closeButtonTop.className = "close-button-top";
+//             closeButtonTop.textContent = "X";
+//             closeButtonTop.addEventListener("click", () => {
+//                 constructorPopup.style.display = "none";
+//                 overlay.style.display = "none";
+//             });
+//             constructorPopup.appendChild(closeButtonTop);
+//             const closeButton = document.createElement("button");
+//             closeButton.className = "ui button close-button";
+//             closeButton.textContent = "Close";
+//             closeButton.addEventListener("click", () => {
+//                 constructorPopup.style.display = "none";
+//                 overlay.style.display = "none";
+//             });
 
-        // Update the race details without re-rendering the entire tables
-        updateRaceTables(raceId);
-    });
+//             constructorPopup.appendChild(closeButton);
 
-    const iconWrapper = document.createElement("div");
-    iconWrapper.className = "favorite-icon-wrapper";
-    iconWrapper.appendChild(favoriteIcon);
+//             constructorPopup.style.display = "block";
+//         } else {
+//             console.warn(`No constructor found with ID ${id} for season ${season}`);
+//         }
+//     } catch (error) {
+//         console.error("Error fetching constructor details:", error);
+//     }
+// }
 
-    segment.appendChild(iconWrapper);
 
-    const detailsContainer = document.createElement("div");
-    detailsContainer.className = "driver-details";
+// function createConstructorDetails(constructor, constructorDetails, targetElement, raceId) {
+//     console.log("Constructor Details:", constructorDetails);
+//     console.log("Race ID:", raceId);
 
-    const title = document.createElement("h2");
-    title.textContent = "Constructor Details";
-    detailsContainer.appendChild(title);
+//     const column = document.createElement("div");
+//     column.className = "twelve wide column";
 
-    detailsContainer.appendChild(createDetailParagraph("Name", constructorDetails.name));
+//     const segment = document.createElement("div");
+//     segment.className = "ui segment driver-details-container";
 
-    const countryParagraph = document.createElement("p");
-    countryParagraph.className = "country-details";
+//     const favoriteIcon = document.createElement("i");
+//     const constructorId = constructorDetails.constructorId;
 
-    const countryLabel = document.createElement("span");
-    countryLabel.className = "label-bold";
-    countryLabel.textContent = "Nationality: ";
+//     favoriteIcon.className = isFavorite("constructors", constructorId)
+//         ? "heart icon red heart-icon"
+//         : "heart outline icon heart-icon";
 
-    const countryValue = document.createElement("span");
-    countryValue.className = "country-name";
-    countryValue.textContent = ` ${constructorDetails.nationality}`;
+//     favoriteIcon.addEventListener("click", () => {
+//         console.log("Toggling favorite for constructor ID:", constructorId);
+//         toggleFavorite("constructors", constructorId);
 
-    // Get the country code and flag URL
-    const countryCode = getCountryCodeByNationality(constructorDetails.nationality);
-    const flagImg = document.createElement("img");
-    flagImg.className = "country-flag";
-    flagImg.src = getFlagUrl(countryCode);
-    flagImg.alt = `${constructorDetails.nationality} flag`;
+//         // Update only the favorite icon state
+//         const isNowFavorite = isFavorite("constructors", constructorId);
+//         favoriteIcon.className = isNowFavorite
+//             ? "heart icon red heart-icon"
+//             : "heart outline icon heart-icon";
 
-    countryParagraph.appendChild(countryLabel);
-    countryParagraph.appendChild(countryValue);
-    countryParagraph.appendChild(flagImg);
+//         // Update the race details without re-rendering the entire tables
+//         updateRaceTables(raceId);
+//     });
 
-    detailsContainer.appendChild(countryParagraph);
+//     const iconWrapper = document.createElement("div");
+//     iconWrapper.className = "favorite-icon-wrapper";
+//     iconWrapper.appendChild(favoriteIcon);
 
-    const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
-    detailsContainer.appendChild(infoLink);
+//     segment.appendChild(iconWrapper);
 
-    segment.appendChild(detailsContainer);
-    column.appendChild(segment);
+//     const detailsContainer = document.createElement("div");
+//     detailsContainer.className = "driver-details";
 
-    targetElement.appendChild(column);
-    targetElement.append(createConstructorsTable(constructor));
-}
+//     const title = document.createElement("h2");
+//     title.textContent = "Constructor Details";
+//     detailsContainer.appendChild(title);
+
+//     detailsContainer.appendChild(createDetailParagraph("Name", constructorDetails.name));
+
+//     const countryParagraph = document.createElement("p");
+//     countryParagraph.className = "country-details";
+
+//     const countryLabel = document.createElement("span");
+//     countryLabel.className = "label-bold";
+//     countryLabel.textContent = "Nationality: ";
+
+//     const countryValue = document.createElement("span");
+//     countryValue.className = "country-name";
+//     countryValue.textContent = ` ${constructorDetails.nationality}`;
+
+//     // Get the country code and flag URL
+//     const countryCode = getCountryCodeByNationality(constructorDetails.nationality);
+//     const flagImg = document.createElement("img");
+//     flagImg.className = "country-flag";
+//     flagImg.src = getFlagUrl(countryCode);
+//     flagImg.alt = `${constructorDetails.nationality} flag`;
+
+//     countryParagraph.appendChild(countryLabel);
+//     countryParagraph.appendChild(countryValue);
+//     countryParagraph.appendChild(flagImg);
+
+//     detailsContainer.appendChild(countryParagraph);
+
+//     const infoLink = createInfoLink("Constructor Biography", constructorDetails.url);
+//     detailsContainer.appendChild(infoLink);
+
+//     segment.appendChild(detailsContainer);
+//     column.appendChild(segment);
+
+//     targetElement.appendChild(column);
+//     targetElement.append(createConstructorsTable(constructor));
+// }
 
 // function createConstructorsTable(constructorResults) {
 
@@ -819,149 +818,149 @@ function createConstructorDetails(constructor, constructorDetails, targetElement
 //     return table;
 // }
 
-export async function displayDriverPopup(id, constructors, season, raceid) {
+// export async function displayDriverPopup(id, constructors, season, raceid) {
 
-    // Filter constructor data for the given id and season
-    let filteredResults = constructors.filter(
-        c => c.driver.id === id && c.race.year === season
-    );
+//     // Filter constructor data for the given id and season
+//     let filteredResults = constructors.filter(
+//         c => c.driver.id === id && c.race.year === season
+//     );
 
-    filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
+//     filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
-    try {
-        // Await the result of fetchConstructorDetails
-        const constructorDetails = await fetchDriverDetails(id);
+//     try {
+//         // Await the result of fetchConstructorDetails
+//         const constructorDetails = await fetchDriverDetails(id);
 
-        if (filteredResults.length > 0) {
-            const driverPopup = document.querySelector("#driver");
-            driverPopup.innerHTML = ""; // Clear previous content
-            const overlay = document.querySelector("#modal-overlay");
-            overlay.style.display = "block";
+//         if (filteredResults.length > 0) {
+//             const driverPopup = document.querySelector("#driver");
+//             driverPopup.innerHTML = ""; // Clear previous content
+//             const overlay = document.querySelector("#modal-overlay");
+//             overlay.style.display = "block";
 
-            // Create and display constructor details
-            createDriverDetails(filteredResults, constructorDetails, driverPopup, raceid);
+//             // Create and display constructor details
+//             createDriverDetails(filteredResults, constructorDetails, driverPopup, raceid);
 
-            // Add a close button (top-right)
-            const closeButtonTop = document.createElement("button");
-            closeButtonTop.className = "close-button-top";
-            closeButtonTop.textContent = "X";
-            closeButtonTop.addEventListener("click", () => {
-                driverPopup.style.display = "none";
-                overlay.style.display = "none";
-            });
-            driverPopup.appendChild(closeButtonTop);
+//             // Add a close button (top-right)
+//             const closeButtonTop = document.createElement("button");
+//             closeButtonTop.className = "close-button-top";
+//             closeButtonTop.textContent = "X";
+//             closeButtonTop.addEventListener("click", () => {
+//                 driverPopup.style.display = "none";
+//                 overlay.style.display = "none";
+//             });
+//             driverPopup.appendChild(closeButtonTop);
 
-            const closeButton = document.createElement("button");
-            closeButton.className = "ui button close-button";
-            closeButton.textContent = "Close";
-            closeButton.addEventListener("click", () => {
-                driverPopup.style.display = "none";
-                overlay.style.display = "none";
-            });
+//             const closeButton = document.createElement("button");
+//             closeButton.className = "ui button close-button";
+//             closeButton.textContent = "Close";
+//             closeButton.addEventListener("click", () => {
+//                 driverPopup.style.display = "none";
+//                 overlay.style.display = "none";
+//             });
 
-            driverPopup.appendChild(closeButton);
+//             driverPopup.appendChild(closeButton);
 
-            driverPopup.style.display = "block";
-        } else {
-            console.warn(`No constructor found with ID ${id} for season ${season}`);
-        }
-    } catch (error) {
-        console.error("Error fetching constructor details:", error);
-    }
-}
+//             driverPopup.style.display = "block";
+//         } else {
+//             console.warn(`No constructor found with ID ${id} for season ${season}`);
+//         }
+//     } catch (error) {
+//         console.error("Error fetching constructor details:", error);
+//     }
+// }
 
-function createDriverDetails(driver, driverDetails, targetElement, raceId) {
-    console.log("Driver Details:", driverDetails);
-    console.log("Race ID:", raceId);
+// function createDriverDetails(driver, driverDetails, targetElement, raceId) {
+//     console.log("Driver Details:", driverDetails);
+//     console.log("Race ID:", raceId);
 
-    const column = document.createElement("div");
-    column.className = "twelve wide column";
+//     const column = document.createElement("div");
+//     column.className = "twelve wide column";
 
-    const segment = document.createElement("div");
-    segment.className = "ui segment driver-details-container";
+//     const segment = document.createElement("div");
+//     segment.className = "ui segment driver-details-container";
 
-    const imageContainer = document.createElement("div");
-    imageContainer.className = "driver-image";
+//     const imageContainer = document.createElement("div");
+//     imageContainer.className = "driver-image";
 
-    const image = document.createElement("img");
-    image.src = `https://placehold.co/300x200?text=${driverDetails.forename || "Driver"}+${driverDetails.surname || "Image"}`;
-    image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
-    imageContainer.appendChild(image);
+//     const image = document.createElement("img");
+//     image.src = `https://placehold.co/300x200?text=${driverDetails.forename || "Driver"}+${driverDetails.surname || "Image"}`;
+//     image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
+//     imageContainer.appendChild(image);
 
-    segment.appendChild(imageContainer);
+//     segment.appendChild(imageContainer);
 
-    const favoriteIcon = document.createElement("i");
-    const driverId = driverDetails.driverId;
+//     const favoriteIcon = document.createElement("i");
+//     const driverId = driverDetails.driverId;
 
-    favoriteIcon.className = isFavorite("drivers", driverId)
-        ? "heart icon red heart-icon"
-        : "heart outline icon heart-icon";
+//     favoriteIcon.className = isFavorite("drivers", driverId)
+//         ? "heart icon red heart-icon"
+//         : "heart outline icon heart-icon";
 
-    favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for driver ID:", driverId);
-        toggleFavorite("drivers", driverId);
+//     favoriteIcon.addEventListener("click", () => {
+//         console.log("Toggling favorite for driver ID:", driverId);
+//         toggleFavorite("drivers", driverId);
 
-        // Update only the favorite icon state
-        const isNowFavorite = isFavorite("drivers", driverId);
-        favoriteIcon.className = isNowFavorite
-            ? "heart icon red heart-icon"
-            : "heart outline icon heart-icon";
+//         // Update only the favorite icon state
+//         const isNowFavorite = isFavorite("drivers", driverId);
+//         favoriteIcon.className = isNowFavorite
+//             ? "heart icon red heart-icon"
+//             : "heart outline icon heart-icon";
 
-        // Update the race details without re-rendering the entire tables
-        updateRaceTables(raceId);
-    });
+//         // Update the race details without re-rendering the entire tables
+//         updateRaceTables(raceId);
+//     });
 
-    const iconWrapper = document.createElement("div");
-    iconWrapper.className = "favorite-icon-wrapper";
-    iconWrapper.appendChild(favoriteIcon);
+//     const iconWrapper = document.createElement("div");
+//     iconWrapper.className = "favorite-icon-wrapper";
+//     iconWrapper.appendChild(favoriteIcon);
 
-    segment.appendChild(iconWrapper);
+//     segment.appendChild(iconWrapper);
 
-    const detailsContainer = document.createElement("div");
-    detailsContainer.className = "driver-details";
+//     const detailsContainer = document.createElement("div");
+//     detailsContainer.className = "driver-details";
 
-    const title = document.createElement("h2");
-    title.textContent = "Driver Details";
-    detailsContainer.appendChild(title);
+//     const title = document.createElement("h2");
+//     title.textContent = "Driver Details";
+//     detailsContainer.appendChild(title);
 
-    detailsContainer.appendChild(createDetailParagraph("Name", `${driverDetails.forename} ${driverDetails.surname}`));
+//     detailsContainer.appendChild(createDetailParagraph("Name", `${driverDetails.forename} ${driverDetails.surname}`));
 
-    const countryParagraph = document.createElement("p");
-    countryParagraph.className = "country-details";
+//     const countryParagraph = document.createElement("p");
+//     countryParagraph.className = "country-details";
 
-    const countryLabel = document.createElement("span");
-    countryLabel.className = "label-bold";
-    countryLabel.textContent = "Nationality: ";
+//     const countryLabel = document.createElement("span");
+//     countryLabel.className = "label-bold";
+//     countryLabel.textContent = "Nationality: ";
 
-    const countryValue = document.createElement("span");
-    countryValue.className = "country-name";
-    countryValue.textContent = ` ${driverDetails.nationality}`;
+//     const countryValue = document.createElement("span");
+//     countryValue.className = "country-name";
+//     countryValue.textContent = ` ${driverDetails.nationality}`;
 
-    // Get the country code and flag URL
-    const countryCode = getCountryCodeByNationality(driverDetails.nationality);
-    const flagImg = document.createElement("img");
-    flagImg.className = "country-flag";
-    flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
-    flagImg.alt = `${driverDetails.nationality} flag`;
+//     // Get the country code and flag URL
+//     const countryCode = getCountryCodeByNationality(driverDetails.nationality);
+//     const flagImg = document.createElement("img");
+//     flagImg.className = "country-flag";
+//     flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
+//     flagImg.alt = `${driverDetails.nationality} flag`;
 
-    countryParagraph.appendChild(countryLabel);
-    countryParagraph.appendChild(countryValue);
-    countryParagraph.appendChild(flagImg);
+//     countryParagraph.appendChild(countryLabel);
+//     countryParagraph.appendChild(countryValue);
+//     countryParagraph.appendChild(flagImg);
 
-    detailsContainer.appendChild(countryParagraph);
+//     detailsContainer.appendChild(countryParagraph);
 
 
-    detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driverDetails.dob)));
+//     detailsContainer.appendChild(createDetailParagraph("Age", calculateAge(driverDetails.dob)));
 
-    const infoLink = createInfoLink("Driver Biography", driverDetails.url);
-    detailsContainer.appendChild(infoLink);
+//     const infoLink = createInfoLink("Driver Biography", driverDetails.url);
+//     detailsContainer.appendChild(infoLink);
 
-    segment.appendChild(detailsContainer);
-    column.appendChild(segment);
-    targetElement.appendChild(column);
+//     segment.appendChild(detailsContainer);
+//     column.appendChild(segment);
+//     targetElement.appendChild(column);
 
-    targetElement.appendChild(createDriversTable(driver || []));
-}
+//     targetElement.appendChild(createDriversTable(driver || []));
+// }
 
 // function createDriversTable(driverResults) {
 
@@ -978,229 +977,229 @@ function createDriverDetails(driver, driverDetails, targetElement, raceId) {
 //     return table;
 // }
 
-function calculateAge(dob) {
-    if (!dob) return "N/A"; // Handle cases where dob is null or undefined
+// function calculateAge(dob) {
+//     if (!dob) return "N/A"; // Handle cases where dob is null or undefined
 
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    return age;
-}
-
-
-function displayCircuitPopup(id, race, season) {
-    console.log(race);
-
-    const circuitPopup = document.querySelector("#circuit");
-    circuitPopup.innerHTML = ""; // Clear previous content
-    const overlay = document.querySelector("#modal-overlay");
-    overlay.style.display = "block";
-
-    // Create and display constructor details
-    createCircuitDetails(race, circuitPopup);
-
-    // Add a close button (top-right)
-    const closeButtonTop = document.createElement("button");
-    closeButtonTop.className = "close-button-top";
-    closeButtonTop.textContent = "X";
-    closeButtonTop.addEventListener("click", () => {
-        circuitPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
-    circuitPopup.appendChild(closeButtonTop);
-
-    const closeButton = document.createElement("button");
-    closeButton.className = "ui button close-button";
-    closeButton.textContent = "Close";
-    closeButton.addEventListener("click", () => {
-        circuitPopup.style.display = "none";
-        overlay.style.display = "none";
-    });
-    circuitPopup.appendChild(closeButton);
-
-    circuitPopup.style.display = "block";
-
-}
-
-function createCircuitDetails(driver, targetElement) {
-    console.log("Circuit Details:", driver);
-    console.log("Circuit ID:", driver.id);
-
-    const column = document.createElement("div");
-    column.className = "twelve wide column";
-
-    const segment = document.createElement("div");
-    segment.className = "ui segment driver-details-container";
+//     const birthDate = new Date(dob);
+//     const today = new Date();
+//     let age = today.getFullYear() - birthDate.getFullYear();
+//     return age;
+// }
 
 
-    const favoriteIcon = document.createElement("i");
-    const circuitId = driver.id;
-    console.log("Constructor ID:", circuitId);
+// function displayCircuitPopup(id, race, season) {
+//     console.log(race);
 
-    favoriteIcon.className = isFavorite("constructors", circuitId)
-        ? "heart icon red heart-icon"
-        : "heart outline icon heart-icon";
+//     const circuitPopup = document.querySelector("#circuit");
+//     circuitPopup.innerHTML = ""; // Clear previous content
+//     const overlay = document.querySelector("#modal-overlay");
+//     overlay.style.display = "block";
 
-    favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for race ID:", circuitId);
-        toggleFavorite("circuits", circuitId);
+//     // Create and display constructor details
+//     createCircuitDetails(race, circuitPopup);
 
-        // Immediately update the icon
-        const isNowFavorite = isFavorite("circuits", circuitId);
-        console.log("Is now favorite:", isNowFavorite);
-        favoriteIcon.className = isNowFavorite
-            ? "heart icon red heart-icon"
-            : "heart outline icon heart-icon";
+//     // Add a close button (top-right)
+//     const closeButtonTop = document.createElement("button");
+//     closeButtonTop.className = "close-button-top";
+//     closeButtonTop.textContent = "X";
+//     closeButtonTop.addEventListener("click", () => {
+//         circuitPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
+//     circuitPopup.appendChild(closeButtonTop);
 
-        // Re-render only the race list (left column)
-        const raceGrid = document.querySelector("#race-grid");
-        raceGrid.innerHTML = ""; // Clear race grid
-        renderRaceList(raceGrid, races, qualifyingResults, results); // Re-render races
+//     const closeButton = document.createElement("button");
+//     closeButton.className = "ui button close-button";
+//     closeButton.textContent = "Close";
+//     closeButton.addEventListener("click", () => {
+//         circuitPopup.style.display = "none";
+//         overlay.style.display = "none";
+//     });
+//     circuitPopup.appendChild(closeButton);
 
-        // Re-display the current race details
-        displayRaceDetails(driver, results); // Replace `driver` with the specific race object
-        displayQualifyResults(driver.id, qualifyingResults, results);
-        displayTop3Racers(driver.id, results);
-        displayFinalResults(driver.id, results);
-    });
+//     circuitPopup.style.display = "block";
 
-    const iconWrapper = document.createElement("div");
-    iconWrapper.className = "favorite-icon-wrapper";
-    iconWrapper.appendChild(favoriteIcon);
+// }
 
-    segment.appendChild(iconWrapper);
+// function createCircuitDetails(driver, targetElement) {
+//     console.log("Circuit Details:", driver);
+//     console.log("Circuit ID:", driver.id);
 
-    const imageContainer = document.createElement("div");
-    imageContainer.className = "driver-image";
+//     const column = document.createElement("div");
+//     column.className = "twelve wide column";
 
-    const image = document.createElement("img");
-    // image.src = '../img/profile.png';
-    // image.src = `https://placehold.co/text=${driver.circuit.name || "Circuit"}`;
-    image.src = `https://placehold.co/300x200?text=${driver.circuit.name || "Circuit"}`;
-    imageContainer.appendChild(image);
-
-    segment.appendChild(imageContainer);
-
-    const detailsContainer = document.createElement("div");
-    detailsContainer.className = "driver-details";
-
-    const title = document.createElement("h2");
-    title.textContent = "Circuit Details";
-    detailsContainer.appendChild(title);
-
-    detailsContainer.appendChild(createDetailParagraph("Name", driver.circuit.name));
-    detailsContainer.appendChild(createDetailParagraph("Location", driver.circuit.location));
-
-    const countryParagraph = document.createElement("p");
-    countryParagraph.className = "country-details";
-
-    const countryLabel = document.createElement("span");
-    countryLabel.className = "label-bold";
-    countryLabel.textContent = "Country: ";
-
-    const countryValue = document.createElement("span");
-    countryValue.className = "country-name";
-    countryValue.textContent = ` ${driver.circuit.country}`;
-
-    const countryCode = getCountryCodeByCountry(driver.circuit.country);
-    const flagImg = document.createElement("img");
-    flagImg.className = "country-flag";
-    flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
-    flagImg.alt = `${driver.circuit.country} flag`;
-
-    countryParagraph.appendChild(countryLabel);
-    countryParagraph.appendChild(countryValue);
-    countryParagraph.appendChild(flagImg);
-
-    detailsContainer.appendChild(countryParagraph);
+//     const segment = document.createElement("div");
+//     segment.className = "ui segment driver-details-container";
 
 
-    const infoLink = createInfoLink("Circuit Biography", driver.circuit.url);
-    detailsContainer.appendChild(infoLink);
+//     const favoriteIcon = document.createElement("i");
+//     const circuitId = driver.id;
+//     console.log("Constructor ID:", circuitId);
 
-    segment.appendChild(detailsContainer);
+//     favoriteIcon.className = isFavorite("constructors", circuitId)
+//         ? "heart icon red heart-icon"
+//         : "heart outline icon heart-icon";
 
-    column.appendChild(segment);
+//     favoriteIcon.addEventListener("click", () => {
+//         console.log("Toggling favorite for race ID:", circuitId);
+//         toggleFavorite("circuits", circuitId);
 
-    targetElement.appendChild(column);
-}
+//         // Immediately update the icon
+//         const isNowFavorite = isFavorite("circuits", circuitId);
+//         console.log("Is now favorite:", isNowFavorite);
+//         favoriteIcon.className = isNowFavorite
+//             ? "heart icon red heart-icon"
+//             : "heart outline icon heart-icon";
 
-function updateRaceTables(raceId) {
+//         // Re-render only the race list (left column)
+//         const raceGrid = document.querySelector("#race-grid");
+//         raceGrid.innerHTML = ""; // Clear race grid
+//         renderRaceList(raceGrid, races, qualifyingResults, results); // Re-render races
+
+//         // Re-display the current race details
+//         displayRaceDetails(driver, results); // Replace `driver` with the specific race object
+//         displayQualifyResults(driver.id, qualifyingResults, results);
+//         displayTop3Racers(driver.id, results);
+//         displayFinalResults(driver.id, results);
+//     });
+
+//     const iconWrapper = document.createElement("div");
+//     iconWrapper.className = "favorite-icon-wrapper";
+//     iconWrapper.appendChild(favoriteIcon);
+
+//     segment.appendChild(iconWrapper);
+
+//     const imageContainer = document.createElement("div");
+//     imageContainer.className = "driver-image";
+
+//     const image = document.createElement("img");
+//     // image.src = '../img/profile.png';
+//     // image.src = `https://placehold.co/text=${driver.circuit.name || "Circuit"}`;
+//     image.src = `https://placehold.co/300x200?text=${driver.circuit.name || "Circuit"}`;
+//     imageContainer.appendChild(image);
+
+//     segment.appendChild(imageContainer);
+
+//     const detailsContainer = document.createElement("div");
+//     detailsContainer.className = "driver-details";
+
+//     const title = document.createElement("h2");
+//     title.textContent = "Circuit Details";
+//     detailsContainer.appendChild(title);
+
+//     detailsContainer.appendChild(createDetailParagraph("Name", driver.circuit.name));
+//     detailsContainer.appendChild(createDetailParagraph("Location", driver.circuit.location));
+
+//     const countryParagraph = document.createElement("p");
+//     countryParagraph.className = "country-details";
+
+//     const countryLabel = document.createElement("span");
+//     countryLabel.className = "label-bold";
+//     countryLabel.textContent = "Country: ";
+
+//     const countryValue = document.createElement("span");
+//     countryValue.className = "country-name";
+//     countryValue.textContent = ` ${driver.circuit.country}`;
+
+//     const countryCode = getCountryCodeByCountry(driver.circuit.country);
+//     const flagImg = document.createElement("img");
+//     flagImg.className = "country-flag";
+//     flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
+//     flagImg.alt = `${driver.circuit.country} flag`;
+
+//     countryParagraph.appendChild(countryLabel);
+//     countryParagraph.appendChild(countryValue);
+//     countryParagraph.appendChild(flagImg);
+
+//     detailsContainer.appendChild(countryParagraph);
+
+
+//     const infoLink = createInfoLink("Circuit Biography", driver.circuit.url);
+//     detailsContainer.appendChild(infoLink);
+
+//     segment.appendChild(detailsContainer);
+
+//     column.appendChild(segment);
+
+//     targetElement.appendChild(column);
+// }
+
+export function updateRaceTables(raceId) {
     displayRaceDetails(races.find(r => r.id === raceId), results);
     displayQualifyResults(raceId, qualifyingResults, results);
     displayTop3Racers(raceId, results);
     displayFinalResults(raceId, results);
 }
 
-function getFlagUrl(countryCode) {
-    return `https://flagcdn.com/w40/${countryCode}.png`;
-}
+// function getFlagUrl(countryCode) {
+//     return `https://flagcdn.com/w40/${countryCode}.png`;
+// }
 
-function getCountryCodeByCountry(country) {
-    const countryCodes = {
-        'Bahrain': 'bh',
-        'Saudi Arabia': 'sa',
-        'Australia': 'au',
-        'Italy': 'it',
-        'USA': 'us',
-        'Spain': 'es',
-        'Monaco': 'mc',
-        'Azerbaijan': 'az',
-        'Canada': 'ca',
-        'UK': 'gb',
-        'Austria': 'at',
-        'France': 'fr',
-        'Hungary': 'hu',
-        'Belgium': 'be',
-        'Netherlands': 'nl',
-        'Singapore': 'sg',
-        'Japan': 'jp',
-        'Mexico': 'mx',
-        'Brazil': 'br',
-        'UAE': 'ae',
-        'Germany': 'de',
-        'Switzerland': 'ch',
-        'Thailand': 'th',
-        'China': 'cn',
-        'Denmark': 'dk',
-        'Finland': 'fi',
-        'Japan': 'jp',
-        'South Africa': 'za',
-        'India': 'in'
-    };
+// function getCountryCodeByCountry(country) {
+//     const countryCodes = {
+//         'Bahrain': 'bh',
+//         'Saudi Arabia': 'sa',
+//         'Australia': 'au',
+//         'Italy': 'it',
+//         'USA': 'us',
+//         'Spain': 'es',
+//         'Monaco': 'mc',
+//         'Azerbaijan': 'az',
+//         'Canada': 'ca',
+//         'UK': 'gb',
+//         'Austria': 'at',
+//         'France': 'fr',
+//         'Hungary': 'hu',
+//         'Belgium': 'be',
+//         'Netherlands': 'nl',
+//         'Singapore': 'sg',
+//         'Japan': 'jp',
+//         'Mexico': 'mx',
+//         'Brazil': 'br',
+//         'UAE': 'ae',
+//         'Germany': 'de',
+//         'Switzerland': 'ch',
+//         'Thailand': 'th',
+//         'China': 'cn',
+//         'Denmark': 'dk',
+//         'Finland': 'fi',
+//         'Japan': 'jp',
+//         'South Africa': 'za',
+//         'India': 'in'
+//     };
 
-    const defaultFlag = 'un';
+//     const defaultFlag = 'un';
 
-    return countryCodes[country] || defaultFlag;
-}
+//     return countryCodes[country] || defaultFlag;
+// }
 
 
-function getCountryCodeByNationality(nationality) {
-    const nationalityCodes = {
-        'Monegasque': 'mc',
-        'Spanish': 'es',
-        'British': 'gb',
-        'Danish': 'dk',
-        'Finnish': 'fi',
-        'French': 'fr',
-        'Japanese': 'jp',
-        'Chinese': 'cn',
-        'German': 'de',
-        'Canadian': 'ca',
-        'Thai': 'th',
-        'Australian': 'au',
-        'Mexican': 'mx',
-        'Dutch': 'nl',
-        'Swiss': 'ch',
-        'Italian': 'it',
-        'American': 'us',
-        'Austrian': 'at'
-    };
+// function getCountryCodeByNationality(nationality) {
+//     const nationalityCodes = {
+//         'Monegasque': 'mc',
+//         'Spanish': 'es',
+//         'British': 'gb',
+//         'Danish': 'dk',
+//         'Finnish': 'fi',
+//         'French': 'fr',
+//         'Japanese': 'jp',
+//         'Chinese': 'cn',
+//         'German': 'de',
+//         'Canadian': 'ca',
+//         'Thai': 'th',
+//         'Australian': 'au',
+//         'Mexican': 'mx',
+//         'Dutch': 'nl',
+//         'Swiss': 'ch',
+//         'Italian': 'it',
+//         'American': 'us',
+//         'Austrian': 'at'
+//     };
 
-    const defaultFlag = 'un';
+//     const defaultFlag = 'un';
 
-    return nationalityCodes[nationality] || defaultFlag;
-}
+//     return nationalityCodes[nationality] || defaultFlag;
+// }
 
 
 function createLookup(results) {

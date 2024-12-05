@@ -1,6 +1,7 @@
-import { getNestedProperty, sortData } from './utils.js';
-import { isFavorite } from './dataUtils.js';
-import { displayDriverPopup, displayConstructorPopup } from './browseView.js';
+import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
+// import { displayDriverPopup, displayConstructorPopup } from './browseView.js';
+import { displayConstructorPopup, displayDriverPopup, displayCircuitPopup } from './popupUtils.js';
+
 
 
 export function createTableHeaders(headers, sortMapping, data, renderCallback) {

@@ -1,5 +1,6 @@
 import { isFavorite } from './dataUtils.js';
 import { displayConstructorPopup, displayDriverPopup } from './popupUtils.js';
+import { sortData } from './utils.js';
 
 
 

@@ -1,6 +1,5 @@
-import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
-// import { displayDriverPopup, displayConstructorPopup } from './browseView.js';
-import { displayConstructorPopup, displayDriverPopup, displayCircuitPopup } from './popupUtils.js';
+import { isFavorite } from './dataUtils.js';
+import { displayConstructorPopup, displayDriverPopup } from './popupUtils.js';
 
 
 

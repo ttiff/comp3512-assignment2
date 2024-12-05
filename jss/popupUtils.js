@@ -1,6 +1,6 @@
-import { fetchAndStoreData, updateStorage, removeStorage, retrieveStorage, fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite, getFavorites } from './dataUtils.js';
-import { createConstructorsTable, createDriversTable, createTableHeaders, createPopUpTableHeaders, createQualifyingResultsTable, createTop3RacersTable, createCell, createFinalResultsTable, createQualifyingTableBody, createTop3RacersTableBody, createFinalResultsTableBody, createConstructorTableBody, createDriversTableBody } from './tableUtils.js';
-import { renderRaceList, updateRaceTables, displayQualifyResults, displayRaceDetails, displayTop3Racers, displayFinalResults } from './browseView.js'
+import { fetchDriverDetails, fetchConstructorDetails, isFavorite, toggleFavorite } from './dataUtils.js';
+import { createConstructorsTable, createDriversTable } from './tableUtils.js';
+import { updateRaceTables } from './browseView.js'
 import { getCountryCodeByCountry, getCountryCodeByNationality, getFlagUrl, calculateAge, createDetailParagraph, createInfoLink } from './utils.js';
 
 

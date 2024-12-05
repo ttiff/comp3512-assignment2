@@ -16,12 +16,14 @@ The project focuses on creating a responsive and user-friendly application, inco
 - HTML, CSS, PHP, JavaScript, Semantic UI
 
 ## Main Project Files
-- index.html:
-- browseView.js:
-- dataUtils.js:
-- script.js:
-- style_browse.css:
-- style_index.css:
+- index.html: The main entry point of the application, serving as the backbone of the user interface. It provides the structure and layout for the webpage.
+- browseView.js: Responsible for rendering the browse view of the application, specifically the race grid and associated dynamic elements.
+- dataUtils.js: Handles data operations, including fetching, storing, and processing data from external APIs.
+- popupUtils.js: Handles the creation and interaction of pop-ups for displaying detailed information about circuits, drivers, and constructors.
+- tableUtils.js: Handles the creation and rendering of tables for displaying detailed race, qualifying, and driver statistics.
+- script.js: Serves as the central controller that ties together all other modules and initializes the application.
+- style_browse.css: Dedicated stylesheet for the browse view.
+- style_index.css:Dedicated style sheet for the home view. 
   
 ## API Routes
 > **Note:** I did not create these API routes. They are provided as part of the assignment instructions.

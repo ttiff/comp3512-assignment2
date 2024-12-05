@@ -11,6 +11,8 @@ export let results = null;
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
     browseView.innerHTML = ""; // Clear existing browse view content
+    const spinner = document.querySelector("#loadingSpinner");
+    spinner.style.display = "block";
 
     const mainContainer = setupMainContainer();
     const mainGrid = createMainGrid(browseView);
@@ -25,9 +27,8 @@ export async function renderRaces(seasonYear) {
         const resultsArray = await Promise.all([
             fetchAndStoreData(racesUrl),
             fetchAndStoreData(qualifyingUrl),
-            fetchAndStoreData(resultsUrl)
+            fetchAndStoreData(resultsUrl),
         ]);
-
 
         races = sortData(resultsArray[0], "round");
         qualifyingResults = sortData(resultsArray[1], "position");
@@ -41,6 +42,8 @@ export async function renderRaces(seasonYear) {
     } catch (error) {
         console.error("Error loading races:", error);
         alert("Failed to load race data. Please try again later.");
+    } finally {
+        spinner.style.display = "none";
     }
 
     createDetailsColumn(mainGrid, seasonYear);

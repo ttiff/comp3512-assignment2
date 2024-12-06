@@ -26,6 +26,7 @@ The project is hosted on **GitHub Pages**. You can access the live app [here](ht
 - tableUtils.js: Handles the creation and rendering of tables for displaying detailed race, qualifying, and driver statistics.
 - domUtils.js: Handles creating and manipulating DOM elements.
 - utils.js: Contains shared funcations used across the SPA.
+- homeView.js: Handles the creation and rendering of the Home view layout.
 - script.js: Serves as the central controller that ties together all other modules and initializes the application.
 - style_browse.css: Dedicated stylesheet for the browse view.
 - style_index.css:Dedicated style sheet for the home view. 

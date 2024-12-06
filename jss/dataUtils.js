@@ -1,15 +1,17 @@
+/**This module provides utility functions for managing data storage, retrieval,
+ * and interaction with APIs*/
+
+//Stores the provided data object in localStorage under the key 'dashboardData'
 export function updateStorage(data) {
     localStorage.setItem('dashboardData', JSON.stringify(data));
 }
 
+//Retrieves the 'dashboardData' object from localStorage. Returns an empty object if none exists.
 export function retrieveStorage() {
     return JSON.parse(localStorage.getItem('dashboardData')) || {};
 }
 
-export function removeStorage() {
-    localStorage.removeItem('dashboardData');
-}
-
+//Fetches data from the provided URL, caches it in localStorage, and returns the data.
 export async function fetchAndStoreData(url) {
 
     let data = retrieveStorage();
@@ -36,11 +38,9 @@ export async function fetchAndStoreData(url) {
         });
 }
 
+// Fetches detailed information about an F1 driver by driver ID and caches the result and returns the driver details.
 export async function fetchDriverDetails(driverId) {
     const driverUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driverId}`;
-
-    // console.log("Driver ID:", driverId);
-    // console.log("Driver URL:", driverUrl);
 
     return fetchAndStoreData(driverUrl)
         .then(driverDetails => driverDetails)
@@ -50,11 +50,9 @@ export async function fetchDriverDetails(driverId) {
         });
 }
 
+//Fetches detailed information about an F1 constructor by constructor ID and caches the result and returns the constructor details.
 export async function fetchConstructorDetails(constructorId) {
     const constructorUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/constructors.php?id=${constructorId}`;
-
-    // console.log("Constructor ID:", constructorId);
-    // console.log("Constructor URL:", constructorUrl);
 
     return fetchAndStoreData(constructorUrl)
         .then(constructorDetails => constructorDetails)
@@ -64,10 +62,12 @@ export async function fetchConstructorDetails(constructorId) {
         });
 }
 
+// Retrieves the 'favorites' object from localStorage.
 export function getFavorites() {
     return JSON.parse(localStorage.getItem('favorites')) || { drivers: [], constructors: [], circuits: [] };
 }
 
+// Toggles the favorite status of an item (driver, constructor, or circuit) based on its type and ID, updating localStorage.
 export function toggleFavorite(type, id) {
     const favorites = getFavorites();
     const index = favorites[type].indexOf(id);
@@ -80,6 +80,7 @@ export function toggleFavorite(type, id) {
     return favorites;
 }
 
+// Checks if a specific item (driver, constructor, or circuit) is marked as a favorite in localStorage.
 export function isFavorite(type, id) {
     const favorites = getFavorites();
     return favorites[type].includes(id);

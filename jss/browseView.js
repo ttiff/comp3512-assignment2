@@ -4,13 +4,18 @@ import { createQualifyingResultsTable, createTop3RacersTable, createFinalResults
 import { displayCircuitPopup } from './popupUtils.js';
 import { setupMainContainer, createMainGrid, createTableContainer, createRaceListColumn, createDetailsColumn, addFavoritesSection } from './domUtils.js';
 
+/**
+  This module manages the rendering and interactive features of the browse view in the SPA
+ */
+
 export let races = null;
 export let qualifyingResults = null;
 export let results = null;
 
+// Fetches race, qualifying, and result data for the selected season, processes the data, and renders the race list and details sections
 export async function renderRaces(seasonYear) {
     const browseView = document.querySelector("#browse");
-    browseView.innerHTML = ""; // Clear existing browse view content
+    browseView.innerHTML = "";
     const spinner = document.querySelector("#loadingSpinner");
     spinner.style.display = "block";
 
@@ -19,7 +24,6 @@ export async function renderRaces(seasonYear) {
     const raceGrid = createRaceListColumn(mainGrid, seasonYear);
 
     try {
-        // Fetch race data for the selected season
         const racesUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/races.php?season=${seasonYear}`;
         const qualifyingUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php?season=${seasonYear}`;
         const resultsUrl = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php?season=${seasonYear}`;
@@ -49,6 +53,12 @@ export async function renderRaces(seasonYear) {
     createDetailsColumn(mainGrid, seasonYear);
 }
 
+// Iterates over the race data and generates individual race cards for each race in the grid layout
+export function renderRaceList(raceGrid, races, qualifyingResults, results) {
+    races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
+}
+
+//  Creates a card element for a specific race, displaying basic details and providing buttons for detailed results.
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
     const raceColumn = document.createElement("div");
     raceColumn.className = "column";
@@ -101,12 +111,7 @@ function createRaceCard(raceGrid, race, qualifyingResults, results) {
     });
 }
 
-
-export function renderRaceList(raceGrid, races, qualifyingResults, results) {
-    races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
-}
-
-// Function to display detailed information for a selected race
+// Displays detailed information about a selected race
 export function displayRaceDetails(race, results) {
     const detailsColumn = document.querySelector(".eleven.wide.column");
     detailsColumn.textContent = ""; // Clear existing details
@@ -173,7 +178,7 @@ export function displayRaceDetails(race, results) {
     segment.appendChild(infoLink);
 }
 
-
+// Displays a table of qualifying results for the selected race
 export function displayQualifyResults(raceId, qualifyingResults, results) {
     const filteredResults = qualifyingResults.filter(qr => qr.race.id === raceId);
 
@@ -192,7 +197,7 @@ export function displayQualifyResults(raceId, qualifyingResults, results) {
         console.warn(`No qualifying results found for race ID ${raceId}`);
     }
 }
-
+// Displays a table of top 3 finishers for the selected race 
 export function displayTop3Racers(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId && r.position <= 3);
 
@@ -211,6 +216,7 @@ export function displayTop3Racers(raceId, results) {
     }
 }
 
+//Displays a table of race results for the selected race
 export function displayFinalResults(raceId, results) {
     const filteredResults = results.filter(r => r.race.id === raceId);
 
@@ -225,6 +231,7 @@ export function displayFinalResults(raceId, results) {
     }
 }
 
+// Updates all race-related tables (details, qualifying, top 3 racers, and final results) for a selected race ID.
 export function updateRaceTables(raceId) {
     displayRaceDetails(races.find(r => r.id === raceId), results);
     displayQualifyResults(raceId, qualifyingResults, results);
@@ -232,7 +239,7 @@ export function updateRaceTables(raceId) {
     displayFinalResults(raceId, results);
 }
 
-
+//  Generates a lookup table for circuits, drivers, and constructors based on the results data
 function createLookup(results) {
     if (!Array.isArray(results)) {
         return { circuits: {}, drivers: {}, constructors: {} };
@@ -259,7 +266,7 @@ function createLookup(results) {
     return lookups;
 }
 
-
+// Displays a popup with the user's favorite circuits, drivers, and constructors
 export function displayFavoritesPopup() {
     const favoritesPopup = document.querySelector("#favorites-popup");
     const overlay = document.querySelector("#modal-overlay");

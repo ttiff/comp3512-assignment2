@@ -5,6 +5,9 @@ This repository contains the code for Assignment #2 for COMP 3512 at Mount Royal
 
 The project focuses on creating a responsive and user-friendly application, incorporating views for home, races, and popups for detailed information about drivers, constructors, and circuits. 
 
+## Hosting 
+The project is hosted on **GitHub Pages**. You can access the live app [here](https://ttiff.github.io/comp3512-assignment2/).
+
 ## Features 
 - Home View: Select a season to fetch and display race data, switching to the Races View.
 - Race View: View all races for the selected season, sorted by rounds. Users can explore detailed qualifying and race results with sorting functionality.
@@ -13,7 +16,7 @@ The project focuses on creating a responsive and user-friendly application, inco
 - Local Storage Integration: Store fetched data locally to optimize performance and reduce server load.
 
 ## Technologies Used
-- HTML, CSS, PHP, JavaScript, Semantic UI
+- HTML, CSS, JavaScript, Semantic UI
 
 ## Main Project Files
 - index.html: The main entry point of the application, serving as the backbone of the user interface. It provides the structure and layout for the webpage.
@@ -21,6 +24,8 @@ The project focuses on creating a responsive and user-friendly application, inco
 - dataUtils.js: Handles data operations, including fetching, storing, and processing data from external APIs.
 - popupUtils.js: Handles the creation and interaction of pop-ups for displaying detailed information about circuits, drivers, and constructors.
 - tableUtils.js: Handles the creation and rendering of tables for displaying detailed race, qualifying, and driver statistics.
+- domUtils.js: Handles creating and manipulating DOM elements.
+- utils.js: Contains shared funcations used across the SPA.
 - script.js: Serves as the central controller that ties together all other modules and initializes the application.
 - style_browse.css: Dedicated stylesheet for the browse view.
 - style_index.css:Dedicated style sheet for the home view. 

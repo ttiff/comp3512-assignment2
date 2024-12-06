@@ -4,7 +4,7 @@ import { updateRaceTables } from './browseView.js'
 import { getCountryCodeByCountry, getCountryCodeByNationality, getFlagUrl, calculateAge, createDetailParagraph, createInfoLink } from './utils.js';
 
 /**
- This module provides utility functions for creating and displaying popups in the SPA.
+    This module provides utility functions for creating and displaying popups in the SPA.
  */
 
 // Displays a popup with details about a specific constructor.

@@ -1,4 +1,6 @@
-/** This module provides utility functions for creating and manipulating the DOM elements used in the SPA */
+/** 
+    This module provides utility functions for creating and manipulating the DOM elements used in the SPA 
+*/
 
 // Sets up the main container element for the application layout.
 export function setupMainContainer() {

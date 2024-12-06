@@ -1,8 +1,13 @@
 import { renderRaces, displayFavoritesPopup } from "./browseView.js";
+/**
+    This module initializes and manages the core functionality and navigation for the SPA. It creates the homepage layout, handles 
+    view switching between "home" and "browse" pages, and manages the header navigation.
+ */
 
+// Creates the navigation bar with links to "Home", "GitHub", and "Favorites"
 export function createNavigationBar(switchViewCallback) {
     const headerContainer = document.querySelector("header");
-    headerContainer.innerHTML = ""; // Clear existing content
+    headerContainer.innerHTML = "";
 
     const menuContainer = document.createElement("div");
     menuContainer.className = "ui dark large secondary pointing menu";
@@ -48,7 +53,6 @@ export function createNavigationBar(switchViewCallback) {
         displayFavoritesPopup();
     });
 
-    // Append all items to the menu container
     menuContainer.appendChild(homeLink);
     menuContainer.appendChild(githubLink);
     menuContainer.appendChild(favoritesButton);
@@ -56,7 +60,7 @@ export function createNavigationBar(switchViewCallback) {
 }
 
 
-
+// Toggles between "home" and "browse" views by showing/hiding the respective sections
 function switchView(view) {
     const homeView = document.querySelector("#home");
     const browseView = document.querySelector("#browse");
@@ -85,21 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // Replace with API data when available
     const seasons = ["2020", "2021", "2022", "2023"];
 
-    // Method to create and append the header
+    // Creates and returns a header element for the homepage 
     function addHeader() {
         const header = document.createElement("h1");
         header.textContent = "Formula 1 Dashboard";
         return header;
     }
 
-    // Method to create and append the description paragraph
+    // Creates and returns a description paragraph for the homepage
     function addPageInfo() {
         const pageInfo = document.createElement("p");
-        pageInfo.textContent = "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript and Semantic UI. Click below to explore race results, driver performances, and more from 2020 - 2022 F1 seasons.";
+        pageInfo.textContent = "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript and Semantic UI. Click below to explore race results, driver performances, and more from 2020 - 2023 F1 seasons.";
         return pageInfo;
     }
 
-    // Method to create and append the select element
+    // Creates and returns a description paragraph for the homepage.
     function createSeasonSelect() {
         const container = document.createElement("div");
         container.classList.add("select-container");
@@ -121,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return container;
     }
 
-    // Method to populate the select element with options
+    // Populates the season dropdown with options for each available season
     function populateSeasonOptions(selectElement, seasons) {
         const defaultOption = document.createElement("option");
         defaultOption.value = "";
@@ -136,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Method to create and append the diagonal-layout section
+    // Creates the diagonal homepage layout, including the image section, header, description, and season selection dropdown
     function addDiagonalLayout() {
         const diagonalLayout = document.createElement("section");
         diagonalLayout.classList.add("diagonal-layout");
@@ -151,19 +155,17 @@ document.addEventListener("DOMContentLoaded", () => {
         textSection.appendChild(addPageInfo());
         textSection.appendChild(createSeasonSelect());
 
-        // Append the two divs to the diagonal-layout section
         diagonalLayout.appendChild(imageSection);
         diagonalLayout.appendChild(textSection);
 
-        // Append the diagonal-layout section to the #home element
         homeView.appendChild(diagonalLayout);
     }
 
-    // Call method to build the home view
     createNavigationBar(switchView);
     addDiagonalLayout();
 });
 
+// Switches the active stylesheet based on the current view (home or browse)
 export function switchStylesheet(view) {
     const themeStylesheet = document.querySelector("#theme-stylesheet");
 

@@ -1,5 +1,6 @@
-/**This module provides utility functions for managing data storage, retrieval,
- * and interaction with APIs*/
+/**
+    This module provides utility functions for managing data storage, retrieval, and interaction with APIs
+ */
 
 //Stores the provided data object in localStorage under the key 'dashboardData'
 export function updateStorage(data) {

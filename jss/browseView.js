@@ -2,7 +2,7 @@ import { fetchAndStoreData, isFavorite, getFavorites } from './dataUtils.js';
 import { sortData, getFlagUrl, getCountryCodeByCountry, createDetailParagraph, createInfoLink } from './utils.js';
 import { createQualifyingResultsTable, createTop3RacersTable, createFinalResultsTable } from './tableUtils.js';
 import { displayCircuitPopup } from './popupUtils.js';
-import { setupMainContainer, createMainGrid, createTableContainer, createRaceListColumn, createDetailsColumn } from './domUtils.js';
+import { setupMainContainer, createMainGrid, createTableContainer, createRaceListColumn, createDetailsColumn, addFavoritesSection } from './domUtils.js';
 
 export let races = null;
 export let qualifyingResults = null;
@@ -232,7 +232,12 @@ export function updateRaceTables(raceId) {
     displayFinalResults(raceId, results);
 }
 
+
 function createLookup(results) {
+    if (!Array.isArray(results)) {
+        return { circuits: {}, drivers: {}, constructors: {} };
+    }
+
     const lookups = {
         circuits: {},
         drivers: {},
@@ -243,37 +248,15 @@ function createLookup(results) {
         if (result.race && result.race.id && result.race.name) {
             lookups.circuits[result.race.id] = result.race.name;
         }
-
-        if (result.driver && result.driver.id && result.driver.forename && result.driver.surname) {
+        if (result.driver && result.driver.id) {
             lookups.drivers[result.driver.id] = `${result.driver.forename} ${result.driver.surname}`;
         }
-
-        if (result.constructor && result.constructor.id && result.constructor.name) {
+        if (result.constructor && result.constructor.id) {
             lookups.constructors[result.constructor.id] = result.constructor.name;
         }
     });
 
     return lookups;
-}
-
-function addFavoritesSection(container, title, items, lookup) {
-    const sectionHeader = document.createElement("h3");
-    sectionHeader.textContent = title;
-    container.appendChild(sectionHeader);
-
-    const list = document.createElement("ul");
-    if (items.length === 0) {
-        const emptyMessage = document.createElement("p");
-        emptyMessage.textContent = `No ${title.toLowerCase()} favorited.`;
-        container.appendChild(emptyMessage);
-    } else {
-        items.forEach(id => {
-            const listItem = document.createElement("li");
-            listItem.textContent = lookup[id] || `ID: ${id} (unknown name)`;
-            list.appendChild(listItem);
-        });
-        container.appendChild(list);
-    }
 }
 
 
@@ -294,10 +277,11 @@ export function displayFavoritesPopup() {
 
     const favorites = getFavorites();
 
-    if (!results || results.length === 0) {
+    if (!favorites || favorites.length === 0) {
         const noFavoritesMessage = document.createElement("p");
         noFavoritesMessage.textContent = "You haven't added any favorites yet.";
         favoritesPopup.appendChild(noFavoritesMessage);
+
     } else {
         const lookups = createLookup(results);
 

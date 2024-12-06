@@ -60,3 +60,24 @@ export function createDetailsColumn(parent, seasonYear) {
     message.textContent = message.textContent = `Please select a circuit to view details and race results for the ${seasonYear} season.`;
     segment.appendChild(message);
 }
+
+// Creates favorites section for the favorites pop up card
+export function addFavoritesSection(container, title, items, lookup) {
+    const sectionHeader = document.createElement("h3");
+    sectionHeader.textContent = title;
+    container.appendChild(sectionHeader);
+
+    const list = document.createElement("ul");
+    if (items.length === 0) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.textContent = `No ${title.toLowerCase()} favorited.`;
+        container.appendChild(emptyMessage);
+    } else {
+        items.forEach(id => {
+            const listItem = document.createElement("li");
+            listItem.textContent = lookup[id] || `ID: ${id} (unknown name)`;
+            list.appendChild(listItem);
+        });
+        container.appendChild(list);
+    }
+}

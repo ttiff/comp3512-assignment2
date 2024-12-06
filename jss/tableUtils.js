@@ -2,7 +2,9 @@ import { isFavorite } from './dataUtils.js';
 import { displayConstructorPopup, displayDriverPopup } from './popupUtils.js';
 import { sortData } from './utils.js';
 
-
+/**
+     This module provides utility functions for creating and displaying HTML tables
+ */
 
 export function createTableHeaders(headers, sortMapping, data, renderCallback) {
     const thead = document.createElement("thead");
@@ -15,26 +17,22 @@ export function createTableHeaders(headers, sortMapping, data, renderCallback) {
         if (sortMapping[headerText]) {
             th.classList.add("sortable");
             th.dataset.sortKey = sortMapping[headerText];
-            th.dataset.sortOrder = "asc"; // Default sort order
+            th.dataset.sortOrder = "asc";
 
             th.addEventListener("click", () => {
                 const sortKey = th.dataset.sortKey;
                 const order = th.dataset.sortOrder;
 
-                // Toggle sort order
                 th.dataset.sortOrder = order === "asc" ? "desc" : "asc";
 
-                // Remove active class from all headers
                 const allHeaders = th.parentNode.querySelectorAll(".sortable");
                 allHeaders.forEach(header => {
                     header.classList.remove("active", "asc", "desc");
                 });
 
-                // Add active class to the clicked header
                 th.classList.add("active");
-                th.classList.add(order); // Add 'asc' or 'desc' class
+                th.classList.add(order);
 
-                // Sort data and re-render the table
                 const sortedData = sortData([...data], sortKey, order);
                 renderCallback(sortedData);
             });
@@ -101,7 +99,6 @@ export function createTop3RacersTable(top3Racers, results) {
         "Driver": "driver.surname",
     };
 
-    // Create headers with sorting functionality
     const thead = createTableHeaders(headers, sortMapping, top3Racers, (sortedData) => {
         const newTbody = createTop3RacersTableBody(sortedData, results);
         table.replaceChild(newTbody, table.querySelector("tbody"));
@@ -161,7 +158,6 @@ export function createQualifyingTableBody(qualifyingResults, results) {
 
         row.appendChild(positionCell);
 
-        // Create Driver Cell
         const driverCell = document.createElement("td");
         const driverLink = document.createElement("a");
         driverLink.href = "#";
@@ -181,7 +177,6 @@ export function createQualifyingTableBody(qualifyingResults, results) {
 
         row.appendChild(driverCell);
 
-        // Create Constructor Cell
         const constructorCell = document.createElement("td");
         const constructorLink = document.createElement("a");
         constructorLink.href = "#";
@@ -201,7 +196,6 @@ export function createQualifyingTableBody(qualifyingResults, results) {
 
         row.appendChild(constructorCell);
 
-        // Add Q1, Q2, and Q3 cells
         row.appendChild(createCell(result.q1));
         row.appendChild(createCell(result.q2));
         row.appendChild(createCell(result.q3));
@@ -238,7 +232,6 @@ export function createTop3RacersTableBody(top3Racers, results) {
 
         positionCell.appendChild(medalIcon);
 
-        // Add Position Number
         const positionText = document.createTextNode(` ${result.position}`);
         positionCell.appendChild(positionText);
 
@@ -307,7 +300,7 @@ export function createFinalResultsTableBody(finalResults, results) {
 
         if (isFavorite("constructors", result.constructor.id)) {
             const driverHeartIcon = document.createElement("i");
-            driverHeartIcon.className = "heart icon red heart-icon"; // Add heart-icon class
+            driverHeartIcon.className = "heart icon red heart-icon";
             constructorCell.appendChild(driverHeartIcon);
         }
 

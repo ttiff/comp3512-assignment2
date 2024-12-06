@@ -20,7 +20,7 @@ export function createMainGrid(parent) {
 // Creates a container for a table 
 export function createTableContainer(titleText) {
     const divTable = document.createElement("div");
-    divTable.className = "column";
+    divTable.className = "column results-title";
 
     const title = document.createElement("h3");
     title.textContent = titleText;

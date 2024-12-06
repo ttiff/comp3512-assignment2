@@ -121,6 +121,12 @@ main {
     box-sizing: border-box;
 }
 
+.results-title h3 {
+    margin-top: 20px !important;
+    font-size: 1.5em;
+    text-align: center;
+}
+
 
 #modal-overlay {
     position: fixed;
@@ -259,11 +265,8 @@ main {
 
 .medal-icon {
     margin-right: 5px;
-    /* Space between medal and position number */
     font-size: 1.0rem;
-    /* Adjust size of the medal icon */
     vertical-align: middle;
-    /* Align icon with text */
 }
 
 .gold-medal {

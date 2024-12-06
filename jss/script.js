@@ -1,7 +1,9 @@
 import { renderRaces, displayFavoritesPopup } from "./browseView.js";
+import { addDiagonalLayout } from "./homeView.js";
+
 /**
-    This module initializes and manages the core functionality and navigation for the SPA. It creates the homepage layout, handles 
-    view switching between "home" and "browse" pages, and manages the header navigation.
+    Initializes and manages the Single Page Application (SPA) functionality.
+    Handles view switching, navigation bar creation, and homepage layout.
  */
 
 // Creates the navigation bar with links to "Home", "GitHub", and "Favorites"
@@ -14,6 +16,7 @@ export function createNavigationBar(switchViewCallback) {
 
     const homeLink = document.createElement("a");
     homeLink.className = "item";
+    homeLink.id = "nav-home";
     homeLink.href = "#";
 
     const homeIcon = document.createElement("i");
@@ -25,6 +28,7 @@ export function createNavigationBar(switchViewCallback) {
 
     homeLink.addEventListener("click", () => {
         switchViewCallback("home");
+        setActiveNavItem("home");
     });
 
     const githubLink = document.createElement("a");
@@ -40,6 +44,7 @@ export function createNavigationBar(switchViewCallback) {
 
     const favoritesButton = document.createElement("a");
     favoritesButton.className = "item";
+    favoritesButton.id = "nav-favorites";
     favoritesButton.href = "#";
 
     const favoritesIcon = document.createElement("i");
@@ -51,6 +56,7 @@ export function createNavigationBar(switchViewCallback) {
 
     favoritesButton.addEventListener("click", () => {
         displayFavoritesPopup();
+        setActiveNavItem("favorites");
     });
 
     menuContainer.appendChild(homeLink);
@@ -59,8 +65,18 @@ export function createNavigationBar(switchViewCallback) {
     headerContainer.appendChild(menuContainer);
 }
 
+// Helper function to set the active navigation item
+function setActiveNavItem(activeId) {
+    const navItems = document.querySelectorAll(".ui.dark.menu .item");
+    navItems.forEach((item) => item.classList.remove("active")); // Remove active class from all items
 
-// Toggles between "home" and "browse" views by showing/hiding the respective sections
+    const activeItem = document.querySelector(`#nav-${activeId}`);
+    if (activeItem) {
+        activeItem.classList.add("active"); // Add active class to the selected item
+    }
+}
+
+// Toggles between "home" and "browse" views
 function switchView(view) {
     const homeView = document.querySelector("#home");
     const browseView = document.querySelector("#browse");
@@ -69,103 +85,17 @@ function switchView(view) {
         homeView.classList.remove("hidden");
         browseView.classList.add("hidden");
         switchStylesheet("home");
-
+        setActiveNavItem("home"); // Highlight the Home nav button
     } else if (view === "browse") {
         homeView.classList.add("hidden");
         browseView.classList.remove("hidden");
         switchStylesheet("browse");
+        setActiveNavItem("browse"); // Highlight the appropriate nav button (if applicable)
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const mainContainer = document.querySelector("main");
-    mainContainer.classList.add("container");
-    const homeView = document.querySelector("#home");
-    const browseView = document.querySelector("#browse");
-    browseView.classList.add("hidden");
-    homeView.classList.remove("hidden");
 
-
-    // Replace with API data when available
-    const seasons = ["2020", "2021", "2022", "2023"];
-
-    // Creates and returns a header element for the homepage 
-    function addHeader() {
-        const header = document.createElement("h1");
-        header.textContent = "Formula 1 Dashboard";
-        return header;
-    }
-
-    // Creates and returns a description paragraph for the homepage
-    function addPageInfo() {
-        const pageInfo = document.createElement("p");
-        pageInfo.textContent = "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript and Semantic UI. Click below to explore race results, driver performances, and more from 2020 - 2023 F1 seasons.";
-        return pageInfo;
-    }
-
-    // Creates and returns a description paragraph for the homepage.
-    function createSeasonSelect() {
-        const container = document.createElement("div");
-        container.classList.add("select-container");
-        const seasonSelect = document.createElement("select");
-
-        // Populate select options
-        populateSeasonOptions(seasonSelect, seasons);
-        container.appendChild(seasonSelect);
-
-        // Add event listener to seasonSelect
-        seasonSelect.addEventListener("change", (event) => {
-            const selectedSeason = event.target.value;
-            if (selectedSeason) {
-                switchView("browse");
-                renderRaces(selectedSeason);
-            }
-        });
-
-        return container;
-    }
-
-    // Populates the season dropdown with options for each available season
-    function populateSeasonOptions(selectElement, seasons) {
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Select a Season";
-        selectElement.appendChild(defaultOption);
-
-        seasons.forEach(season => {
-            const option = document.createElement("option");
-            option.value = season;
-            option.textContent = `${season} Season`;
-            selectElement.appendChild(option);
-        });
-    }
-
-    // Creates the diagonal homepage layout, including the image section, header, description, and season selection dropdown
-    function addDiagonalLayout() {
-        const diagonalLayout = document.createElement("section");
-        diagonalLayout.classList.add("diagonal-layout");
-
-        const imageSection = document.createElement("div");
-        imageSection.classList.add("image-section");
-
-        const textSection = document.createElement("div");
-        textSection.classList.add("text-section");
-
-        textSection.appendChild(addHeader());
-        textSection.appendChild(addPageInfo());
-        textSection.appendChild(createSeasonSelect());
-
-        diagonalLayout.appendChild(imageSection);
-        diagonalLayout.appendChild(textSection);
-
-        homeView.appendChild(diagonalLayout);
-    }
-
-    createNavigationBar(switchView);
-    addDiagonalLayout();
-});
-
-// Switches the active stylesheet based on the current view (home or browse)
+// Switches the active stylesheet for the current view
 export function switchStylesheet(view) {
     const themeStylesheet = document.querySelector("#theme-stylesheet");
 
@@ -175,3 +105,20 @@ export function switchStylesheet(view) {
         themeStylesheet.href = "css/style_browse.css";
     }
 }
+
+// Initializes the application on DOM content loaded
+document.addEventListener("DOMContentLoaded", () => {
+    const mainContainer = document.querySelector("main");
+    mainContainer.classList.add("container");
+    const homeView = document.querySelector("#home");
+    const browseView = document.querySelector("#browse");
+    browseView.classList.add("hidden");
+    homeView.classList.remove("hidden");
+
+    const seasons = ["2020", "2021", "2022", "2023"];
+
+    createNavigationBar(switchView);
+    setActiveNavItem("home");
+    const diagonalLayout = addDiagonalLayout(seasons, switchView, renderRaces);
+    homeView.appendChild(diagonalLayout);
+});

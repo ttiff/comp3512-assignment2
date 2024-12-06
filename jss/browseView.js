@@ -2,7 +2,7 @@ import { fetchAndStoreData, isFavorite, getFavorites } from './dataUtils.js';
 import { sortData, getFlagUrl, getCountryCodeByCountry, createDetailParagraph, createInfoLink } from './utils.js';
 import { createQualifyingResultsTable, createTop3RacersTable, createFinalResultsTable } from './tableUtils.js';
 import { displayCircuitPopup } from './popupUtils.js';
-
+import { setupMainContainer, createMainGrid, createTableContainer, createRaceListColumn, createDetailsColumn } from './domUtils.js';
 
 export let races = null;
 export let qualifyingResults = null;
@@ -47,40 +47,6 @@ export async function renderRaces(seasonYear) {
     }
 
     createDetailsColumn(mainGrid, seasonYear);
-}
-
-// Function to set up the main container
-function setupMainContainer() {
-    const mainContainer = document.querySelector("main");
-    mainContainer.className = "ui fluid container";
-    return mainContainer;
-}
-
-// Function to create the main grid layout
-function createMainGrid(parent) {
-    const mainGrid = document.createElement("div");
-    mainGrid.className = "ui grid stackable";
-    parent.appendChild(mainGrid);
-    return mainGrid;
-}
-
-// Function to create the left column for race list
-function createRaceListColumn(parent, seasonYear) {
-    const raceListColumn = document.createElement("div");
-    raceListColumn.className = "four wide column";
-    parent.appendChild(raceListColumn);
-
-    const header = document.createElement("h1");
-    header.className = "ui centered header";
-    header.textContent = `${seasonYear} Races`;
-    raceListColumn.appendChild(header);
-
-    const raceGrid = document.createElement("div");
-    raceGrid.className = "ui stackable doubling three column grid";
-    raceGrid.id = "race-grid";
-    raceListColumn.appendChild(raceGrid);
-
-    return raceGrid;
 }
 
 function createRaceCard(raceGrid, race, qualifyingResults, results) {
@@ -140,24 +106,7 @@ export function renderRaceList(raceGrid, races, qualifyingResults, results) {
     races.forEach(race => createRaceCard(raceGrid, race, qualifyingResults, results));
 }
 
-
-// Function to create the right column for the details message
-function createDetailsColumn(parent, seasonYear) {
-    const detailsColumn = document.createElement("div");
-    detailsColumn.className = "eleven wide column";
-    parent.appendChild(detailsColumn);
-
-    const segment = document.createElement("div");
-    segment.className = "ui segment";
-    detailsColumn.appendChild(segment);
-
-    const message = document.createElement("p");
-    message.textContent = message.textContent = `Please select a circuit to view details and race results for the ${seasonYear} season.`;
-    segment.appendChild(message);
-}
-
 // Function to display detailed information for a selected race
-
 export function displayRaceDetails(race, results) {
     const detailsColumn = document.querySelector(".eleven.wide.column");
     detailsColumn.textContent = ""; // Clear existing details
@@ -274,18 +223,6 @@ export function displayFinalResults(raceId, results) {
     } else {
         console.warn(`No final results found for race ID ${raceId}`);
     }
-}
-
-
-function createTableContainer(titleText) {
-    const divTable = document.createElement("div");
-    divTable.className = "column";
-
-    const title = document.createElement("h3");
-    title.textContent = titleText;
-    divTable.appendChild(title);
-
-    return divTable;
 }
 
 export function updateRaceTables(raceId) {

@@ -134,7 +134,7 @@ export function displayRaceDetails(race, results) {
     circuitLink.textContent = race.circuit.name;
     circuitLink.addEventListener("click", (e) => {
         e.preventDefault();
-        displayCircuitPopup(race.circuit.id, race, race.year);
+        displayCircuitPopup(race);
     });
 
     circuitParagraph.appendChild(circuitLabel);

@@ -4,10 +4,9 @@ import { updateRaceTables } from './browseView.js'
 import { getCountryCodeByCountry, getCountryCodeByNationality, getFlagUrl, calculateAge, createDetailParagraph, createInfoLink } from './utils.js';
 
 
-export async function displayConstructorPopup(id, constructors, season, raceid) {
-
+export async function displayConstructorPopup(id, results, season, raceid) {
     // Filter constructor data for the given id and season
-    let filteredResults = constructors.filter(
+    let filteredResults = results.filter(
         c => c.constructor.id === id && c.race.year === season
     );
 
@@ -52,10 +51,7 @@ export async function displayConstructorPopup(id, constructors, season, raceid) 
     }
 }
 
-export function createConstructorDetails(constructor, constructorDetails, targetElement, raceId) {
-    console.log("Constructor Details:", constructorDetails);
-    console.log("Race ID:", raceId);
-
+export function createConstructorDetails(filteredResults, constructorDetails, targetElement, raceId) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
@@ -129,22 +125,20 @@ export function createConstructorDetails(constructor, constructorDetails, target
     column.appendChild(segment);
 
     targetElement.appendChild(column);
-    targetElement.append(createConstructorsTable(constructor));
+    targetElement.append(createConstructorsTable(filteredResults));
 }
 
 
-export async function displayDriverPopup(id, constructors, season, raceid) {
+export async function displayDriverPopup(id, results, season, raceid) {
 
-    // Filter constructor data for the given id and season
-    let filteredResults = constructors.filter(
+    let filteredResults = results.filter(
         c => c.driver.id === id && c.race.year === season
     );
 
     filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
     try {
-        // Await the result of fetchConstructorDetails
-        const constructorDetails = await fetchDriverDetails(id);
+        const driverDetails = await fetchDriverDetails(id);
 
         if (filteredResults.length > 0) {
             const driverPopup = document.querySelector("#driver");
@@ -152,10 +146,8 @@ export async function displayDriverPopup(id, constructors, season, raceid) {
             const overlay = document.querySelector("#modal-overlay");
             overlay.style.display = "block";
 
-            // Create and display constructor details
-            createDriverDetails(filteredResults, constructorDetails, driverPopup, raceid);
+            createDriverDetails(filteredResults, driverDetails, driverPopup, raceid);
 
-            // Add a close button (top-right)
             const closeButtonTop = document.createElement("button");
             closeButtonTop.className = "close-button-top";
             closeButtonTop.textContent = "X";
@@ -184,10 +176,7 @@ export async function displayDriverPopup(id, constructors, season, raceid) {
     }
 }
 
-export function createDriverDetails(driver, driverDetails, targetElement, raceId) {
-    console.log("Driver Details:", driverDetails);
-    console.log("Race ID:", raceId);
-
+export function createDriverDetails(filteredResults, driverDetails, targetElement, raceId) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
@@ -199,7 +188,7 @@ export function createDriverDetails(driver, driverDetails, targetElement, raceId
 
     const image = document.createElement("img");
     image.src = `https://placehold.co/300x200?text=${driverDetails.forename || "Driver"}+${driverDetails.surname || "Image"}`;
-    image.alt = `${driver.forename || "Driver"} ${driver.surname || "Image"}`;
+    image.alt = `${driverDetails.forename || "Driver"} ${driverDetails.surname || "Image"}`;
     imageContainer.appendChild(image);
 
     segment.appendChild(imageContainer);
@@ -274,12 +263,11 @@ export function createDriverDetails(driver, driverDetails, targetElement, raceId
     column.appendChild(segment);
     targetElement.appendChild(column);
 
-    targetElement.appendChild(createDriversTable(driver || []));
+    targetElement.appendChild(createDriversTable(filteredResults || []));
 }
 
 
-export function displayCircuitPopup(id, race, season) {
-    console.log(race);
+export function displayCircuitPopup(race) {
 
     const circuitPopup = document.querySelector("#circuit");
     circuitPopup.innerHTML = ""; // Clear previous content
@@ -313,7 +301,7 @@ export function displayCircuitPopup(id, race, season) {
 }
 
 
-export function createCircuitDetails(circuit, targetElement) {
+export function createCircuitDetails(race, targetElement) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
@@ -324,32 +312,32 @@ export function createCircuitDetails(circuit, targetElement) {
     imageContainer.className = "driver-image";
 
     const image = document.createElement("img");
-    image.src = `https://placehold.co/300x200?text=${circuit.name || "Circuit Image"} `;
-    image.alt = `${circuit.name} "Image"`;
+    image.src = `https://placehold.co/300x200?text=${race.circuit.name || "Circuit Image"} `;
+    image.alt = `${race.circuit.name} "Image"`;
     imageContainer.appendChild(image);
 
     segment.appendChild(imageContainer);
 
     // Create the favorite icon for the pop-up
     const favoriteIcon = document.createElement("i");
-    const circuitId = circuit.id;
+    const raceId = race.id;
 
-    favoriteIcon.className = isFavorite("circuits", circuitId)
+    favoriteIcon.className = isFavorite("circuits", raceId)
         ? "heart icon red heart-icon"
         : "heart outline icon heart-icon";
 
     favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for circuit ID:", circuitId);
-        toggleFavorite("circuits", circuitId);
+        console.log("Toggling favorite for circuit ID:", raceId);
+        toggleFavorite("circuits", raceId);
 
-        const isNowFavorite = isFavorite("circuits", circuitId);
+        const isNowFavorite = isFavorite("circuits", raceId);
         console.log("Is now favorite:", isNowFavorite);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
 
         // Update the corresponding race card's heart icon
-        const raceCardIcon = document.querySelector(`[race-id="${circuitId}"] .heart-icon`);
+        const raceCardIcon = document.querySelector(`[race-id="${raceId}"] .heart-icon`);
         if (raceCardIcon) {
             raceCardIcon.className = isNowFavorite
                 ? "heart icon red heart-icon"
@@ -370,8 +358,8 @@ export function createCircuitDetails(circuit, targetElement) {
     title.textContent = "Circuit Details";
     detailsContainer.appendChild(title);
 
-    detailsContainer.appendChild(createDetailParagraph("Name", circuit.name));
-    detailsContainer.appendChild(createDetailParagraph("Location", circuit.circuit.location));
+    detailsContainer.appendChild(createDetailParagraph("Name", race.circuit.name));
+    detailsContainer.appendChild(createDetailParagraph("Location", race.circuit.location));
 
     const countryParagraph = document.createElement("p");
     countryParagraph.className = "country-details";
@@ -382,14 +370,14 @@ export function createCircuitDetails(circuit, targetElement) {
 
     const countryValue = document.createElement("span");
     countryValue.className = "country-name";
-    countryValue.textContent = ` ${circuit.circuit.country}`;
+    countryValue.textContent = ` ${race.circuit.country}`;
 
 
-    const countryCode = getCountryCodeByCountry(circuit.circuit.country);
+    const countryCode = getCountryCodeByCountry(race.circuit.country);
     const flagImg = document.createElement("img");
     flagImg.className = "country-flag";
     flagImg.src = getFlagUrl(countryCode);
-    flagImg.alt = `${circuit.country} flag`;
+    flagImg.alt = `${race.country} flag`;
 
     countryParagraph.appendChild(countryLabel);
     countryParagraph.appendChild(countryValue);
@@ -397,7 +385,7 @@ export function createCircuitDetails(circuit, targetElement) {
 
     detailsContainer.appendChild(countryParagraph);
 
-    const infoLink = createInfoLink("Circuit Biography", circuit.url);
+    const infoLink = createInfoLink("Circuit Biography", race.circuit.url);
     detailsContainer.appendChild(infoLink);
 
     segment.appendChild(detailsContainer);

@@ -314,14 +314,21 @@ export function displayCircuitPopup(id, race, season) {
 
 
 export function createCircuitDetails(circuit, targetElement) {
-    console.log("Circuit Details:", circuit);
-    console.log("Circuit ID:", circuit.id);
-
     const column = document.createElement("div");
     column.className = "twelve wide column";
 
     const segment = document.createElement("div");
-    segment.className = "ui segment circuit-details-container";
+    segment.className = "ui segment driver-details-container";
+
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "driver-image";
+
+    const image = document.createElement("img");
+    image.src = `https://placehold.co/300x200?text=${circuit.name || "Circuit Image"} `;
+    image.alt = `${circuit.name} "Image"`;
+    imageContainer.appendChild(image);
+
+    segment.appendChild(imageContainer);
 
     // Create the favorite icon for the pop-up
     const favoriteIcon = document.createElement("i");

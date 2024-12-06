@@ -3,9 +3,13 @@ import { createConstructorsTable, createDriversTable } from './tableUtils.js';
 import { updateRaceTables } from './browseView.js'
 import { getCountryCodeByCountry, getCountryCodeByNationality, getFlagUrl, calculateAge, createDetailParagraph, createInfoLink } from './utils.js';
 
+/**
+ This module provides utility functions for creating and displaying popups in the SPA.
+ */
 
+// Displays a popup with details about a specific constructor.
 export async function displayConstructorPopup(id, results, season, raceid) {
-    // Filter constructor data for the given id and season
+
     let filteredResults = results.filter(
         c => c.constructor.id === id && c.race.year === season
     );
@@ -13,12 +17,11 @@ export async function displayConstructorPopup(id, results, season, raceid) {
     filteredResults = filteredResults.sort((a, b) => a.race.round - b.race.round);
 
     try {
-        // Await the result of fetchConstructorDetails
         const constructorDetails = await fetchConstructorDetails(id);
 
         if (filteredResults.length > 0) {
             const constructorPopup = document.querySelector("#constructor");
-            constructorPopup.innerHTML = ""; // Clear previous content
+            constructorPopup.innerHTML = "";
             const overlay = document.querySelector("#modal-overlay");
             overlay.style.display = "block";
 
@@ -51,6 +54,7 @@ export async function displayConstructorPopup(id, results, season, raceid) {
     }
 }
 
+//Generates the content for the constructor popup
 export function createConstructorDetails(filteredResults, constructorDetails, targetElement, raceId) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
@@ -69,13 +73,11 @@ export function createConstructorDetails(filteredResults, constructorDetails, ta
         console.log("Toggling favorite for constructor ID:", constructorId);
         toggleFavorite("constructors", constructorId);
 
-        // Update only the favorite icon state
         const isNowFavorite = isFavorite("constructors", constructorId);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
 
-        // Update the race details without re-rendering the entire tables
         updateRaceTables(raceId);
     });
 
@@ -105,7 +107,6 @@ export function createConstructorDetails(filteredResults, constructorDetails, ta
     countryValue.className = "country-name";
     countryValue.textContent = ` ${constructorDetails.nationality}`;
 
-    // Get the country code and flag URL
     const countryCode = getCountryCodeByNationality(constructorDetails.nationality);
     const flagImg = document.createElement("img");
     flagImg.className = "country-flag";
@@ -128,7 +129,7 @@ export function createConstructorDetails(filteredResults, constructorDetails, ta
     targetElement.append(createConstructorsTable(filteredResults));
 }
 
-
+// Displays a popup with details about a specific driver
 export async function displayDriverPopup(id, results, season, raceid) {
 
     let filteredResults = results.filter(
@@ -142,7 +143,7 @@ export async function displayDriverPopup(id, results, season, raceid) {
 
         if (filteredResults.length > 0) {
             const driverPopup = document.querySelector("#driver");
-            driverPopup.innerHTML = ""; // Clear previous content
+            driverPopup.innerHTML = "";
             const overlay = document.querySelector("#modal-overlay");
             overlay.style.display = "block";
 
@@ -169,13 +170,14 @@ export async function displayDriverPopup(id, results, season, raceid) {
 
             driverPopup.style.display = "block";
         } else {
-            console.warn(`No constructor found with ID ${id} for season ${season}`);
+            console.warn(`No driver found with ID ${id} for season ${season}`);
         }
     } catch (error) {
-        console.error("Error fetching constructor details:", error);
+        console.error("Error fetching driver details:", error);
     }
 }
 
+//  Generates the content for the driver popup
 export function createDriverDetails(filteredResults, driverDetails, targetElement, raceId) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
@@ -204,13 +206,11 @@ export function createDriverDetails(filteredResults, driverDetails, targetElemen
         console.log("Toggling favorite for driver ID:", driverId);
         toggleFavorite("drivers", driverId);
 
-        // Update only the favorite icon state
         const isNowFavorite = isFavorite("drivers", driverId);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
 
-        // Update the race details without re-rendering the entire tables
         updateRaceTables(raceId);
     });
 
@@ -240,11 +240,10 @@ export function createDriverDetails(filteredResults, driverDetails, targetElemen
     countryValue.className = "country-name";
     countryValue.textContent = ` ${driverDetails.nationality}`;
 
-    // Get the country code and flag URL
     const countryCode = getCountryCodeByNationality(driverDetails.nationality);
     const flagImg = document.createElement("img");
     flagImg.className = "country-flag";
-    flagImg.src = getFlagUrl(countryCode); // Helper function to generate the flag URL
+    flagImg.src = getFlagUrl(countryCode);
     flagImg.alt = `${driverDetails.nationality} flag`;
 
     countryParagraph.appendChild(countryLabel);
@@ -266,18 +265,16 @@ export function createDriverDetails(filteredResults, driverDetails, targetElemen
     targetElement.appendChild(createDriversTable(filteredResults || []));
 }
 
-
+// Displays a popup with details about a specific circuit
 export function displayCircuitPopup(race) {
 
     const circuitPopup = document.querySelector("#circuit");
-    circuitPopup.innerHTML = ""; // Clear previous content
+    circuitPopup.innerHTML = "";
     const overlay = document.querySelector("#modal-overlay");
     overlay.style.display = "block";
 
-    // Create and display constructor details
     createCircuitDetails(race, circuitPopup);
 
-    // Add a close button (top-right)
     const closeButtonTop = document.createElement("button");
     closeButtonTop.className = "close-button-top";
     closeButtonTop.textContent = "X";
@@ -300,7 +297,7 @@ export function displayCircuitPopup(race) {
 
 }
 
-
+// Generates the content for the circuit popup
 export function createCircuitDetails(race, targetElement) {
     const column = document.createElement("div");
     column.className = "twelve wide column";
@@ -318,7 +315,6 @@ export function createCircuitDetails(race, targetElement) {
 
     segment.appendChild(imageContainer);
 
-    // Create the favorite icon for the pop-up
     const favoriteIcon = document.createElement("i");
     const raceId = race.id;
 
@@ -336,7 +332,6 @@ export function createCircuitDetails(race, targetElement) {
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";
 
-        // Update the corresponding race card's heart icon
         const raceCardIcon = document.querySelector(`[race-id="${raceId}"] .heart-icon`);
         if (raceCardIcon) {
             raceCardIcon.className = isNowFavorite

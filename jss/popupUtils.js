@@ -126,6 +126,12 @@ export function createConstructorDetails(filteredResults, constructorDetails, ta
     column.appendChild(segment);
 
     targetElement.appendChild(column);
+
+    const raceDetailsTitle = document.createElement("h3");
+    raceDetailsTitle.className = "race-results-title";
+    raceDetailsTitle.textContent = "Race Results";
+
+    targetElement.appendChild(raceDetailsTitle);
     targetElement.append(createConstructorsTable(filteredResults));
 }
 
@@ -261,6 +267,12 @@ export function createDriverDetails(filteredResults, driverDetails, targetElemen
     segment.appendChild(detailsContainer);
     column.appendChild(segment);
     targetElement.appendChild(column);
+
+    const raceDetailsTitle = document.createElement("h3");
+    raceDetailsTitle.className = "race-results-title";
+    raceDetailsTitle.textContent = "Race Results";
+
+    targetElement.appendChild(raceDetailsTitle);
 
     targetElement.appendChild(createDriversTable(filteredResults || []));
 }

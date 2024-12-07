@@ -70,7 +70,6 @@ export function createConstructorDetails(filteredResults, constructorDetails, ta
         : "heart outline icon heart-icon";
 
     favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for constructor ID:", constructorId);
         toggleFavorite("constructors", constructorId);
 
         const isNowFavorite = isFavorite("constructors", constructorId);
@@ -209,7 +208,6 @@ export function createDriverDetails(filteredResults, driverDetails, targetElemen
         : "heart outline icon heart-icon";
 
     favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for driver ID:", driverId);
         toggleFavorite("drivers", driverId);
 
         const isNowFavorite = isFavorite("drivers", driverId);
@@ -335,11 +333,9 @@ export function createCircuitDetails(race, targetElement) {
         : "heart outline icon heart-icon";
 
     favoriteIcon.addEventListener("click", () => {
-        console.log("Toggling favorite for circuit ID:", raceId);
         toggleFavorite("circuits", raceId);
 
         const isNowFavorite = isFavorite("circuits", raceId);
-        console.log("Is now favorite:", isNowFavorite);
         favoriteIcon.className = isNowFavorite
             ? "heart icon red heart-icon"
             : "heart outline icon heart-icon";

@@ -91,8 +91,6 @@ export function createQualifyingResultsTable(qualifyingResults, results) {
 }
 
 export function createTop3RacersTable(top3Racers, results) {
-    console.log(top3Racers);
-    console.log(results);
     const table = document.createElement("table");
     table.className = "ui celled striped single line very compact left aligned table";
 

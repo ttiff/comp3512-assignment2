@@ -15,7 +15,7 @@ function addHeader() {
 function addPageInfo() {
     const pageInfo = document.createElement("p");
     pageInfo.textContent =
-        "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript and Semantic UI. Click below to explore race results, driver performances, and more from 2020 - 2023 F1 seasons.";
+        "MRU COMP 3512 Assignment #2 by Tiffany Tran. Built using HTML, CSS, JavaScript, and Semantic UI. Use the dropdown below to explore race results, driver performances, and more from the 2020–2023 F1 seasons.";
     return pageInfo;
 }
 

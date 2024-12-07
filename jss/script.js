@@ -28,7 +28,6 @@ export function createNavigationBar(switchViewCallback) {
 
     homeLink.addEventListener("click", () => {
         switchViewCallback("home");
-        setActiveNavItem("home");
     });
 
     const githubLink = document.createElement("a");
@@ -56,24 +55,12 @@ export function createNavigationBar(switchViewCallback) {
 
     favoritesButton.addEventListener("click", () => {
         displayFavoritesPopup();
-        setActiveNavItem("favorites");
     });
 
     menuContainer.appendChild(homeLink);
     menuContainer.appendChild(githubLink);
     menuContainer.appendChild(favoritesButton);
     headerContainer.appendChild(menuContainer);
-}
-
-// Helper function to set the active navigation item
-function setActiveNavItem(activeId) {
-    const navItems = document.querySelectorAll(".ui.dark.menu .item");
-    navItems.forEach((item) => item.classList.remove("active")); // Remove active class from all items
-
-    const activeItem = document.querySelector(`#nav-${activeId}`);
-    if (activeItem) {
-        activeItem.classList.add("active"); // Add active class to the selected item
-    }
 }
 
 // Toggles between "home" and "browse" views
@@ -85,12 +72,10 @@ function switchView(view) {
         homeView.classList.remove("hidden");
         browseView.classList.add("hidden");
         switchStylesheet("home");
-        setActiveNavItem("home"); // Highlight the Home nav button
     } else if (view === "browse") {
         homeView.classList.add("hidden");
         browseView.classList.remove("hidden");
         switchStylesheet("browse");
-        setActiveNavItem("browse"); // Highlight the appropriate nav button (if applicable)
     }
 }
 
@@ -118,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const seasons = ["2020", "2021", "2022", "2023"];
 
     createNavigationBar(switchView);
-    setActiveNavItem("home");
     const diagonalLayout = addDiagonalLayout(seasons, switchView, renderRaces);
     homeView.appendChild(diagonalLayout);
 });

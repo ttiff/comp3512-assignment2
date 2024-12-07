@@ -42,16 +42,10 @@ header {
     transition: background-color 0.3s ease;
 }
 
-.ui.dark.menu .active.item {
-    color: #D32F2F !important;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-bottom: none;
-}
-
 .ui.dark.menu a.item:hover {
     background-color: rgba(255, 255, 255, 0.2);
     color: #D32F2F !important;
-    border-bottom: none;
+    border-bottom: none !important;
 }
 
 .diagonal-layout {

@@ -12,7 +12,7 @@ export function createTableHeaders(headers, sortMapping, data, renderCallback) {
 
     headers.forEach((headerText) => {
         const th = document.createElement("th");
-        th.textContent = headerText;
+        th.textContent = `${headerText} ⇵`;
 
         if (sortMapping[headerText]) {
             th.classList.add("sortable");
@@ -26,16 +26,19 @@ export function createTableHeaders(headers, sortMapping, data, renderCallback) {
                 th.dataset.sortOrder = order === "asc" ? "desc" : "asc";
 
                 const allHeaders = th.parentNode.querySelectorAll(".sortable");
-                allHeaders.forEach(header => {
-                    header.classList.remove("active", "asc", "desc");
+                allHeaders.forEach((header) => {
+                    header.classList.remove("active");
+                    header.textContent = `${header.dataset.originalText} ⇵`;
                 });
 
                 th.classList.add("active");
-                th.classList.add(order);
+                th.textContent = `${headerText} ${order === "asc" ? "▲" : "▼"}`;
 
                 const sortedData = sortData([...data], sortKey, order);
                 renderCallback(sortedData);
             });
+
+            th.dataset.originalText = headerText;
         }
 
         headerRow.appendChild(th);

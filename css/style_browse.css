@@ -224,21 +224,8 @@ main {
 }
 
 .sortable {
-    cursor: pointer;
+    cursor: pointer !important;
 }
-
-.sortable.active.asc::after {
-    content: " ▼";
-    color: #007bff;
-    font-size: 0.6em;
-}
-
-.sortable.active.desc::after {
-    content: " ▲";
-    color: #007bff;
-    font-size: 0.6em;
-}
-
 
 .country-details {
     display: flex;
